@@ -4,7 +4,7 @@ function App() {
   return (
 
     <div className="temp">
-      <h1>Website is currently in development and will be live soon. </h1>
+      <h1>This website is currently in development and will be live soon. </h1>
       <p>Thank You</p>
     </div>
 
