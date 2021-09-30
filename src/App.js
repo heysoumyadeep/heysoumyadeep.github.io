@@ -1,12 +1,25 @@
 import './App.css';
 import './components/dev.js';
+import NavBar from'./components/NavBar';
+import Home from './components/Home';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
 function App() {
   return (
+    <>
+    <Router>
+      <NavBar />
+      <Home />
+      <Switch>
+        <Route path='/' />
+      </Switch>
+    </Router>
+    </>
 
-    <div className="temp">
-      <h1>This website is currently in development and will be live soon. </h1>
-      <p>Thank You</p>
-    </div>
+    // <div className="temp">
+    //   <h1>This website is currently in development and will be live soon. </h1>
+    //   <p>Thank You</p>
+    // </div>
 
     // <section className="coming-soon">
     //   <div>

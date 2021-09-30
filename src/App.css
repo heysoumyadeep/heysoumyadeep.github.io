@@ -53,3 +53,7 @@ h2{
     font-weight: bold;
     padding-top: 1rem;
 }
+
+.body{
+    display: flex;
+}

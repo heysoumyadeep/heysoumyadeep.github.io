@@ -1,0 +1,30 @@
+.navigationBar{
+    height: 100vh;
+    flex: 0.1;
+    min-width: 50px;
+    height: 100vh;
+    border: 1px solid red;
+}
+
+.sidebar > strong {
+    letter-spacing: 1.8px;
+}
+
+.sidebar > hr{
+    border: 1px solid #282828;
+    width: 90%;
+    margin: 10px auto;
+}
+
+.sidebar_logo{
+    height: 70px;
+    padding: 10px;
+    margin-right: auto;
+}
+
+.sidebar_title{
+    margin-left: 10px;
+    padding: 5px;
+    font-size: 12px;
+}
+
