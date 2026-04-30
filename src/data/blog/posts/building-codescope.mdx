@@ -1,0 +1,102 @@
+export const frontmatter = {
+  title: "Building CodeScope: Visualizing Codebases with AI",
+  date: "Apr 21, 2026",
+  readTime: "8 min",
+  excerpt: "How I designed an AI-assisted system that turns sprawling repositories into navigable mental models.",
+  author: "Soumyadeep Pradhan",
+  tags: ["AI", "developer-tools", "visualization", "software-architecture"]
+}
+
+export const faqs = [
+  {
+    question: "What is CodeScope?",
+    answer: "CodeScope is an AI-powered tool built by Soumyadeep Pradhan that visualizes large codebases and surfaces intelligent debugging insights, helping engineers understand unfamiliar repositories faster."
+  },
+  {
+    question: "How does AI codebase visualization work?",
+    answer: "CodeScope uses a layered summarization pipeline: it summarizes individual functions using an LLM, aggregates those into module-level summaries, then builds a weighted dependency graph to create a navigable mental model of the codebase."
+  },
+  {
+    question: "What tech stack does CodeScope use?",
+    answer: "CodeScope is built with React and D3.js for the frontend visualization, Python with the OpenAI API for the summarization pipeline, and SQLite for storing summaries and graph data."
+  }
+]
+
+# Building CodeScope: Visualizing Codebases with AI
+
+Every engineer has had the experience of opening an unfamiliar repository and feeling immediately lost. The file tree is deep, the module boundaries are unclear, and the README is three years out of date. You spend the first two days just trying to understand what connects to what before you can write a single line of meaningful code.
+
+CodeScope started as a personal frustration project. I wanted a tool that could look at a codebase and produce a navigable mental model — something that answered the question "how does this thing actually work?" without requiring me to read every file.
+
+## The Problem with Existing Tools
+
+Static analysis tools like `ctags` or IDE dependency graphs are useful, but they operate at the symbol level. They tell you that `UserService` calls `DatabaseAdapter`, but they don't tell you *why*, or what the broader flow looks like. Documentation generators produce reference material, not understanding.
+
+What I wanted was something closer to how a senior engineer explains a system to a new hire: high-level concepts first, then progressively more detail, with the important paths highlighted and the boilerplate pushed to the background.
+
+## The Approach: Layered Summarization
+
+The core insight behind CodeScope is that understanding a codebase is a hierarchical problem. You need to understand modules before files, files before functions, and functions before lines. So the summarization pipeline mirrors that hierarchy.
+
+The pipeline has three stages:
+
+1. **Leaf summarization** — each function and class is summarized independently using an LLM prompt that emphasizes purpose and side effects over implementation details.
+2. **Module aggregation** — file-level summaries are produced by feeding the leaf summaries into a second prompt that asks the model to identify the module's responsibility and its key dependencies.
+3. **Graph construction** — the module summaries are used to build a weighted dependency graph, where edge weights reflect how tightly coupled two modules are based on call frequency and shared data structures.
+
+## Technical Implementation
+
+The summarization pipeline is written in Python and uses the OpenAI API with structured outputs to ensure consistent JSON responses.
+
+```python
+def summarize_function(source: str, context: dict) -> FunctionSummary:
+    prompt = build_prompt(
+        template="function_summary",
+        source=source,
+        module_context=context,
+    )
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": prompt}],
+        response_format=FunctionSummary,
+    )
+    return response.choices[0].message.parsed
+```
+
+The `FunctionSummary` type is a Pydantic model that captures the function's purpose, inputs, outputs, and any notable side effects. Using structured outputs eliminated a whole class of parsing bugs that plagued earlier versions of the tool.
+
+For the graph visualization layer, I used a React frontend with `d3-force` for layout and `react-zoom-pan-pinch` for navigation. Each node in the graph is a module; clicking it expands a side panel with the module summary and a list of its key functions.
+
+```typescript
+const ModuleNode = ({ data }: NodeProps<ModuleNodeData>) => {
+  const { label, summary, coupling } = data;
+  return (
+    <div className={`module-node coupling-${coupling}`}>
+      <span className="module-label">{label}</span>
+      <span className="module-summary">{summary}</span>
+    </div>
+  );
+};
+```
+
+One of the trickier parts was deciding how to handle large repositories. Sending an entire codebase through the summarization pipeline is expensive and slow. The solution was incremental processing: CodeScope tracks a content hash for each file and only re-summarizes files that have changed since the last run. The summaries are stored in a local SQLite database alongside the graph data.
+
+## Handling Ambiguity
+
+LLMs are not deterministic, and early versions of CodeScope produced summaries that were inconsistent across runs — the same function described differently depending on what else was in the context window. I addressed this in two ways.
+
+First, I added a consistency check that re-runs summarization for any function whose summary changes significantly between runs (measured by cosine similarity of embeddings). If the new summary is too different, the model is prompted again with both versions and asked to produce a canonical one.
+
+Second, I moved to a fixed context window strategy: each function is summarized with only its immediate file context, not the entire module. This trades some accuracy for consistency, and in practice the tradeoff is worth it.
+
+## Lessons Learned
+
+**Start with the output, not the pipeline.** I spent two weeks building a sophisticated summarization pipeline before I had a clear picture of what the final visualization would look like. When I finally built the UI, I realized I needed different data than what the pipeline was producing. Prototype the output first.
+
+**LLM costs add up fast during development.** I burned through a non-trivial amount of API credits running the pipeline against large open-source repos during testing. Caching aggressively from day one would have saved both time and money.
+
+**Graph layout is harder than it looks.** Force-directed layouts look great in demos but become unreadable for graphs with more than ~50 nodes. I ended up implementing a hierarchical layout for large repos and only using force-directed for small ones.
+
+**The most valuable feature is search.** Users don't browse the graph — they search for a concept and then explore outward from the result. Building a good semantic search over the summaries turned out to be more impactful than any visualization improvement.
+
+CodeScope is still a work in progress, but it's already changed how I approach unfamiliar codebases. The goal was never to replace reading code — it's to make the first hour in a new repo feel less like wandering in the dark.

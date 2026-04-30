@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+build
+
+# Vite temp files
+.__mf__temp
+.vite-temp
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor configs (keep .vscode if you want to share settings, remove if not)
+.idea
+
+# Environment files — never commit secrets
+.env
+.env.local
+.env.*.local
+*.local
+
+# Kiro IDE spec files — internal tooling, not needed in repo
+.kiro

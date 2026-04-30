@@ -1,0 +1,6 @@
+# robots.txt — https://soumya.io
+# All crawlers (search engines + AI bots) are welcome.
+
+User-agent: *
+Allow: /
+Sitemap: https://soumya.io/sitemap.xml

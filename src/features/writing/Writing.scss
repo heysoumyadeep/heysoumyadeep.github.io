@@ -1,0 +1,109 @@
+.writing { position: relative; z-index: 2; }
+
+.writing__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+
+  .section-header { margin-bottom: var(--space-4); }
+}
+
+.writing__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: gap var(--duration-hover) var(--ease);
+
+  &:hover { gap: 12px; }
+}
+
+.writing__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.writing__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--duration-hover) var(--ease),
+              box-shadow var(--duration-hover) var(--ease),
+              background-color var(--duration-theme) var(--ease),
+              border-color var(--duration-theme) var(--ease);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gradient-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: transparent;
+    box-shadow: 0 18px 40px -16px var(--color-shadow);
+
+    &::before { transform: scaleX(1); }
+
+    .writing__cta { gap: 10px; }
+  }
+}
+
+.writing__meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--color-text-dim);
+}
+
+.writing__title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+.writing__excerpt {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+  flex: 1;
+}
+
+.writing__cta {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: gap var(--duration-hover) var(--ease);
+}

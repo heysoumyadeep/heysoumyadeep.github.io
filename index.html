@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Security headers (supplement server-level headers) -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
+
+    <!-- Primary SEO — overridden per-page by react-helmet-async -->
+    <title>Soumyadeep Pradhan — Full-Stack Developer</title>
+    <meta name="description" content="Soumyadeep Pradhan is a Full-Stack Developer (SDE2) at JPMorgan Chase. I build thoughtful software across the stack — React, Node.js, Java, Spring Boot, AWS." />
+    <meta name="author" content="Soumyadeep Pradhan" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <link rel="canonical" href="https://soumya.io" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Soumyadeep Pradhan — Full-Stack Developer" />
+    <meta property="og:description" content="Full-Stack Developer (SDE2) at JPMorgan Chase. Building thoughtful software across the stack." />
+    <meta property="og:url" content="https://soumya.io" />
+    <meta property="og:image" content="https://soumya.io/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Soumyadeep Pradhan — Full-Stack Developer" />
+    <meta property="og:site_name" content="Soumyadeep Pradhan" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@soumyadeep" />
+    <meta name="twitter:creator" content="@soumyadeep" />
+    <meta name="twitter:title" content="Soumyadeep Pradhan — Full-Stack Developer" />
+    <meta name="twitter:description" content="Full-Stack Developer (SDE2) at JPMorgan Chase. Building thoughtful software across the stack." />
+    <meta name="twitter:image" content="https://soumya.io/og-image.png" />
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#2D142C" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1c031b" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="msapplication-TileColor" content="#2D142C" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Extended meta — topic signals for Bing, crawlers, and aggregators -->
+    <!-- Keywords source of truth: src/seo/keywords.js — keep in sync when updating -->
+    <meta name="keywords" content="Soumyadeep Pradhan, Soumya Pradhan, Soumya, soumyadeep, soumya.io, Full-Stack Developer, Full Stack Developer, Software Engineer, SDE2, Software Engineer II, JPMorgan Chase, JPMC, software engineer India, developer portfolio, React, React developer, Node.js, JavaScript, TypeScript, Java, Spring Boot, AWS, Docker, PostgreSQL, Redis, Kafka, Python, REST API, microservices, full stack web development, CodeScope, AI codebase visualization, codebase visualization tool, AI developer tools, OpenAI API, D3.js, developer tooling, software engineering blog, engineering career advice, SDE2 lessons, mid-level engineering, software craft, developer growth, code review best practices, AI in software development" />
+    <meta name="subject" content="Software Engineering Portfolio" />
+    <meta name="classification" content="Technology, Software Development" />
+    <meta name="category" content="Portfolio, Blog, Software Engineering" />
+    <meta name="coverage" content="Worldwide" />
+    <meta name="distribution" content="Global" />
+    <meta name="rating" content="General" />
+    <meta name="revisit-after" content="7 days" />
+
+    <!-- Geo / local SEO -->
+    <meta name="geo.region" content="IN" />
+    <meta name="geo.placename" content="India" />
+
+    <!-- RSS feed — signals blog content to aggregators and LLM pipelines -->
+    <link rel="alternate" type="application/rss+xml" title="Soumyadeep Pradhan Blog" href="https://soumya.io/rss.xml" />
+
+    <!-- Sitemap reference -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <!-- Theme init — runs synchronously before first paint to prevent flash -->
+  <!-- Reads saved theme from localStorage and sets data-theme on <html> immediately -->
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('portfolio:theme');
+        var theme = (saved === 'light' || saved === 'dark')
+          ? saved
+          : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch(e) {}
+    })();
+  </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/app/main.jsx"></script>
+  </body>
+</html>

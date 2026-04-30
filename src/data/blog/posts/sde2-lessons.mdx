@@ -1,0 +1,69 @@
+export const frontmatter = {
+  title: "Six things I learned in my first year as an SDE2",
+  date: "Mar 15, 2026",
+  readTime: "6 min",
+  excerpt: "The unwritten rules of mid-level engineering — what I wish someone had told me on day one.",
+  author: "Soumyadeep Pradhan",
+  tags: ["career", "engineering", "growth", "sde2"]
+}
+
+export const faqs = [
+  {
+    question: "What is the difference between SDE1 and SDE2?",
+    answer: "At SDE2, the shift is less about technical difficulty and more about ownership, communication, and ambiguity. SDE2 engineers are expected to reduce uncertainty, manage scope, and coordinate across teams — not just implement tickets."
+  },
+  {
+    question: "What skills do you need to become an SDE2?",
+    answer: "Beyond technical skills, SDE2 requires writing design docs, managing scope creep, conducting effective code reviews, building cross-team relationships, and making your work legible and easy to build on."
+  },
+  {
+    question: "How long does it take to get promoted to SDE2?",
+    answer: "Typically 2-4 years from SDE1, depending on the company and individual growth. The key is demonstrating ownership, communication, and the ability to handle ambiguous problems independently."
+  }
+]
+
+# Six things I learned in my first year as an SDE2
+
+The promotion to SDE2 felt like a clear milestone. The title changed, the compensation changed, and I assumed the job would feel roughly the same — just with harder problems. I was wrong about that last part.
+
+The technical bar does go up, but the bigger shift is in everything around the code: how you communicate, how you scope work, how you handle ambiguity, and how you think about your relationship to the team. Here are six things I wish I had understood on day one.
+
+## 1. Your job is to reduce uncertainty, not just write code
+
+As an SDE1, the path is usually clear. Someone hands you a ticket, you implement it, you ship it. At SDE2, you're expected to take ownership of problems that don't have a clear path yet. The most valuable thing you can do early in a project isn't writing code — it's identifying the unknowns and systematically eliminating them.
+
+This means writing design docs before writing implementations, asking "what could go wrong?" before asking "how do I build this?", and being the person who flags when a requirement is underspecified rather than making a silent assumption and moving on.
+
+## 2. Saying "I don't know" is a superpower
+
+Junior engineers often feel pressure to have an answer for everything. At the mid-level, you're in enough meetings and design reviews that pretending to know things you don't will catch up with you quickly. The engineers I respect most are the ones who say "I'm not sure, let me look into that" without any visible discomfort.
+
+Admitting uncertainty also creates space for others to contribute. Some of the best solutions I've seen came from someone saying "I don't know the answer, but here's how I'd figure it out" and then opening the floor.
+
+## 3. Code review is a teaching tool, not a gatekeeping mechanism
+
+I spent the first few months of SDE2 writing code review comments that were technically correct but not particularly useful. "This could be simplified" without showing how. "Consider a different approach" without explaining why.
+
+Good code review is specific, actionable, and explains the reasoning. It's also calibrated to the author — a comment that's appropriate for a new grad might be condescending to a senior engineer. The goal is to make the code better and help the author grow, not to demonstrate that you spotted something.
+
+## 4. Scope creep is your responsibility to manage
+
+At SDE1, scope creep is mostly someone else's problem. At SDE2, you're often the one closest to the implementation, which means you're the first to notice when a project is growing beyond its original boundaries. And you're expected to do something about it.
+
+This doesn't mean saying no to everything. It means surfacing the tradeoff explicitly: "We can add this, but it'll push the timeline by two weeks — is that the right call?" That conversation is much better than silently absorbing the extra work and then missing the deadline.
+
+## 5. Relationships with adjacent teams matter more than you think
+
+Most of the interesting work at mid-level involves coordinating across team boundaries — integrating with another team's API, aligning on a shared data model, getting buy-in for a breaking change. How smoothly that goes depends almost entirely on the relationships you've built before you needed something.
+
+Invest time in understanding what adjacent teams are working on, even when it's not directly relevant to your current project. Attend their design reviews occasionally. When you do need to ask for something, you're asking a colleague, not a stranger.
+
+## 6. The best engineers make their work legible
+
+Technical skill is necessary but not sufficient. The engineers who have the most impact are the ones who make their work easy to understand, review, and build on. That means clear commit messages, design docs that explain the *why* not just the *what*, and code that reads like it was written for the next person who has to maintain it.
+
+Legibility is also how you build trust. When your work is easy to follow, people feel confident delegating to you. When it's opaque, even good work creates anxiety.
+
+---
+
+None of this is secret knowledge — most of it you could find in any engineering career guide. But there's a difference between reading advice and actually internalizing it under the pressure of a real job. The first year at SDE2 is where that internalization happens, and it's worth paying attention to.

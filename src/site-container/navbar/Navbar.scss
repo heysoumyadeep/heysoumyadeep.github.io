@@ -1,0 +1,328 @@
+// ── Navbar ────────────────────────────────────────────────────────────────────
+
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: var(--z-nav);
+  padding: 18px 0;
+  background: var(--color-nav-bg);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: padding var(--duration-hover) var(--ease),
+              background-color var(--duration-theme) var(--ease),
+              border-color var(--duration-theme) var(--ease);
+}
+
+.navbar--scrolled {
+  padding: 12px 0;
+  border-bottom-color: var(--color-border);
+}
+
+.navbar__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+// ── Logo — theme-aware favicon SVG ────────────────────────────────────────────
+
+.navbar__logo {
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  transition: transform var(--duration-hover) var(--ease),
+              box-shadow var(--duration-hover) var(--ease);
+
+  &:hover {
+    transform: rotate(-8deg) scale(1.12);
+    box-shadow: 0 6px 20px -4px var(--color-shadow);
+  }
+}
+
+.navbar__logo-icon {
+  display: block;
+  // Idle animation: gentle float + soft glow pulse
+  animation: logo-float 4s ease-in-out infinite;
+}
+
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); filter: drop-shadow(0 2px 6px var(--color-shadow)); }
+  30%       { transform: translateY(-3px) rotate(-2deg); filter: drop-shadow(0 6px 12px var(--color-shadow)); }
+  70%       { transform: translateY(-1px) rotate(1deg); filter: drop-shadow(0 4px 8px var(--color-shadow)); }
+}
+
+// Light mode: dark plum background, accent red letter
+.navbar__logo-rect {
+  fill: var(--color-text);
+  transition: fill var(--duration-theme) var(--ease);
+}
+
+.navbar__logo-letter {
+  fill: var(--color-accent);
+  transition: fill var(--duration-theme) var(--ease);
+}
+
+// Dark mode: accent red background, deep dark letter — matches the palette
+[data-theme='dark'] .navbar__logo-rect {
+  fill: var(--color-accent);
+}
+
+[data-theme='dark'] .navbar__logo-letter {
+  fill: #1c031b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar__logo-icon { animation: none; }
+}
+
+// ── Desktop nav links ─────────────────────────────────────────────────────────
+
+.navbar__menu { display: flex; align-items: center; gap: var(--space-2); }
+
+.navbar__link {
+  display: inline-block;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: color var(--duration-hover) var(--ease),
+              background-color var(--duration-hover) var(--ease);
+
+  &:hover { color: var(--color-text); background: var(--color-surface); }
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+// ── Hamburger button ──────────────────────────────────────────────────────────
+
+.navbar__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  gap: 5px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background-color var(--duration-hover) var(--ease);
+
+  &:hover {
+    background: var(--color-surface-alt);
+  }
+
+  span {
+    display: block;
+    width: 22px;
+    height: 1.8px;
+    background: var(--color-text);
+    border-radius: 2px;
+    transition: transform var(--duration-hover) var(--ease),
+                opacity var(--duration-hover) var(--ease),
+                background-color var(--duration-theme) var(--ease);
+    transform-origin: center;
+  }
+}
+
+// Dark mode: give the burger a subtle dark surface so it's visible
+[data-theme='dark'] .navbar__burger {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// ── Mobile menu panel ─────────────────────────────────────────────────────────
+
+.mobile-menu {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(85%, 340px);
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  z-index: var(--z-nav);
+  padding: 0;
+  transform: translateX(100%);
+  transition: transform 0.4s var(--ease),
+              background-color var(--duration-theme) var(--ease),
+              border-color var(--duration-theme) var(--ease);
+  display: none;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.mobile-menu--open { transform: translateX(0); }
+
+// ── Close button inside the panel ────────────────────────────────────────────
+
+.mobile-menu__close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color var(--duration-hover) var(--ease),
+              transform var(--duration-hover) var(--ease);
+
+  &:hover {
+    background: var(--color-accent-soft);
+    transform: rotate(90deg);
+  }
+
+  span {
+    position: absolute;
+    width: 18px;
+    height: 1.8px;
+    background: var(--color-text);
+    border-radius: 2px;
+    transition: background-color var(--duration-theme) var(--ease);
+
+    &:nth-child(1) { transform: rotate(45deg); }
+    &:nth-child(2) { transform: rotate(-45deg); }
+  }
+}
+
+// ── Nav list ──────────────────────────────────────────────────────────────────
+
+.mobile-menu__list {
+  display: flex;
+  flex-direction: column;
+  padding: 80px var(--space-6) var(--space-5);
+  position: relative;
+  z-index: 1;
+}
+
+.mobile-menu__list .navbar__link {
+  display: block;
+  padding: 16px 0;
+  font-size: 18px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+
+  &:hover { background: transparent; color: var(--color-accent); }
+}
+
+.mobile-menu__list li:last-child .navbar__link { border-bottom: none; }
+
+// ── Aurora ribbons ────────────────────────────────────────────────────────────
+
+.mobile-menu__aurora {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.aurora__ribbon {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  border-radius: 50%;
+  filter: blur(32px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+}
+
+.aurora__ribbon--1 {
+  height: 180px;
+  bottom: 20%;
+  background: linear-gradient(
+    135deg,
+    rgba(238, 69, 64, 0.7) 0%,
+    rgba(199, 44, 65, 0.5) 50%,
+    transparent 100%
+  );
+  animation: aurora-drift-1 7s ease-in-out infinite alternate;
+}
+
+.aurora__ribbon--2 {
+  height: 140px;
+  bottom: 5%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(128, 19, 54, 0.6) 40%,
+    rgba(238, 69, 64, 0.4) 80%,
+    transparent 100%
+  );
+  animation: aurora-drift-2 9s ease-in-out infinite alternate;
+}
+
+.aurora__ribbon--3 {
+  height: 100px;
+  bottom: 35%;
+  background: linear-gradient(
+    150deg,
+    rgba(81, 10, 50, 0.5) 0%,
+    rgba(199, 44, 65, 0.35) 60%,
+    transparent 100%
+  );
+  animation: aurora-drift-3 11s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift-1 {
+  from { transform: translateX(-8%) scaleY(1) rotate(-2deg); opacity: 0.45; }
+  to   { transform: translateX(8%)  scaleY(1.15) rotate(2deg); opacity: 0.65; }
+}
+
+@keyframes aurora-drift-2 {
+  from { transform: translateX(6%) scaleY(1.1) rotate(1deg); opacity: 0.5; }
+  to   { transform: translateX(-6%) scaleY(0.9) rotate(-1deg); opacity: 0.35; }
+}
+
+@keyframes aurora-drift-3 {
+  from { transform: translateX(-4%) scaleY(0.95) rotate(-1deg); opacity: 0.4; }
+  to   { transform: translateX(10%) scaleY(1.2) rotate(2deg); opacity: 0.6; }
+}
+
+// ── Backdrop ──────────────────────────────────────────────────────────────────
+
+.mobile-menu__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: var(--z-overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
+  display: none;
+}
+
+.mobile-menu__backdrop--open { opacity: 1; pointer-events: auto; }
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .navbar__menu--desktop { display: none; }
+  .navbar__burger { display: flex; }
+  .mobile-menu { display: flex; }
+  .mobile-menu__backdrop { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora__ribbon { animation: none; }
+}
