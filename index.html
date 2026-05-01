@@ -1,56 +1,69 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Security headers (supplement server-level headers) -->
+    <!-- Security headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
 
-    <!-- Primary SEO - overridden per-page by react-helmet-async -->
-    <title>Soumyadeep Pradhan - Full-Stack Developer</title>
-    <meta name="description" content="Soumyadeep Pradhan is a Full-Stack Developer (SDE2) at JPMorgan Chase. I build thoughtful software across the stack - React, Node.js, Java, Spring Boot, AWS." />
+    <!-- Primary SEO -->
+    <title>Soumyadeep Pradhan - Full-Stack Developer | soumya.io</title>
+    <meta name="description" content="Soumyadeep Pradhan (heysoumyadeep) - Full-Stack Developer (SDE2) at JPMorgan Chase. Creator of CodeScope. Building thoughtful software with React, Node.js, Java, Spring Boot, and AWS. Based in India." />
     <meta name="author" content="Soumyadeep Pradhan" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <meta name="bingbot" content="index, follow" />
     <link rel="canonical" href="https://soumya.io" />
 
-    <!-- Open Graph -->
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp, Slack) -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Soumyadeep Pradhan - Full-Stack Developer" />
-    <meta property="og:description" content="Full-Stack Developer (SDE2) at JPMorgan Chase. Building thoughtful software across the stack." />
+    <meta property="og:description" content="Full-Stack Developer (SDE2) at JPMorgan Chase. Creator of CodeScope. Building thoughtful software across the stack." />
     <meta property="og:url" content="https://soumya.io" />
     <meta property="og:image" content="https://soumya.io/og-image.png" />
+    <meta property="og:image:secure_url" content="https://soumya.io/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:alt" content="Soumyadeep Pradhan - Full-Stack Developer" />
     <meta property="og:site_name" content="Soumyadeep Pradhan" />
     <meta property="og:locale" content="en_US" />
 
-    <!-- Twitter Card -->
+    <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@soumyadeep" />
-    <meta name="twitter:creator" content="@soumyadeep" />
+    <meta name="twitter:site" content="@heysoumyadeep" />
+    <meta name="twitter:creator" content="@heysoumyadeep" />
     <meta name="twitter:title" content="Soumyadeep Pradhan - Full-Stack Developer" />
-    <meta name="twitter:description" content="Full-Stack Developer (SDE2) at JPMorgan Chase. Building thoughtful software across the stack." />
+    <meta name="twitter:description" content="Full-Stack Developer (SDE2) at JPMorgan Chase. Creator of CodeScope. Building thoughtful software across the stack." />
     <meta name="twitter:image" content="https://soumya.io/og-image.png" />
+    <meta name="twitter:image:alt" content="Soumyadeep Pradhan - Full-Stack Developer" />
 
-    <!-- Theme -->
+    <!-- Theme / PWA -->
+    <meta name="theme-color" content="#1c031b" />
     <meta name="theme-color" content="#2D142C" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1c031b" media="(prefers-color-scheme: dark)" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="msapplication-TileColor" content="#2D142C" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="msapplication-TileColor" content="#1c031b" />
+    <meta name="msapplication-TileImage" content="/favicon.svg" />
+    <meta name="application-name" content="Soumyadeep Pradhan" />
+    <meta name="apple-mobile-web-app-title" content="Soumyadeep" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Extended meta - topic signals for Bing, crawlers, and aggregators -->
-    <!-- Keywords source of truth: src/seo/keywords.js — keep in sync when updating -->
-    <meta name="keywords" content="Soumyadeep Pradhan, Soumya Pradhan, Soumya, soumyadeep, soumya.io, Full-Stack Developer, Full Stack Developer, Software Engineer, SDE2, Software Engineer II, JPMorgan Chase, JPMC, software engineer India, developer portfolio, React, React developer, Node.js, JavaScript, TypeScript, Java, Spring Boot, AWS, Docker, PostgreSQL, Redis, Kafka, Python, REST API, microservices, full stack web development, CodeScope, AI codebase visualization, codebase visualization tool, AI developer tools, OpenAI API, D3.js, developer tooling, software engineering blog, engineering career advice, SDE2 lessons, mid-level engineering, software craft, developer growth, code review best practices, AI in software development" />
+    <!-- Keywords (Bing, DuckDuckGo, Yandex, Baidu still use these) -->
+    <meta name="keywords" content="Soumyadeep Pradhan, Soumya Pradhan, Soumya, soumyadeep, heysoumyadeep, Pradhan, soumya.io, Full-Stack Developer, Full Stack Developer, Software Engineer, SDE2, Software Engineer II, JPMorgan Chase, JPMC, software engineer India, developer portfolio, React, React developer, Node.js, JavaScript, TypeScript, Java, Spring Boot, AWS, Docker, PostgreSQL, Redis, Kafka, Python, REST API, microservices, full stack web development, CodeScope, AI codebase visualization, codebase visualization tool, AI developer tools, OpenAI API, D3.js, developer tooling, software engineering blog, engineering career advice, SDE2 lessons, mid-level engineering, software craft, developer growth, code review best practices, AI in software development" />
+
+    <!-- Extended meta signals -->
     <meta name="subject" content="Software Engineering Portfolio" />
     <meta name="classification" content="Technology, Software Development" />
     <meta name="category" content="Portfolio, Blog, Software Engineering" />
@@ -58,43 +71,56 @@
     <meta name="distribution" content="Global" />
     <meta name="rating" content="General" />
     <meta name="revisit-after" content="7 days" />
+    <meta name="language" content="English" />
+    <meta name="target" content="all" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
 
     <!-- Geo / local SEO -->
     <meta name="geo.region" content="IN" />
     <meta name="geo.placename" content="India" />
+    <meta name="geo.position" content="20.5937;78.9629" />
+    <meta name="ICBM" content="20.5937, 78.9629" />
 
-    <!-- RSS feed - signals blog content to aggregators and LLM pipelines -->
+    <!-- Bing Webmaster verification (add your code from Bing Webmaster Tools) -->
+    <meta name="msvalidate.01" content="" />
+
+    <!-- Yandex verification (add your code from Yandex Webmaster) -->
+    <meta name="yandex-verification" content="" />
+
+    <!-- RSS feed -->
     <link rel="alternate" type="application/rss+xml" title="Soumyadeep Pradhan Blog" href="https://soumya.io/rss.xml" />
 
     <!-- Sitemap reference -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
-    <!-- Theme init — runs synchronously before first paint to prevent flash -->
-  <!-- Reads saved theme from localStorage and sets data-theme on <html> immediately -->
-  <script>
-    (function() {
-      try {
-        var saved = localStorage.getItem('portfolio:theme');
-        // Default to dark theme on first visit
-        var theme = (saved === 'light' || saved === 'dark')
-          ? saved
-          : 'dark';
-        document.documentElement.setAttribute('data-theme', theme);
-      } catch(e) {}
-    })();
-  </script>
+    <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://cdnjs.buymeacoffee.com" />
+
+    <!-- Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Theme init - runs before first paint to prevent flash -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('portfolio:theme');
+          var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/app/main.jsx"></script>
-    
-    <!-- Buy Me a Coffee Widget - will be controlled by React component -->
+    <!-- Buy Me a Coffee Widget - controlled by React component -->
     <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="heysoumyadeep" data-description="Support me on Buy me a coffee!" data-message="" data-color="#C72C41" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
   </body>
 </html>

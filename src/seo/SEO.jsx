@@ -11,7 +11,7 @@ import { SITE_CONFIG } from '@config/site';
 
 const BASE_URL = SITE_CONFIG.url;
 const AUTHOR = SITE_CONFIG.name;
-const TWITTER = '@soumyadeep';
+const TWITTER = '@heysoumyadeep';
 const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
 const DEFAULT_OG_ALT = `${AUTHOR} - Full-Stack Developer`;
 
@@ -44,6 +44,12 @@ export default function SEO({
 
   return (
     <Helmet>
+      {/* ── Bing / other search engines ──────────────────────────────── */}
+      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+      <meta name="googlebot" content="index, follow" />
+      <meta name="bingbot" content="index, follow" />
+      <meta name="slurp" content="index, follow" />
+
       {/* ── Primary ─────────────────────────────────────────────────── */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />

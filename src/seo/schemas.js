@@ -47,9 +47,8 @@ export const websiteSchema = {
 export const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: SITE_CONFIG.name,
-  // alternateName connects partial name searches ("Soumya") to this entity
-  alternateName: ['Soumya Pradhan', 'Soumya'],
+  name: 'Soumyadeep Pradhan',
+  alternateName: ['Soumya Pradhan', 'Soumya', 'soumyadeep', 'heysoumyadeep'],
   url: BASE_URL,
   image: `${BASE_URL}/og-image.png`,
   jobTitle: personalInfo.role,
@@ -59,11 +58,12 @@ export const personSchema = {
     url: 'https://www.jpmorganchase.com',
   },
   description: personalInfo.bio[0],
-  // sameAs links your identity across platforms — important for Knowledge Graph
   sameAs: [
     personalInfo.social.github,
     personalInfo.social.linkedin,
     personalInfo.social.twitter,
+    'https://buymeacoffee.com/heysoumyadeep',
+    BASE_URL,
   ],
   knowsAbout: KNOWS_ABOUT,
 };
@@ -177,14 +177,15 @@ export const profilePageSchema = {
   mainEntity: {
     '@type': 'Person',
     name: 'Soumyadeep Pradhan',
-    alternateName: ['Soumya Pradhan', 'Soumya'],
+    alternateName: ['Soumya Pradhan', 'Soumya', 'soumyadeep', 'heysoumyadeep'],
     url: BASE_URL,
     jobTitle: 'Full-Stack Developer',
-    description: 'Full-Stack Developer (SDE2) at JPMorgan Chase. Creator of CodeScope.',
+    description: 'Full-Stack Developer (SDE2) at JPMorgan Chase. Creator of CodeScope. Known online as heysoumyadeep.',
     sameAs: [
       personalInfo.social.github,
       personalInfo.social.linkedin,
       personalInfo.social.twitter,
+      'https://buymeacoffee.com/heysoumyadeep',
     ],
   },
 };

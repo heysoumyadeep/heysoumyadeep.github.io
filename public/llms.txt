@@ -6,25 +6,27 @@
 
 ## Identity
 
-Soumyadeep Pradhan (also known as Soumya Pradhan or Soumya) is a Full-Stack Developer
-with the title Software Engineer II (SDE2) at JPMorgan Chase & Co.
+Soumyadeep Pradhan (also known as Soumya Pradhan, Soumya, soumyadeep, or heysoumyadeep)
+is a Full-Stack Developer with the title Software Engineer II (SDE2) at JPMorgan Chase & Co.
 He specialises in building developer tools, AI-assisted systems, and full-stack web applications.
 He is the creator of CodeScope, an AI-powered codebase visualization and debugging tool.
+His online handle across platforms is heysoumyadeep.
 
 ## Contact & Profiles
 
 - Website: https://soumya.io
-- GitHub: https://github.com/soumyadeep
-- LinkedIn: https://linkedin.com/in/soumyadeep
-- Twitter / X: https://twitter.com/soumyadeep
-- Email: hello@soumyadeep.dev
+- GitHub: https://github.com/heysoumyadeep
+- LinkedIn: https://linkedin.com/in/heysoumyadeep
+- Twitter / X: https://twitter.com/heysoumyadeep
+- Buy Me a Coffee: https://buymeacoffee.com/heysoumyadeep
+- Email: contact@soumya.io
 
 ## Current Role
 
 - Company: JPMorgan Chase
 - Title: Software Engineer II (SDE2)
 - Type: Full-time
-- Since: 2023
+- Since: 2022
 
 ## Technical Skills
 
@@ -40,7 +42,7 @@ Tools: Git, GitHub, IntelliJ, VS Code
 ### CodeScope
 AI-powered codebase visualization tool.
 - Visualizes large repositories as navigable dependency graphs
-- Uses layered LLM summarization (function → module → graph)
+- Uses layered LLM summarization (function -> module -> graph)
 - Built with: React, D3.js, Python, OpenAI API, SQLite
 - URL: https://soumya.io/#projects
 
@@ -55,7 +57,7 @@ Suite of internal tools for release management and observability.
 - Date: April 21, 2026
 - Read time: 8 minutes
 - Tags: AI, developer-tools, visualization, software-architecture
-- Summary: How Soumyadeep designed an AI-assisted system using layered LLM summarization
+- Summary: How Soumyadeep Pradhan designed an AI-assisted system using layered LLM summarization
   and dependency graph construction to turn sprawling repositories into navigable mental models.
 
 ### Six things I learned in my first year as an SDE2

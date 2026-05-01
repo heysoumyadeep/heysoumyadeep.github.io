@@ -24,7 +24,9 @@ export const IDENTITY_KEYWORDS = [
   'Soumya Pradhan',
   'Soumya',
   'soumyadeep',
+  'heysoumyadeep',
   'soumya.io',
+  'Pradhan',
 ];
 
 // ── Role / professional keywords ──────────────────────────────────────────────
