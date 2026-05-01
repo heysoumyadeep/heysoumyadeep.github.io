@@ -29,6 +29,9 @@ export default defineConfig(({ command }) => ({
           'react-router-dom': { singleton: true, requiredVersion: '^6.26.0' },
         },
       }),
+    ] : []),
+    // Sitemap + prerender always run on build (needed for GitHub Pages SPA routing)
+    ...(command === 'build' ? [
       sitemapPlugin(),
       prerenderPlugin(),
     ] : []),
