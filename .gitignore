@@ -20,6 +20,7 @@ Thumbs.db
 
 # Editor configs (keep .vscode if you want to share settings, remove if not)
 .idea
+.vscode
 
 # Environment files — never commit secrets
 .env
