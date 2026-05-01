@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Navbar, Footer, ParallaxBackground, SupportSnackbar } from '@components';
 import { useScrollReveal } from '@hooks';
@@ -9,8 +9,10 @@ export default function BlogPage() {
   useScrollReveal();
   const { slug } = useParams();
 
-  // Scroll to top on route change
-  useEffect(() => { window.scrollTo(0, 0); }, [slug]);
+  // Scroll to top immediately on route change - useLayoutEffect runs before paint
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   return (
     <>

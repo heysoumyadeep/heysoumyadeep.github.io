@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from '@hooks';
@@ -9,6 +9,13 @@ const HomePage = lazy(() => import('@pages/HomePage'));
 const BlogPage = lazy(() => import('@pages/BlogPage'));
 
 export default function App() {
+  // Set scroll restoration to manual globally
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
   return (
     <HelmetProvider>
       <ThemeProvider>
