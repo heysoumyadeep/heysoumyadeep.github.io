@@ -77,6 +77,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -105,13 +106,22 @@ export default function Navbar() {
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    navigate(ROUTES.HOME);
+    // Scroll to top after navigation
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
+  };
+
   return (
     <>
       <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
         <div className="navbar__inner container">
 
           {/* Logo — favicon SVG, theme-aware */}
-          <Link to={ROUTES.HOME} className="navbar__logo" aria-label="Home">
+          <Link to={ROUTES.HOME} className="navbar__logo" aria-label="Home" onClick={handleLogoClick}>
             <SiteLogo />
           </Link>
 

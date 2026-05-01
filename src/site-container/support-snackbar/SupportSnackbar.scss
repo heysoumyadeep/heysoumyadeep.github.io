@@ -65,19 +65,36 @@
 
 .support-snackbar__cta {
   flex-shrink: 0;
-  padding: 8px 16px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   background: var(--gradient-accent);
   color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: var(--radius-pill);
-  white-space: nowrap;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px -2px rgba(199, 44, 65, 0.4);
 
   &:hover {
-    opacity: 0.88;
-    transform: translateY(-1px);
+    opacity: 0.9;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px -2px rgba(199, 44, 65, 0.5);
   }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+.support-snackbar__bmc-logo {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+  pointer-events: none;
 }
 
 .support-snackbar__close {
@@ -112,3 +129,21 @@
     border-radius: var(--radius-lg);
   }
 }
+
+// ── Hide BMC Widget Button ────────────────────────────────────────────────────
+// We use our custom snackbar instead, but trigger the BMC widget programmatically
+
+#bmc-wbtn {
+  display: none !important;
+}
+
+// ── Style BMC Modal/Iframe ────────────────────────────────────────────────────
+// Make the popup medium size when it opens
+
+div[class*="bmc-"] iframe,
+iframe[src*="buymeacoffee"] {
+  max-width: 420px !important;
+  max-height: min(70vh, 580px) !important;
+  height: min(70vh, 580px) !important;
+}
+
