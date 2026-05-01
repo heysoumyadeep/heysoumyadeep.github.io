@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Soumyadeep Pradhan — Blog</title>
+    <title>Soumyadeep Pradhan - Blog</title>
     <link>https://soumya.io/blog</link>
     <description>Notes on engineering, software craft, and the occasional detour into other things. By Soumyadeep Pradhan, Full-Stack Developer at JPMorgan Chase.</description>
     <language>en-us</language>
@@ -11,7 +11,7 @@
     <atom:link href="https://soumya.io/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://soumya.io/og-image.png</url>
-      <title>Soumyadeep Pradhan — Blog</title>
+      <title>Soumyadeep Pradhan - Blog</title>
       <link>https://soumya.io/blog</link>
     </image>
     <item>
@@ -31,7 +31,7 @@
       <link>https://soumya.io/blog/sde2-lessons</link>
       <guid isPermaLink="true">https://soumya.io/blog/sde2-lessons</guid>
       <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
-      <description>The unwritten rules of mid-level engineering — what I wish someone had told me on day one.</description>
+      <description>The unwritten rules of mid-level engineering, what I wish someone had told me on day one.</description>
       <author>hello@soumyadeep.dev (Soumyadeep Pradhan)</author>
       <category>career</category>
       <category>engineering</category>

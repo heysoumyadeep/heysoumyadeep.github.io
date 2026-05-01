@@ -36,41 +36,57 @@
               box-shadow var(--duration-hover) var(--ease);
 
   &:hover {
-    transform: rotate(-8deg) scale(1.12);
-    box-shadow: 0 6px 20px -4px var(--color-shadow);
+    transform: scale(1.08);
+    box-shadow: 0 8px 24px -4px var(--color-shadow);
   }
 }
 
 .navbar__logo-icon {
   display: block;
-  // Idle animation: gentle float + soft glow pulse
-  animation: logo-float 4s ease-in-out infinite;
+  // Subtle float + glow pulse
+  animation: logo-float 3s ease-in-out infinite,
+             logo-glow-pulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 2px 8px var(--color-shadow));
+  transition: filter 0.3s ease, transform 0.3s ease;
+
+  .navbar__logo:hover & {
+    animation: logo-bounce 0.6s ease-in-out;
+    filter: drop-shadow(0 6px 20px var(--color-accent))
+            drop-shadow(0 0 32px var(--color-accent));
+  }
 }
 
 @keyframes logo-float {
-  0%, 100% { transform: translateY(0) rotate(0deg); filter: drop-shadow(0 2px 6px var(--color-shadow)); }
-  30%       { transform: translateY(-3px) rotate(-2deg); filter: drop-shadow(0 6px 12px var(--color-shadow)); }
-  70%       { transform: translateY(-1px) rotate(1deg); filter: drop-shadow(0 4px 8px var(--color-shadow)); }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
 }
 
-// Light mode: dark plum background, accent red letter
+@keyframes logo-glow-pulse {
+  0%, 100% { 
+    filter: drop-shadow(0 2px 8px var(--color-shadow));
+  }
+  50% { 
+    filter: drop-shadow(0 4px 12px var(--color-accent))
+            drop-shadow(0 0 16px rgba(238, 69, 64, 0.3));
+  }
+}
+
+@keyframes logo-bounce {
+  0%, 100% { transform: scale(1) translateY(0); }
+  25%      { transform: scale(1.15) translateY(-6px); }
+  50%      { transform: scale(0.95) translateY(0); }
+  75%      { transform: scale(1.05) translateY(-2px); }
+}
+
+// Same logo in both themes - always accent background with dark letter
 .navbar__logo-rect {
-  fill: var(--color-text);
-  transition: fill var(--duration-theme) var(--ease);
+  fill: var(--color-accent);
+  transition: fill 0.3s ease;
 }
 
 .navbar__logo-letter {
-  fill: var(--color-accent);
-  transition: fill var(--duration-theme) var(--ease);
-}
-
-// Dark mode: accent red background, deep dark letter — matches the palette
-[data-theme='dark'] .navbar__logo-rect {
-  fill: var(--color-accent);
-}
-
-[data-theme='dark'] .navbar__logo-letter {
   fill: #1c031b;
+  transition: fill 0.3s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {

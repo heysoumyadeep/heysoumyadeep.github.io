@@ -10,7 +10,7 @@ export default defineConfig(({ command }) => ({
   plugins: [
     { enforce: 'pre', ...mdx() },
     react(),
-    // Federation only runs during build — in dev mode it hijacks the root
+    // Federation only runs during build - in dev mode it hijacks the root
     // route and shows the MF debug UI instead of the actual app.
     // Also disabled when VITE_DISABLE_FEDERATION=true (e.g. GitHub Pages deploy)
     ...(command === 'build' && !process.env.VITE_DISABLE_FEDERATION ? [

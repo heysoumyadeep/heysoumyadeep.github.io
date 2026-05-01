@@ -26,7 +26,7 @@ export const faqs = [
 
 Every engineer has had the experience of opening an unfamiliar repository and feeling immediately lost. The file tree is deep, the module boundaries are unclear, and the README is three years out of date. You spend the first two days just trying to understand what connects to what before you can write a single line of meaningful code.
 
-CodeScope started as a personal frustration project. I wanted a tool that could look at a codebase and produce a navigable mental model — something that answered the question "how does this thing actually work?" without requiring me to read every file.
+CodeScope started as a personal frustration project. I wanted a tool that could look at a codebase and produce a navigable mental model - something that answered the question "how does this thing actually work?" without requiring me to read every file.
 
 ## The Problem with Existing Tools
 
@@ -40,9 +40,9 @@ The core insight behind CodeScope is that understanding a codebase is a hierarch
 
 The pipeline has three stages:
 
-1. **Leaf summarization** — each function and class is summarized independently using an LLM prompt that emphasizes purpose and side effects over implementation details.
-2. **Module aggregation** — file-level summaries are produced by feeding the leaf summaries into a second prompt that asks the model to identify the module's responsibility and its key dependencies.
-3. **Graph construction** — the module summaries are used to build a weighted dependency graph, where edge weights reflect how tightly coupled two modules are based on call frequency and shared data structures.
+1. **Leaf summarization** - each function and class is summarized independently using an LLM prompt that emphasizes purpose and side effects over implementation details.
+2. **Module aggregation** - file-level summaries are produced by feeding the leaf summaries into a second prompt that asks the model to identify the module's responsibility and its key dependencies.
+3. **Graph construction** - the module summaries are used to build a weighted dependency graph, where edge weights reflect how tightly coupled two modules are based on call frequency and shared data structures.
 
 ## Technical Implementation
 
@@ -83,7 +83,7 @@ One of the trickier parts was deciding how to handle large repositories. Sending
 
 ## Handling Ambiguity
 
-LLMs are not deterministic, and early versions of CodeScope produced summaries that were inconsistent across runs — the same function described differently depending on what else was in the context window. I addressed this in two ways.
+LLMs are not deterministic, and early versions of CodeScope produced summaries that were inconsistent across runs - the same function described differently depending on what else was in the context window. I addressed this in two ways.
 
 First, I added a consistency check that re-runs summarization for any function whose summary changes significantly between runs (measured by cosine similarity of embeddings). If the new summary is too different, the model is prompted again with both versions and asked to produce a canonical one.
 
@@ -97,6 +97,6 @@ Second, I moved to a fixed context window strategy: each function is summarized 
 
 **Graph layout is harder than it looks.** Force-directed layouts look great in demos but become unreadable for graphs with more than ~50 nodes. I ended up implementing a hierarchical layout for large repos and only using force-directed for small ones.
 
-**The most valuable feature is search.** Users don't browse the graph — they search for a concept and then explore outward from the result. Building a good semantic search over the summaries turned out to be more impactful than any visualization improvement.
+**The most valuable feature is search.** Users don't browse the graph - they search for a concept and then explore outward from the result. Building a good semantic search over the summaries turned out to be more impactful than any visualization improvement.
 
-CodeScope is still a work in progress, but it's already changed how I approach unfamiliar codebases. The goal was never to replace reading code — it's to make the first hour in a new repo feel less like wandering in the dark.
+CodeScope is still a work in progress, but it's already changed how I approach unfamiliar codebases. The goal was never to replace reading code - it's to make the first hour in a new repo feel less like wandering in the dark.

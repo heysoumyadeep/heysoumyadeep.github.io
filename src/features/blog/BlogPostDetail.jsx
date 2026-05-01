@@ -5,6 +5,7 @@ import { blogPostingSchema, breadcrumbSchema, websiteSchema, faqSchema } from '@
 import { SITE_CONFIG } from '@config/site';
 import { getPostBySlug } from './PostRepository.js';
 import { getViews, incrementView } from './ViewTracker.js';
+import PremiumGate from './PremiumGate.jsx';
 import './BlogPostDetail.scss';
 
 // ── Table of Contents ────────────────────────────────────────────────────────
@@ -98,12 +99,12 @@ function BlogFeedback({ slug, title }) {
         </h3>
         <p className="blog-feedback__lede">
           Spotted something off, have a question, or want to add a point?
-          Drop it here — I read every note.
+          Drop it here, I read every note.
         </p>
 
         {status === 'sent' ? (
           <div className="blog-feedback__thanks" role="status">
-            <span>✓</span> Thanks — noted!
+            <span>✓</span> Thanks, noted!
           </div>
         ) : (
           <form className="blog-feedback__form" onSubmit={handleSubmit}>
@@ -179,7 +180,7 @@ export default function BlogPostDetail({ slug }) {
           title={post.title}
           description={post.excerpt}
           canonical={`/blog/${slug}`}
-          imageAlt={`${post.title} — ${post.author}`}
+          imageAlt={`${post.title} - ${post.author}`}
           type="article"
           article={{ publishedTime: isoDate, author: post.author, tags: post.tags }}
           schema={[
@@ -259,13 +260,21 @@ export default function BlogPostDetail({ slug }) {
                 )}
 
                 <div className="blog-post__body" ref={bodyRef}>
-                  {post.Component && <post.Component />}
+                  {post.Component && (
+                    post.isPremium
+                      ? (
+                        <PremiumGate slug={slug}>
+                          <post.Component />
+                        </PremiumGate>
+                      )
+                      : <post.Component />
+                  )}
                 </div>
               </>
             ) : (
               <div className="blog-post__missing">
                 <h1>Post not found</h1>
-                <p>That article doesn&rsquo;t exist — or hasn&rsquo;t been written yet.</p>
+                <p>That article doesn&rsquo;t exist, or hasn&rsquo;t been written yet.</p>
               </div>
             )}
 

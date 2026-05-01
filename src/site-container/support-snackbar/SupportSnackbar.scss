@@ -1,0 +1,114 @@
+// ── Support Snackbar ──────────────────────────────────────────────────────────
+// Scroll-triggered bottom-right prompt linking to Buy Me a Coffee.
+
+.support-snackbar {
+  position: fixed;
+  bottom: 28px;
+  right: 24px;
+  z-index: 200;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-xl);
+  padding: 12px 14px 12px 16px;
+  box-shadow: 0 12px 40px -8px var(--color-shadow),
+              0 4px 16px -4px rgba(0, 0, 0, 0.12);
+
+  // Constrain width so it never overflows the viewport
+  max-width: 340px;
+  width: max-content;
+
+  // Hidden by default — slides up on .support-snackbar--visible
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &--visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+.support-snackbar__icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.support-snackbar__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.support-snackbar__text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.support-snackbar__sub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.support-snackbar__cta {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  background: var(--gradient-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+}
+
+.support-snackbar__close {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-dim);
+  font-size: 10px;
+  border-radius: 50%;
+  transition: color 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-surface-alt);
+  }
+}
+
+// Mobile: stretch to full width at bottom
+@media (max-width: 480px) {
+  .support-snackbar {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: 100%;
+    width: auto;
+    border-radius: var(--radius-lg);
+  }
+}

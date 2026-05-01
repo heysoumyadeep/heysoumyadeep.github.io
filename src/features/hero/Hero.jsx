@@ -10,7 +10,7 @@ export default function Hero() {
   return (
     <section id="home" className="hero">
       <div className="container">
-        <p className="hero__greeting reveal">Hey there — I'm</p>
+        <p className="hero__greeting reveal">Hey there, I'm</p>
 
         <h1 className="hero__name reveal">
           <span className="gradient-text">{personalInfo.name}</span>
@@ -18,7 +18,7 @@ export default function Hero() {
         </h1>
 
         <p className="hero__tagline reveal">
-          <span className="mono hero__tagline-label">Role —</span>{' '}
+          <span className="mono hero__tagline-label">Role -</span>{' '}
           <strong>{personalInfo.role}</strong>{' '}
           <span className="hero__tagline-divider">·</span>{' '}
           {personalInfo.tagline}

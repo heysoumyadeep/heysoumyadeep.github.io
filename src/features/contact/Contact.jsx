@@ -16,7 +16,7 @@ export default function Contact() {
 
         <p className="contact__lede reveal">
           Open to discussing new ideas, collaborations, or just trading notes
-          on tech and craft. Drop me a line — I read everything.
+          on tech and craft. Drop me a line, I read everything.
         </p>
 
         <div className="contact__wrap reveal">

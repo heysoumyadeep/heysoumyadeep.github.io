@@ -62,11 +62,16 @@ export default function BlogIndex() {
             <ul className="blog-index__list">
               {filtered.map((post) => (
                 <li key={post.slug}>
-                  <Link to={`/blog/${post.slug}`} className="blog-index__card">
+                  <Link to={`/blog/${post.slug}`} className={`blog-index__card${post.isPremium ? ' blog-index__card--premium' : ''}`}>
                     <div className="blog-index__meta mono">
                       <span>{post.date}</span>
                       <span aria-hidden="true">·</span>
                       <span>{post.readTime} read</span>
+                      {post.isPremium && (
+                        <span className="blog-index__premium-badge" aria-label="Premium article">
+                          ☕ Premium
+                        </span>
+                      )}
                     </div>
                     <h2 className="blog-index__card-title">{post.title}</h2>
                     <p className="blog-index__card-excerpt">{post.excerpt}</p>

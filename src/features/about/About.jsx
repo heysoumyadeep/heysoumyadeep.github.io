@@ -21,7 +21,7 @@ export default function About() {
               <span className="gradient-text">Tech</span> I reach for
             </h3>
             <p className="about__skills-lede">
-              The tools I use day-to-day — and the ones I keep on speed dial.
+              The tools I use day-to-day, and the ones I keep on speed dial.
             </p>
             <ul className="about__skills-list">
               {skills.map((skill, index) => (

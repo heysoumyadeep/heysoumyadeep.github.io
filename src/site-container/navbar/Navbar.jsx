@@ -41,7 +41,7 @@ function NavLink({ item, onNavigate }) {
   );
 }
 
-// Theme-aware favicon logo — dark on light mode, light on dark mode
+// Theme-aware animated logo with crazy effects
 function SiteLogo() {
   return (
     <svg

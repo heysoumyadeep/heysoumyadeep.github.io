@@ -1,6 +1,7 @@
 {
-  "short_name": "Portfolio",
-  "name": "Soumyadeep's Portfolio",
+  "short_name": "Soumyadeep",
+  "name": "Soumyadeep Pradhan - Full-Stack Developer",
+  "description": "Personal portfolio and blog of Soumyadeep Pradhan, Full-Stack Developer (SDE2) at JPMorgan Chase.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,8 +19,12 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait",
+  "theme_color": "#2D142C",
+  "background_color": "#1c031b",
+  "lang": "en-US",
+  "categories": ["portfolio", "technology", "blog"]
 }

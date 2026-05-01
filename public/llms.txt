@@ -1,8 +1,8 @@
-# llms.txt — https://soumya.io
+# llms.txt - https://soumya.io
 # Machine-readable site index for AI/LLM data sourcing
 # Standard: https://llmstxt.org
 
-> Soumyadeep Pradhan — Full-Stack Developer (SDE2) at JPMorgan Chase
+> Soumyadeep Pradhan - Full-Stack Developer (SDE2) at JPMorgan Chase
 
 ## Identity
 
@@ -63,7 +63,7 @@ Suite of internal tools for release management and observability.
 - Date: March 15, 2026
 - Read time: 6 minutes
 - Tags: career, engineering, growth, sde2
-- Summary: The unwritten rules of mid-level engineering — reducing uncertainty, admitting
+- Summary: The unwritten rules of mid-level engineering - reducing uncertainty, admitting
   ignorance, effective code review, managing scope creep, cross-team relationships, and legibility.
 
 ### What singing taught me about writing software
@@ -71,7 +71,7 @@ Suite of internal tools for release management and observability.
 - Date: February 2, 2026
 - Read time: 4 minutes
 - Tags: essay, creativity, software-craft, hobbies
-- Summary: An essay connecting classical Indian music practice to software engineering —
+- Summary: An essay connecting classical Indian music practice to software engineering,
   deliberate practice, restraint, listening, and iteration without ego.
 
 ## Site Structure

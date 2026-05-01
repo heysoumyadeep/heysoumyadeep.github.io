@@ -23,7 +23,7 @@ export const projects = [
     id: 'portfolio-v2',
     title: 'Portfolio v2',
     description:
-      'This very site — built from scratch with React and plain CSS, no UI libraries. A small exercise in restraint and craft.',
+      'This very site, built from scratch with React and plain CSS, no UI libraries. A small exercise in restraint and craft.',
     stack: ['React', 'Vite', 'CSS'],
     featured: false,
     link: '#',

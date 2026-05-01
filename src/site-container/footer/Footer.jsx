@@ -13,16 +13,17 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="container footer__inner">
-        <p className="footer__quote">
-          "The best way to start a conversation is to start one."
-        </p>
-
-        <div className="footer__bottom">
-          <p className="footer__credit">
-            Designed and built by{' '}
-            <span className="footer__credit-name">Soumyadeep Pradhan</span>
-            <span className="footer__pulse" aria-hidden="true">♡</span>
-          </p>
+        <div className="footer__content">
+          <div className="footer__left">
+            <p className="footer__credit">
+              Designed and built by{' '}
+              <span className="footer__credit-name">Soumyadeep Pradhan</span>
+              <span className="footer__pulse" aria-hidden="true">♡</span>
+            </p>
+            <p className="footer__meta">
+              © {new Date().getFullYear()} {personalInfo.name}. All rights reserved.
+            </p>
+          </div>
 
           <ul className="footer__social" aria-label="Social links">
             {SOCIAL_ITEMS.map(({ label, href, Icon }) => (
@@ -35,10 +36,6 @@ export default function Footer() {
             ))}
           </ul>
         </div>
-
-        <p className="footer__meta">
-          © {new Date().getFullYear()} {personalInfo.name}. All rights reserved.
-        </p>
       </div>
     </footer>
   );

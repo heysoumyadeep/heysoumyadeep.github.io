@@ -14,7 +14,7 @@ const validate = (data) => {
   if (!data.message.trim()) {
     next.message = 'A short message helps me reply better.';
   } else if (data.message.trim().length < 10) {
-    next.message = 'Tell me a bit more — at least 10 characters.';
+    next.message = 'Tell me a bit more, at least 10 characters.';
   }
   return next;
 };
@@ -62,7 +62,7 @@ export default function ContactForm() {
         <div className="contact-form__success-icon" aria-hidden="true">
           <CheckIcon size={28} />
         </div>
-        <h3>Thanks — message received.</h3>
+        <h3>Thanks, message received.</h3>
         <p>I'll get back to you as soon as I can. In the meantime, take care.</p>
         <Button variant="ghost" onClick={() => setStatus('idle')}>
           Send another

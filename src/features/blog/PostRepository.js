@@ -49,6 +49,7 @@ function buildMeta(mod, filePath) {
     author:   fm.author   != null ? String(fm.author)   : '',
     tags:     Array.isArray(fm.tags) ? fm.tags.map(String) : [],
     faqs:     Array.isArray(mod.faqs) ? mod.faqs : [],
+    isPremium: fm.isPremium === true,
     // Component is NOT stored here — loaded lazily via getPostBySlug
   };
 }

@@ -1,4 +1,4 @@
-import { Navbar, Footer, ParallaxBackground } from '@components';
+import { Navbar, Footer, ParallaxBackground, SupportSnackbar } from '@components';
 import { useScrollReveal } from '@hooks';
 import SEO from '@/seo/SEO';
 import { websiteSchema, personSchema, profilePageSchema, siteNavigationSchema } from '@/seo/schemas';
@@ -16,7 +16,7 @@ export default function HomePage() {
   return (
     <>
       <SEO
-        description="Soumyadeep Pradhan (Soumya) — Full-Stack Developer (SDE2) at JPMorgan Chase. Creator of CodeScope, an AI-powered codebase visualization tool. Building thoughtful software with React, Node.js, Java, Spring Boot, and AWS. Based in India."
+        description="Soumyadeep Pradhan (Soumya) - Full-Stack Developer (SDE2) at JPMorgan Chase. Creator of CodeScope, an AI-powered codebase visualization tool. Building thoughtful software with React, Node.js, Java, Spring Boot, and AWS. Based in India."
         canonical="/"
         schema={[websiteSchema, personSchema, profilePageSchema, siteNavigationSchema]}
       />
@@ -31,6 +31,7 @@ export default function HomePage() {
         <Contact />
       </main>
       <Footer />
+      <SupportSnackbar />
     </>
   );
 }

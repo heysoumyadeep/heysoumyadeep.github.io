@@ -1,4 +1,4 @@
-# robots.txt — https://soumya.io
+# robots.txt - https://soumya.io
 # All crawlers (search engines + AI bots) are welcome.
 
 User-agent: *

@@ -13,7 +13,7 @@ const BASE_URL = SITE_CONFIG.url;
 const AUTHOR = SITE_CONFIG.name;
 const TWITTER = '@soumyadeep';
 const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
-const DEFAULT_OG_ALT = `${AUTHOR} — Full-Stack Developer`;
+const DEFAULT_OG_ALT = `${AUTHOR} - Full-Stack Developer`;
 
 export default function SEO({
   title,
@@ -26,11 +26,11 @@ export default function SEO({
   schema,
 }) {
   const fullTitle = title
-    ? `${title} — ${AUTHOR}`
-    : `${AUTHOR} — Full-Stack Developer`;
+    ? `${title} | ${AUTHOR}`
+    : `${AUTHOR} - Full-Stack Developer`;
 
   const canonicalUrl = canonical ? `${BASE_URL}${canonical}` : BASE_URL;
-  const ogImageAlt = imageAlt || (title ? `${title} — ${AUTHOR}` : DEFAULT_OG_ALT);
+  const ogImageAlt = imageAlt || (title ? `${title} | ${AUTHOR}` : DEFAULT_OG_ALT);
 
   // Normalise schema to array
   const schemas = schema

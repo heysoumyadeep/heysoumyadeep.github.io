@@ -147,7 +147,7 @@ export function blogSchema(posts) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: `${SITE_CONFIG.name} — Blog`,
+    name: `${SITE_CONFIG.name} - Blog`,
     url: `${BASE_URL}/blog`,
     description: 'Notes on engineering, software craft, and the occasional detour into other things.',
     author: {
