@@ -5,8 +5,8 @@
     <link>https://soumya.io/blog</link>
     <description>Notes on engineering, software craft, and the occasional detour into other things. By Soumyadeep Pradhan, Full-Stack Developer at JPMorgan Chase.</description>
     <language>en-us</language>
-    <managingEditor>hello@soumyadeep.dev (Soumyadeep Pradhan)</managingEditor>
-    <webMaster>hello@soumyadeep.dev (Soumyadeep Pradhan)</webMaster>
+    <managingEditor>contact@soumya.io (Soumyadeep Pradhan)</managingEditor>
+    <webMaster>contact@soumya.io (Soumyadeep Pradhan)</webMaster>
     <lastBuildDate>Mon, 21 Apr 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://soumya.io/rss.xml" rel="self" type="application/rss+xml" />
     <image>
@@ -20,7 +20,7 @@
       <guid isPermaLink="true">https://soumya.io/blog/building-codescope</guid>
       <pubDate>Mon, 21 Apr 2026 00:00:00 +0000</pubDate>
       <description>How I designed an AI-assisted system that turns sprawling repositories into navigable mental models.</description>
-      <author>hello@soumyadeep.dev (Soumyadeep Pradhan)</author>
+      <author>contact@soumya.io (Soumyadeep Pradhan)</author>
       <category>AI</category>
       <category>developer-tools</category>
       <category>visualization</category>
@@ -32,7 +32,7 @@
       <guid isPermaLink="true">https://soumya.io/blog/sde2-lessons</guid>
       <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
       <description>The unwritten rules of mid-level engineering, what I wish someone had told me on day one.</description>
-      <author>hello@soumyadeep.dev (Soumyadeep Pradhan)</author>
+      <author>contact@soumya.io (Soumyadeep Pradhan)</author>
       <category>career</category>
       <category>engineering</category>
       <category>growth</category>
@@ -44,7 +44,7 @@
       <guid isPermaLink="true">https://soumya.io/blog/singing-and-software</guid>
       <pubDate>Mon, 02 Feb 2026 00:00:00 +0000</pubDate>
       <description>A short essay on practice, restraint, and why your hobbies make you a better engineer.</description>
-      <author>hello@soumyadeep.dev (Soumyadeep Pradhan)</author>
+      <author>contact@soumya.io (Soumyadeep Pradhan)</author>
       <category>essay</category>
       <category>creativity</category>
       <category>software-craft</category>

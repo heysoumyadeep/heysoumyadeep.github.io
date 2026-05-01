@@ -5,7 +5,7 @@
 export const SITE_CONFIG = {
   name: 'Soumyadeep Pradhan',
   shortName: 'Soumyadeep',
-  email: 'hello@soumyadeep.dev',
+  email: 'contact@soumya.io',
   url: 'https://soumya.io',
 };
 

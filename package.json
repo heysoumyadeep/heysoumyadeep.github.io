@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Personal portfolio website of Soumyadeep Pradhan",
   "author": "Soumyadeep Pradhan",
-  "license": "MIT",
+  "license": "CC-BY-NC-ND-4.0",
   "scripts": {
     "start": "vite",
     "dev": "vite",

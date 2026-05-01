@@ -1,4 +1,4 @@
-import './SkillPill.css';
+import './SkillPill.scss';
 
 export default function SkillPill({ skill, index }) {
   return (

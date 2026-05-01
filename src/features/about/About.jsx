@@ -1,7 +1,7 @@
 import { SectionHeader } from '@components';
 import { personalInfo, skills } from '@data';
 import SkillPill from './SkillPill';
-import './About.css';
+import './About.scss';
 
 export default function About() {
   return (

@@ -1,11 +1,13 @@
-# Soumyadeep Pradhan : Portfolio
+# Soumyadeep Pradhan — Portfolio
 
 Personal portfolio and blog built with React, Vite, MDX, and SCSS.
+
+---
 
 ## Features
 
 - Single-page portfolio with smooth section scrolling
-- Blog powered by MDX, write posts in Markdown, render as React components
+- Blog powered by MDX — write posts in Markdown, rendered as React components
 - Light / dark mode with flash-free theme persistence
 - Parallax background with mouse-tracking orbs
 - Animated skill pills, tabbed experience section, working contact form
@@ -13,7 +15,101 @@ Personal portfolio and blog built with React, Vite, MDX, and SCSS.
 - Module Federation — blog system exposed as a remote module
 - Two-tier blog loading: metadata eager, post bodies lazy per-post
 
-## Getting started
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| UI Framework | React 18 |
+| Build Tool | Vite 5 |
+| Language | JavaScript (ESM) + TypeScript |
+| Styling | SCSS (Sass modern compiler) |
+| Blog / Content | MDX 3 (`@mdx-js/rollup`, `@mdx-js/react`) |
+| Routing | React Router DOM v6 |
+| SEO | React Helmet Async, JSON-LD, Open Graph, Twitter Card |
+| Module Federation | `vite-plugin-federation` |
+| Static Generation | Custom Vite plugins (sitemap, prerender) |
+
+---
+
+## Key Concepts
+
+- **Module Federation** — the blog feature is exposed as a remote module (`remoteEntry.js`) via `vite-plugin-federation`, allowing it to be consumed independently by other apps
+- **Two-tier blog loading** — post metadata is loaded eagerly for listing; post body MDX is loaded lazily per-post to keep initial bundle small
+- **Flash-free theming** — theme is persisted to `localStorage` and applied before React hydrates, preventing a flash of wrong theme on load
+- **Path aliases** — `@`, `@app`, `@components`, `@features`, `@hooks`, `@pages`, `@styles`, `@data` configured in `vite.config.js` for clean imports
+- **Static SPA** — prerender plugin generates static HTML shells for each route at build time; sitemap plugin auto-generates `sitemap.xml` and RSS feed
+- **Design tokens** — all colors, spacing, and typography live in `src/styles/tokens.css` as CSS custom properties, consumed across all SCSS files
+
+---
+
+## Project Structure
+
+```
+├── public/               # Static assets (favicon, robots.txt, manifest, RSS, redirects)
+├── scripts/
+│   ├── vite-plugin-prerender.js   # Generates static HTML per route at build time
+│   └── vite-plugin-sitemap.js     # Auto-generates sitemap.xml + RSS feed
+└── src/
+    ├── app/
+    │   ├── App.jsx               # Root component, router, providers
+    │   └── main.jsx              # React DOM entry point
+    ├── config/
+    │   └── site.js               # Site constants, nav items, route definitions
+    ├── data/                     # All content lives here — edit to update the site
+    │   ├── personal.js           # Name, bio, email, social links
+    │   ├── skills.js             # Tech stack pills (name + brand color)
+    │   ├── experience.js         # Work history tabs
+    │   ├── projects.js           # Featured and secondary projects
+    │   ├── index.js              # Re-exports all data
+    │   └── blog/
+    │       └── posts/            # MDX blog posts (one file per post)
+    ├── features/                 # Self-contained page sections
+    │   ├── hero/
+    │   ├── about/                    # About section (About.scss, SkillPill.scss)
+    │   ├── experience/
+    │   ├── projects/
+    │   ├── writing/
+    │   ├── contact/
+    │   └── blog/
+    │       ├── BlogIndex.jsx         # Blog listing page
+    │       ├── BlogPostDetail.jsx    # Individual post renderer
+    │       ├── PostRepository.js     # Loads + caches post metadata and bodies
+    │       ├── PostProcessor.js      # MDX post transformation utilities
+    │       ├── ViewTracker.js        # Post view count tracking
+    │       ├── PremiumGate.jsx       # Premium content gate component
+    │       └── index.js
+    ├── hooks/
+    │   ├── useTheme.jsx          # Light/dark mode toggle + persistence
+    │   ├── useScrollReveal.js    # Intersection Observer scroll animations
+    │   └── index.js
+    ├── pages/
+    │   ├── HomePage.jsx          # Assembles all portfolio sections
+    │   ├── BlogPage.jsx          # Blog route page
+    │   └── BlogPage.scss
+    ├── seo/
+    │   ├── SEO.jsx               # Helmet-based meta tag component
+    │   ├── schemas.js            # JSON-LD structured data schemas
+    │   └── keywords.js           # SEO keyword sets per page/post
+    ├── site-container/           # Shared UI components
+    │   ├── navbar/
+    │   ├── footer/
+    │   ├── button/
+    │   ├── icons/
+    │   ├── parallax-background/
+    │   ├── section-header/
+    │   ├── support-snackbar/
+    │   ├── theme-toggle/
+    │   └── index.js
+    └── styles/
+        ├── tokens.css            # Design tokens — single source of truth for colors/spacing
+        └── global.css            # Reset, base styles, theme transitions, scrollbar, cursor glow
+```
+
+---
+
+## Getting Started
 
 ```bash
 npm install
@@ -22,75 +118,26 @@ npm run build      # production build → dist/
 npm run preview    # preview the production build
 ```
 
-## Project structure
+---
 
-```
-src/
-├── app/                  # App root, routing, providers
-├── config/               # Site constants, nav items, routes
-├── data/                 # Content files (edit these to update the site)
-│   ├── personal.js       # Name, bio, email, social links
-│   ├── skills.js         # Tech stack pills
-│   ├── experience.js     # Work history
-│   ├── projects.js       # Projects
-│   └── blog/posts/       # MDX blog posts
-├── features/             # Self-contained page sections
-│   ├── hero/
-│   ├── about/
-│   ├── experience/
-│   ├── projects/
-│   ├── writing/
-│   ├── contact/
-│   └── blog/             # Blog index, post detail, repository, view tracker
-├── hooks/                # useTheme, useScrollReveal
-├── pages/                # Route-level pages (HomePage, BlogPage)
-├── seo/                  # SEO component, JSON-LD schemas, keywords
-├── site-container/       # Shared UI components (Navbar, Footer, Button, etc.)
-└── styles/
-    ├── tokens.css        # Design tokens — single source of truth for all colors/spacing
-    └── global.css        # Reset, base styles, theme transitions, scrollbar, cursor glow
-```
-
-## Writing a blog post
-
-1. Create `src/data/blog/posts/your-post-slug.mdx`
-2. Add a frontmatter export at the top:
-
-```mdx
-export const frontmatter = {
-  title: "Your Post Title",
-  date: "Jan 01, 2026",
-  readTime: "5 min",
-  excerpt: "A short description under 160 characters.",
-  author: "Soumyadeep Pradhan",
-  tags: ["tag1", "tag2"]
-}
-
-export const faqs = [
-  { question: "...", answer: "..." }
-]
-
-# Your post content here...
-```
-
-3. Add post-specific keywords to `src/seo/keywords.js` under `POST_KEYWORDS`
-4. Run `npm run build` — the sitemap, prerender routes, and RSS feed update automatically
-
-## Updating content
+## Updating Content
 
 All content lives in `src/data/`. No component changes needed:
 
 - `personal.js` — name, bio, email, social links
-- `skills.js` — tech stack (with brand colors)
+- `skills.js` — tech stack pills (name + brand color)
 - `experience.js` — work history tabs
 - `projects.js` — featured and secondary projects
+- `blog/posts/` — add a new `.mdx` file to publish a blog post
 
-## Wiring up the contact form
+---
 
-Replace the `setTimeout` in `src/features/contact/ContactForm.jsx` with a real request:
+## Contact Form
+
+Replace the `setTimeout` stub in `src/features/contact/ContactForm.jsx` with a real request:
 
 ```js
-// Formspree
+// Example: Formspree
 await fetch('https://formspree.io/f/YOUR_ID', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
@@ -98,31 +145,14 @@ await fetch('https://formspree.io/f/YOUR_ID', {
 });
 ```
 
-## Deploying to Hostinger / AWS
-
-Build command: `npm run build`  
-Output directory: `dist/`
-
-The `dist/` folder is a fully static site. Upload it to any static host.
-
-**Important for SPA routing:** Configure your server to serve `index.html` for all routes.
-
-- **Hostinger**: In the File Manager, add an `.htaccess` file to `public_html/`:
-  ```apache
-  Options -MultiViews
-  RewriteEngine On
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^ index.html [QSA,L]
-  ```
-- **AWS S3 + CloudFront**: Set the error page to `index.html` with HTTP 200.
-- **AWS Amplify**: Add a rewrite rule: source `</^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>`, target `/index.html`, type `200`.
-
-## After deploying
-
-1. Submit `https://soumya.io/sitemap.xml` to [Google Search Console](https://search.google.com/search-console)
-2. Request indexing for each URL in Search Console
-3. Submit to [Bing Webmaster Tools](https://www.bing.com/webmasters)
+---
 
 ## License
 
-MIT
+Copyright (c) 2025 Soumyadeep Pradhan. All Rights Reserved.
+
+This project is licensed under the
+[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+
+You may **not** copy, modify, distribute, or use this work — in whole or in part —
+for any purpose without explicit written permission from the author.
