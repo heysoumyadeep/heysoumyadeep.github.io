@@ -1,11 +1,11 @@
-# Soumyadeep Pradhan — Portfolio
+# Soumyadeep Pradhan : Portfolio
 
 Personal portfolio and blog built with React, Vite, MDX, and SCSS.
 
 ## Features
 
 - Single-page portfolio with smooth section scrolling
-- Blog powered by MDX — write posts in Markdown, render as React components
+- Blog powered by MDX, write posts in Markdown, render as React components
 - Light / dark mode with flash-free theme persistence
 - Parallax background with mouse-tracking orbs
 - Animated skill pills, tabbed experience section, working contact form

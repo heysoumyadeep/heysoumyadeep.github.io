@@ -3,6 +3,7 @@
  *
  * Custom snackbar that triggers the BMC widget when clicked.
  * Only appears on homepage and blog detail pages when user scrolls near contact/feedback section.
+ * Can be triggered programmatically on desktop.
  */
 
 import { useState, useEffect } from 'react';
@@ -11,10 +12,27 @@ import './SupportSnackbar.scss';
 
 const SHOW_DELAY_MS = 500;
 
+// Create a global function to show snackbar (for desktop only)
+let showSnackbarGlobal = null;
+
+export function triggerSnackbar() {
+  if (showSnackbarGlobal && window.innerWidth > 768) {
+    showSnackbarGlobal();
+  }
+}
+
 export default function SupportSnackbar() {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const location = useLocation();
+
+  // Expose show function globally
+  useEffect(() => {
+    showSnackbarGlobal = () => setVisible(true);
+    return () => {
+      showSnackbarGlobal = null;
+    };
+  }, []);
 
   // Reset dismissed state on route change
   useEffect(() => {
@@ -31,10 +49,7 @@ export default function SupportSnackbar() {
       }
     };
 
-    // Hide immediately
     hideWidget();
-
-    // Keep checking and hiding (in case widget loads late)
     const interval = setInterval(hideWidget, 100);
     const timeout = setTimeout(() => clearInterval(interval), 3000);
 
@@ -47,7 +62,6 @@ export default function SupportSnackbar() {
   useEffect(() => {
     if (dismissed) return;
 
-    // Only show on homepage (/) or blog detail pages (/blog/:slug)
     const isHomePage = location.pathname === '/';
     const isBlogDetailPage = /^\/blog\/[^/]+$/.test(location.pathname);
     
@@ -56,7 +70,6 @@ export default function SupportSnackbar() {
       return;
     }
 
-    // Reset visibility on route change
     setVisible(false);
 
     let timer = null;
@@ -77,7 +90,6 @@ export default function SupportSnackbar() {
         const rect = targetSection.getBoundingClientRect();
         const windowHeight = window.innerHeight;
         
-        // Only show when target section enters viewport
         if (rect.top <= windowHeight && rect.bottom >= 0) {
           triggered = true;
           window.removeEventListener('scroll', onScroll);
@@ -88,21 +100,19 @@ export default function SupportSnackbar() {
 
     window.addEventListener('scroll', onScroll, { passive: true });
     
-    // DON'T check immediately - only on scroll
-    
     return () => {
       window.removeEventListener('scroll', onScroll);
       clearTimeout(timer);
     };
   }, [dismissed, location.pathname]);
 
-  const handleDismiss = () => {
+  const handleDismiss = (e) => {
+    e.stopPropagation(); // Prevent snackbar click when closing
     setVisible(false);
     setDismissed(true);
   };
 
   const handleSupport = () => {
-    // Trigger the BMC widget button click
     const bmcButton = document.querySelector('#bmc-wbtn');
     if (bmcButton) {
       bmcButton.click();
@@ -116,26 +126,23 @@ export default function SupportSnackbar() {
       className={`support-snackbar${visible ? ' support-snackbar--visible' : ''}`}
       role="complementary"
       aria-label="Support the author"
+      onClick={handleSupport}
+      style={{ cursor: 'pointer' }}
     >
-      <span className="support-snackbar__icon" aria-hidden="true">☕</span>
+      <span className="support-snackbar__icon" aria-hidden="true">👏🏻</span>
 
       <div className="support-snackbar__body">
         <p className="support-snackbar__text">Liked my work?</p>
         <p className="support-snackbar__sub">Support me with a coffee.</p>
       </div>
 
-      <button
-        type="button"
-        className="support-snackbar__cta"
-        onClick={handleSupport}
-        aria-label="Buy me a coffee"
-      >
+      <div className="support-snackbar__cta">
         <img 
           src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" 
           alt="Buy me a coffee"
           className="support-snackbar__bmc-logo"
         />
-      </button>
+      </div>
 
       <button
         type="button"

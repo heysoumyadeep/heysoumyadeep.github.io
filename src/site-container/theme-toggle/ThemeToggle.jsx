@@ -5,11 +5,15 @@ import './ThemeToggle.scss';
 export default function ThemeToggle() {
   const { isDark, toggleTheme } = useTheme();
 
+  const handleClick = (e) => {
+    toggleTheme(e);
+  };
+
   return (
     <button
       type="button"
       className="theme-toggle"
-      onClick={toggleTheme}
+      onClick={handleClick}
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >

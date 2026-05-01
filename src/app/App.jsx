@@ -19,7 +19,7 @@ export default function App() {
   return (
     <HelmetProvider>
       <ThemeProvider>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Suspense fallback={null}>
             <Routes>
               <Route path={ROUTES.HOME} element={<HomePage />} />

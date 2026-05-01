@@ -5,17 +5,21 @@
   top: 0; left: 0; right: 0;
   z-index: var(--z-nav);
   padding: 18px 0;
-  background: var(--color-nav-bg);
-  backdrop-filter: saturate(180%) blur(16px);
-  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-bottom: 1px solid transparent;
   transition: padding var(--duration-hover) var(--ease),
-              background-color var(--duration-theme) var(--ease),
+              background-color 0.4s var(--ease),
+              backdrop-filter 0.4s var(--ease),
               border-color var(--duration-theme) var(--ease);
 }
 
 .navbar--scrolled {
   padding: 12px 0;
+  background: var(--color-nav-bg);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
   border-bottom-color: var(--color-border);
 }
 

@@ -6,19 +6,68 @@
  * - Centered "Unlock now" button on divider line
  * - Passcode entry modal for users who already bought coffee
  * - Content NOT rendered in DOM until unlocked (prevents inspect element bypass)
+ * - Supports multiple unlock codes
+ * - Encrypts unlock status in localStorage
  */
 
 import { useState, useEffect } from 'react';
 import './PremiumGate.scss';
+import { triggerSnackbar } from '@/site-container/support-snackbar/SupportSnackbar';
 
 const BMC_URL = 'https://buymeacoffee.com/heysoumyadeep';
-const UNLOCK_CODE = '12345678'; // Change this to your actual 8-digit code
+
+const VALID_CODES = (() => {
+  const codesString = import.meta.env.VITE_PREMIUM_CODES || '';
+  return codesString
+    .split(',')
+    .map(code => code.trim())
+    .filter(code => code.length === 8 && /^\d+$/.test(code));
+})();
+
 const STORAGE_KEY = 'premium_unlocked_posts';
+const ENCRYPTION_KEY = import.meta.env.VITE_ENCRYPTION_KEY;
+
+// Simple encryption/decryption functions using XOR cipher
+function encrypt(text) {
+  try {
+    // XOR cipher with base64 encoding
+    const encrypted = btoa(
+      String.fromCharCode(
+        ...text.split('').map((char, i) => 
+          char.charCodeAt(0) ^ ENCRYPTION_KEY.charCodeAt(i % ENCRYPTION_KEY.length)
+        )
+      )
+    );
+    return encrypted;
+  } catch {
+    return text;
+  }
+}
+
+function decrypt(encrypted) {
+  try {
+    const decrypted = atob(encrypted)
+      .split('')
+      .map((char, i) => 
+        String.fromCharCode(
+          char.charCodeAt(0) ^ ENCRYPTION_KEY.charCodeAt(i % ENCRYPTION_KEY.length)
+        )
+      )
+      .join('');
+    return decrypted;
+  } catch {
+    return encrypted;
+  }
+}
 
 // Check if this post is already unlocked
 function isUnlocked(slug) {
   try {
-    const unlocked = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const encrypted = localStorage.getItem(STORAGE_KEY);
+    if (!encrypted) return false;
+    
+    const decrypted = decrypt(encrypted);
+    const unlocked = JSON.parse(decrypted);
     return unlocked[slug] === true;
   } catch {
     return false;
@@ -28,10 +77,25 @@ function isUnlocked(slug) {
 // Mark post as unlocked
 function markUnlocked(slug) {
   try {
-    const unlocked = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const encrypted = localStorage.getItem(STORAGE_KEY);
+    let unlocked = {};
+    
+    if (encrypted) {
+      const decrypted = decrypt(encrypted);
+      unlocked = JSON.parse(decrypted);
+    }
+    
     unlocked[slug] = true;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(unlocked));
-  } catch { /* ignore */ }
+    const encryptedData = encrypt(JSON.stringify(unlocked));
+    localStorage.setItem(STORAGE_KEY, encryptedData);
+  } catch {
+    // Silently fail if localStorage is unavailable
+  }
+}
+
+// Validate if entered code is valid
+function isValidCode(code) {
+  return VALID_CODES.includes(code);
 }
 
 function PasscodeModal({ onClose, onSuccess }) {
@@ -80,7 +144,7 @@ function PasscodeModal({ onClose, onSuccess }) {
       setError('Please enter all 8 digits');
       return;
     }
-    if (entered === UNLOCK_CODE) {
+    if (isValidCode(entered)) {
       onSuccess();
     } else {
       setError('Invalid code. Please try again.');
@@ -148,7 +212,16 @@ export default function PremiumGate({ children, slug }) {
   const [showPasscode, setShowPasscode] = useState(false);
 
   const handleUnlock = () => {
-    window.open(BMC_URL, '_blank', 'noreferrer,noopener');
+    // Trigger the BMC widget button click
+    const bmcButton = document.querySelector('#bmc-wbtn');
+    if (bmcButton) {
+      bmcButton.click();
+      // Show snackbar on desktop only (>768px)
+      triggerSnackbar();
+    } else {
+      // Fallback: open in new tab if widget not found
+      window.open(BMC_URL, '_blank', 'noreferrer,noopener');
+    }
   };
 
   const handlePasscodeSuccess = () => {
@@ -197,7 +270,7 @@ export default function PremiumGate({ children, slug }) {
           className="premium-gate__passcode-link"
           onClick={() => setShowPasscode(true)}
         >
-          Already bought a coffee?
+          Already bought a coffee? Enter code
         </button>
       </div>
 

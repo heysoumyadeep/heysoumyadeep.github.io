@@ -34,6 +34,8 @@ jobs:
         run: npm run build
         env:
           VITE_DISABLE_FEDERATION: true
+          VITE_PREMIUM_CODES: ${{ secrets.VITE_PREMIUM_CODES }}
+          VITE_ENCRYPTION_KEY: ${{ secrets.VITE_ENCRYPTION_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

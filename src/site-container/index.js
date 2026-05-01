@@ -4,5 +4,5 @@ export { default as ParallaxBackground } from './parallax-background/ParallaxBac
 export { default as Button } from './button/Button.jsx';
 export { default as SectionHeader } from './section-header/SectionHeader.jsx';
 export { default as ThemeToggle } from './theme-toggle/ThemeToggle.jsx';
-export { default as SupportSnackbar } from './support-snackbar/SupportSnackbar.jsx';
+export { default as SupportSnackbar, triggerSnackbar } from './support-snackbar/SupportSnackbar.jsx';
 export * from './icons/Icons.jsx';

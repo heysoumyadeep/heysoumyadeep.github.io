@@ -6,7 +6,6 @@
 
     <!-- Security headers (supplement server-level headers) -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
 
@@ -76,9 +75,10 @@
     (function() {
       try {
         var saved = localStorage.getItem('portfolio:theme');
+        // Default to dark theme on first visit
         var theme = (saved === 'light' || saved === 'dark')
           ? saved
-          : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          : 'dark';
         document.documentElement.setAttribute('data-theme', theme);
       } catch(e) {}
     })();

@@ -79,6 +79,8 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const isHomePage = location.pathname === '/';
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
@@ -117,7 +119,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
+      <nav className={`navbar${scrolled || !isHomePage ? ' navbar--scrolled' : ''}`}>
         <div className="navbar__inner container">
 
           {/* Logo — favicon SVG, theme-aware */}
@@ -126,7 +128,7 @@ export default function Navbar() {
           </Link>
 
           <ul className="navbar__menu navbar__menu--desktop">
-            {NAV_ITEMS.map((item) => (
+            {NAV_ITEMS.filter(item => !(isHomePage && !scrolled && item.href === '#home')).map((item) => (
               <li key={item.label}><NavLink item={item} /></li>
             ))}
           </ul>
@@ -155,6 +157,7 @@ export default function Navbar() {
         id="mobile-menu"
         className={`mobile-menu ${menuOpen ? 'mobile-menu--open' : ''}`}
         aria-hidden={!menuOpen}
+        inert={!menuOpen ? '' : undefined}
       >
         {/* Close button inside the panel — always visible when open */}
         <button
@@ -168,10 +171,10 @@ export default function Navbar() {
         </button>
 
         <ul className="mobile-menu__list">
-          {NAV_ITEMS.map((item) => (
-            <li key={item.label}><NavLink item={item} onNavigate={closeMenu} /></li>
-          ))}
-        </ul>
+            {NAV_ITEMS.filter(item => !(isHomePage && !scrolled && item.href === '#home')).map((item) => (
+              <li key={item.label}><NavLink item={item} onNavigate={closeMenu} /></li>
+            ))}
+          </ul>
 
         {/* Aurora ribbons — decorative animation in the empty space */}
         <div className="mobile-menu__aurora" aria-hidden="true">

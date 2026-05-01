@@ -105,3 +105,22 @@ ul, ol { list-style: none; }
 
 /* Firefox */
 * { scrollbar-width: auto; scrollbar-color: var(--color-accent-hover) transparent; }
+
+/* ── View Transition: Circular theme reveal ──────────────────────────────── */
+
+/* Disable default cross-fade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Old view fades out underneath */
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+/* New view clips in as expanding circle */
+::view-transition-new(root) {
+  z-index: 2;
+}
