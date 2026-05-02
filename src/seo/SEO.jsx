@@ -12,7 +12,7 @@ import { SITE_CONFIG } from '@config/site';
 const BASE_URL = SITE_CONFIG.url;
 const AUTHOR = SITE_CONFIG.name;
 const TWITTER = '@heysoumyadeep';
-const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.svg`;
 const DEFAULT_OG_ALT = `${AUTHOR} - Full-Stack Developer`;
 
 export default function SEO({
