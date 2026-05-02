@@ -4,7 +4,7 @@
  * Two-tier loading strategy — scales to any number of posts:
  *
  * TIER 1 — Metadata (eager, tiny):
- *   Only frontmatter fields (title, date, excerpt, author, tags, readTime, faqs)
+ *   Only frontmatter fields (title, date, excerpt, author, tags, readTime)
  *   are loaded upfront. This is used for the blog index, Writing section, and
  *   sitemap. The total payload is a few KB regardless of post count.
  *
@@ -48,7 +48,6 @@ function buildMeta(mod, filePath) {
     excerpt:  fm.excerpt  != null ? String(fm.excerpt)  : '',
     author:   fm.author   != null ? String(fm.author)   : '',
     tags:     Array.isArray(fm.tags) ? fm.tags.map(String) : [],
-    faqs:     Array.isArray(mod.faqs) ? mod.faqs : [],
     isPremium: fm.isPremium === true,
     // Component is NOT stored here — loaded lazily via getPostBySlug
   };

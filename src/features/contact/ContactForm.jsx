@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import emailjs from '@emailjs/browser';
 import { Button, CheckIcon } from '@components';
 import './ContactForm.scss';
 
@@ -21,7 +22,12 @@ const validate = (data) => {
 
 /**
  * Controlled contact form.
- * On submit: validates → simulates send → shows success state.
+ * On submit: validates → sends thank-you email via EmailJS → shows success state.
+ *
+ * Required env vars (add to .env and GitHub Actions secrets):
+ *   VITE_EMAILJS_SERVICE_ID   – your EmailJS service ID
+ *   VITE_EMAILJS_TEMPLATE_ID  – your EmailJS template ID
+ *   VITE_EMAILJS_PUBLIC_KEY   – your EmailJS public key
  */
 export default function ContactForm() {
   const [values, setValues] = useState(initialState);
@@ -48,7 +54,15 @@ export default function ContactForm() {
     }
     setStatus('sending');
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          to_email: values.email,   // recipient — the person who filled the form
+          message: values.message,  // their message (available in template)
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+      );
       setStatus('success');
       setValues(initialState);
     } catch {

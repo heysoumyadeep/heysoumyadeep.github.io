@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
 import SEO from '@/seo/SEO';
-import { blogPostingSchema, breadcrumbSchema, websiteSchema, faqSchema } from '@/seo/schemas';
+import { blogPostingSchema, breadcrumbSchema, websiteSchema } from '@/seo/schemas';
 import { SITE_CONFIG } from '@config/site';
 import { getPostBySlug } from './PostRepository.js';
 import { getViews, incrementView } from './ViewTracker.js';
@@ -53,42 +54,68 @@ function useHeadings(bodyRef) {
 
 // ── Feedback / suggestions form ──────────────────────────────────────────────
 
-const MAX_FEEDBACK_LENGTH = 2000; // prevent localStorage abuse
+const MAX_FEEDBACK_LENGTH = 2000;
 
 function BlogFeedback({ slug, title }) {
-  const [value, setValue] = useState('');
-  const [status, setStatus] = useState('idle'); // idle | sent
+  const [email, setEmail]   = useState('');
+  const [value, setValue]   = useState('');
+  const [emailErr, setEmailErr] = useState('');
+  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
 
-  const handleChange = (e) => {
-    // Enforce max length client-side
-    if (e.target.value.length <= MAX_FEEDBACK_LENGTH) {
-      setValue(e.target.value);
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const trimmed = value.trim();
     if (!trimmed) return;
-    // In production wire this to an API / Formspree / email service.
-    // For now we store locally so the UX is complete.
-    try {
-      const key = 'blog_feedback';
-      const existing = JSON.parse(localStorage.getItem(key) || '[]');
-      // Cap stored entries to prevent unbounded localStorage growth
-      const capped = existing.slice(-49); // keep last 49 + new one = 50 max
-      capped.push({
-        slug,
-        title,
-        message: trimmed.slice(0, MAX_FEEDBACK_LENGTH),
-        ts: new Date().toISOString(),
-      });
-      localStorage.setItem(key, JSON.stringify(capped));
-    } catch {
-      // localStorage unavailable — still show success to user
+
+    // Validate email only if provided (it's optional)
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailErr('Enter a valid email address.');
+      return;
     }
-    setStatus('sent');
-    setValue('');
+    setEmailErr('');
+    setStatus('sending');
+
+    try {
+      // If reader left an email, send them the thank-you email too
+      if (email.trim()) {
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          {
+            to_email: email.trim(),
+            message:  `[Blog feedback on "${title}"]\n\n${trimmed}`,
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        );
+      } else {
+        // No email — still notify you via a second template or the same one
+        // sent to yourself so you don't miss anonymous feedback
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          {
+            to_email: 'contact@soumya.io',
+            message:  `[Anonymous blog feedback on "${title}"]\n\n${trimmed}`,
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        );
+      }
+
+      // Also persist locally as a backup
+      try {
+        const key = 'blog_feedback';
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        const capped = existing.slice(-49);
+        capped.push({ slug, title, message: trimmed.slice(0, MAX_FEEDBACK_LENGTH), ts: new Date().toISOString() });
+        localStorage.setItem(key, JSON.stringify(capped));
+      } catch { /* localStorage unavailable */ }
+
+      setStatus('sent');
+      setValue('');
+      setEmail('');
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -99,31 +126,48 @@ function BlogFeedback({ slug, title }) {
         </h3>
         <p className="blog-feedback__lede">
           Spotted something off, have a question, or want to add a point?
-          Drop it here, I read every note.
+          Drop it here — I read every note.
         </p>
 
         {status === 'sent' ? (
           <div className="blog-feedback__thanks" role="status">
-            <span>✓</span> Thanks, noted!
+            <span>✓</span> Thanks, noted! I'll get back to you if you left an email.
           </div>
         ) : (
           <form className="blog-feedback__form" onSubmit={handleSubmit}>
+            {/* Optional email field */}
+            <div className="blog-feedback__field">
+              <input
+                type="email"
+                className={`blog-feedback__email-input${emailErr ? ' has-error' : ''}`}
+                placeholder="Your email (optional — if you'd like a reply)"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setEmailErr(''); }}
+                aria-label="Your email address (optional)"
+                autoComplete="email"
+              />
+              {emailErr && (
+                <span className="blog-feedback__error" role="alert">{emailErr}</span>
+              )}
+            </div>
+
             <textarea
               className="blog-feedback__input"
               rows={4}
               placeholder="Any points to add? Corrections? Questions? Write freely…"
               value={value}
-              onChange={handleChange}
+              onChange={(e) => { if (e.target.value.length <= MAX_FEEDBACK_LENGTH) setValue(e.target.value); }}
               aria-label="Your feedback or suggestion"
               maxLength={MAX_FEEDBACK_LENGTH}
             />
+
             <div className="blog-feedback__actions">
               <button
                 type="submit"
                 className="blog-feedback__submit"
-                disabled={!value.trim()}
+                disabled={!value.trim() || status === 'sending'}
               >
-                Send feedback →
+                {status === 'sending' ? 'Sending…' : 'Send feedback →'}
               </button>
               <span className="blog-feedback__hint">
                 Or{' '}
@@ -137,6 +181,12 @@ function BlogFeedback({ slug, title }) {
                 </span>
               )}
             </div>
+
+            {status === 'error' && (
+              <p className="blog-feedback__error" role="alert">
+                Something went wrong. Please try again.
+              </p>
+            )}
           </form>
         )}
       </div>
@@ -191,7 +241,6 @@ export default function BlogPostDetail({ slug }) {
               { name: 'Blog', url: `${SITE_CONFIG.url}/blog` },
               { name: post.title, url: `${SITE_CONFIG.url}/blog/${slug}` },
             ]),
-            ...(post.faqs?.length ? [faqSchema(post.faqs)] : []),
           ]}
         />
       )}

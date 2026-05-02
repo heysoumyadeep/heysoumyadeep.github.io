@@ -7,21 +7,6 @@ export const frontmatter = {
   tags: ["AI", "developer-tools", "visualization", "software-architecture"]
 }
 
-export const faqs = [
-  {
-    question: "What is CodeScope?",
-    answer: "CodeScope is an AI-powered tool built by Soumyadeep Pradhan that visualizes large codebases and surfaces intelligent debugging insights, helping engineers understand unfamiliar repositories faster."
-  },
-  {
-    question: "How does AI codebase visualization work?",
-    answer: "CodeScope uses a layered summarization pipeline: it summarizes individual functions using an LLM, aggregates those into module-level summaries, then builds a weighted dependency graph to create a navigable mental model of the codebase."
-  },
-  {
-    question: "What tech stack does CodeScope use?",
-    answer: "CodeScope is built with React and D3.js for the frontend visualization, Python with the OpenAI API for the summarization pipeline, and SQLite for storing summaries and graph data."
-  }
-]
-
 # Building CodeScope: Visualizing Codebases with AI
 
 Every engineer has had the experience of opening an unfamiliar repository and feeling immediately lost. The file tree is deep, the module boundaries are unclear, and the README is three years out of date. You spend the first two days just trying to understand what connects to what before you can write a single line of meaningful code.

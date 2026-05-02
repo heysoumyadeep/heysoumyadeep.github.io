@@ -29,14 +29,6 @@ export const websiteSchema = {
     name: SITE_CONFIG.name,
     url: BASE_URL,
   },
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: `${BASE_URL}/blog?q={search_term_string}`,
-    },
-    'query-input': 'required name=search_term_string',
-  },
 };
 
 // ── Person ────────────────────────────────────────────────────────────────────
@@ -50,7 +42,7 @@ export const personSchema = {
   name: 'Soumyadeep Pradhan',
   alternateName: ['Soumya Pradhan', 'Soumya', 'soumyadeep', 'heysoumyadeep'],
   url: BASE_URL,
-  image: `${BASE_URL}/og-image.png`,
+  image: `${BASE_URL}/og-image.svg`,
   jobTitle: personalInfo.role,
   worksFor: {
     '@type': 'Organization',
@@ -123,7 +115,7 @@ export function blogPostingSchema(post) {
     },
     image: {
       '@type': 'ImageObject',
-      url: `${BASE_URL}/og-image.png`,
+      url: `${BASE_URL}/og-image.svg`,
       width: 1200,
       height: 630,
     },
@@ -207,18 +199,3 @@ export const siteNavigationSchema = {
   ],
 };
 
-// ── FAQPage ───────────────────────────────────────────────────────────────────
-// Enables FAQ rich results in Google Search for blog posts.
-// Pass an array of { question, answer } objects.
-
-export function faqSchema(faqs) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map(({ question, answer }) => ({
-      '@type': 'Question',
-      name: question,
-      acceptedAnswer: { '@type': 'Answer', text: answer },
-    })),
-  };
-}
