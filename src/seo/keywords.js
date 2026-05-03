@@ -131,6 +131,19 @@ export const POST_KEYWORDS = {
     'classical music software',
     'creative hobbies engineering',
   ],
+  'database-indexing-explained': [
+    'database indexing explained',
+    'how database indexes work',
+    'B-Tree index explained',
+    'LSM tree vs B-Tree',
+    'hash index database',
+    'PostgreSQL EXPLAIN ANALYZE',
+    'composite index leftmost prefix',
+    'covering index postgres',
+    'database performance optimization',
+    'CREATE INDEX SQL',
+    'database internals',
+  ],
 };
 
 // ── Computed exports ──────────────────────────────────────────────────────────
@@ -159,6 +172,8 @@ export const KNOWS_ABOUT = [
   'TypeScript',
   'Python',
   'Microservices',
+  'Database Indexing',
+  'PostgreSQL',
   'System Design',
   'Code Review',
   'Engineering Career Growth',

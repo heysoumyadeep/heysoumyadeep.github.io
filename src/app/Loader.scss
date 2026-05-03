@@ -1,0 +1,151 @@
+.loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg);
+  z-index: 9999;
+  overflow: hidden;
+
+  // Hide the BMC widget button while loader is visible
+  ~ * #bmc-wbtn,
+  & ~ #bmc-wbtn {
+    display: none !important;
+  }
+}
+
+// Also hide BMC widget that's a sibling in the DOM
+#bmc-wbtn {
+  .loader ~ & {
+    display: none !important;
+  }
+}
+
+// ── Aurora background orbs ────────────────────────────────────────────────────
+
+.loader__aurora {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.loader__aurora--1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #ee4540 0%, transparent 70%);
+  top: -100px;
+  left: -100px;
+  opacity: 0.4;
+  animation: aurora-drift-1 8s ease-in-out infinite;
+}
+
+.loader__aurora--2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #c72c41 0%, transparent 70%);
+  bottom: -80px;
+  right: -80px;
+  opacity: 0.35;
+  animation: aurora-drift-2 10s ease-in-out infinite;
+}
+
+.loader__aurora--3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #801336 0%, transparent 70%);
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+  opacity: 0.25;
+  animation: aurora-drift-3 7s ease-in-out infinite;
+}
+
+// ── Glow bloom — starts fully glowing, pulses down then back up ───────────────
+
+.loader__glow {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(238, 69, 64, 0.75) 0%, transparent 70%);
+  filter: blur(28px);
+  // Start at peak glow (scale 1.2, full opacity) then pulse down and back up
+  animation: glow-pulse 1.8s ease-in-out infinite;
+  animation-delay: 0s;
+  pointer-events: none;
+}
+
+// ── Logo mark ─────────────────────────────────────────────────────────────────
+
+.loader__mark {
+  position: relative;
+  z-index: 1;
+  border-radius: 18px;
+  // Start scaled up (glowing state), pulse down then back up
+  animation: mark-pulse 1.8s ease-in-out infinite;
+  animation-delay: 0s;
+
+  svg {
+    display: block;
+    border-radius: 18px;
+  }
+}
+
+// ── Keyframes — start at glow peak ───────────────────────────────────────────
+
+// Glow starts bright, dims down, comes back up
+@keyframes glow-pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+// Logo starts scaled up, shrinks, comes back
+@keyframes mark-pulse {
+  0% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(60px, 40px) scale(1.1); }
+  66%       { transform: translate(20px, 80px) scale(0.95); }
+}
+
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%       { transform: translate(-50px, -30px) scale(1.15); }
+  70%       { transform: translate(-20px, -60px) scale(0.9); }
+}
+
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%       { transform: translate(-50%, -50%) scale(1.3); }
+}
+
+// Respect reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .loader__aurora,
+  .loader__glow,
+  .loader__mark {
+    animation: none;
+  }
+}
