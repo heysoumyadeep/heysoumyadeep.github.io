@@ -1,0 +1,241 @@
+export const frontmatter = {
+  title: "Ever Wondered How Indexing Works in Databases?",
+  slug: "database-indexing-explained",
+  date: "May 03, 2026",
+  readTime: "9 min",
+  excerpt: "B-Trees, hash indexes, LSM trees, and what your database is really doing when you CREATE INDEX.",
+  author: "Soumyadeep Pradhan",
+  tags: ["databases", "backend", "performance", "deep-dive"]
+}
+
+# Ever Wondered How Indexing Works in Databases?
+
+Every backend engineer has had this moment. A query that ran in 40 milliseconds in dev is now taking 30 seconds in production. You add an index. Suddenly it's back to 40 milliseconds. Feels like magic.
+
+But it isn't magic. It's a B-Tree. Or an LSM tree. Or a hash table. And knowing the difference between them can be the difference between a system that scales and one that quietly breaks at 3 AM.
+
+This post is about what's actually happening under the hood when you run `CREATE INDEX`.
+
+## What an index actually is
+
+An index is not pixie dust on top of your table. It's a separate data structure, stored on disk, that maps values from a column back to the location of the row.
+
+You're trading three things for faster reads:
+
+- **Disk space**, because the index lives next to your table
+- **Write speed**, because every INSERT, UPDATE, and DELETE has to update the index too
+- **Memory**, because hot indexes get cached aggressively
+
+The "book index" analogy is fine but it undersells things. A better way to think about it: an index is a sorted, searchable shortcut that the database keeps in sync with your data, so lookups don't need to read every row.
+
+```sql
+-- Without an index: scan all 10M rows
+SELECT * FROM users WHERE email = 'a@b.com';
+
+-- With an index on email: about 3 disk reads
+CREATE INDEX idx_users_email ON users(email);
+```
+
+That "3 disk reads" isn't hand-waving. It's roughly what a B-Tree gives you on a table of 10 million rows. Let's see why.
+
+## B-Trees: the default for a reason
+
+When you run `CREATE INDEX` in Postgres, MySQL, SQL Server, or Oracle without specifying anything else, you get a B-Tree (technically a B+Tree in most cases). It's the default because it does almost everything well.
+
+A B-Tree is a balanced tree where every node holds many keys, not just one. Here's a small one indexing user IDs:
+
+```
+                    [ 50 ]
+                  /        \
+          [ 20, 35 ]      [ 70, 85 ]
+         /    |     \     /    |    \
+      [..] [..]   [..] [..]  [..]  [..]
+       ↓    ↓      ↓    ↓     ↓     ↓
+     row  row   row   row   row   row
+     ptrs ptrs  ptrs  ptrs  ptrs  ptrs
+```
+
+The leaves hold pointers back to the actual rows in the table. The interior nodes are just signposts that help you find your way down.
+
+### Why so wide and shallow?
+
+Disks (and even SSDs) don't read one byte at a time. They read in **pages**, usually 4KB or 8KB. So databases pack each B-Tree node with as many keys as fit in one page. The fanout is huge, often 100 to 500 children per node.
+
+The math gets fun. A B-Tree with fanout 100:
+
+```
+Depth 1:        100 entries
+Depth 2:     10,000 entries
+Depth 3:  1,000,000 entries
+Depth 4: 100,000,000 entries
+```
+
+A hundred million rows in **four disk reads**. That's why your `WHERE id = ?` query stays fast even on huge tables.
+
+### Range queries: the secret weapon
+
+B+Trees go one step further. The leaf nodes are linked together in a sorted linked list.
+
+```
+[10, 12, 15] → [18, 20, 22] → [27, 29, 31] → ...
+```
+
+Once you find your starting point, you just walk the list. That's why this query is fast on a B-Tree:
+
+```sql
+SELECT * FROM orders
+WHERE created_at BETWEEN '2026-01-01' AND '2026-01-31'
+ORDER BY created_at;
+```
+
+Range scans, `ORDER BY`, `LIMIT` with sorting: all of these lean on this leaf-level linked list.
+
+## Hash indexes: fast, but narrow
+
+A hash index is simpler. You hash the key, look it up in a hash table, and get the row pointer.
+
+```
+hash("a@b.com") → bucket 47 → row at page 12, offset 8192
+```
+
+Lookups are O(1) instead of O(log n). So why aren't they the default?
+
+Two reasons:
+
+1. **They only do equality.** `WHERE email = 'x'` works. `WHERE email LIKE 'x%'` or `email > 'x'` doesn't. Hashing destroys ordering by design.
+2. **They don't help with sorts or ranges.** The whole point of a hash is that similar inputs scatter to very different buckets.
+
+Postgres has had hash indexes for years, but most teams never use them. They earn their keep in narrow cases like in-memory caches and key-value stores.
+
+## LSM Trees: the write-optimized cousin
+
+If your workload is write-heavy (think time-series data, event logs, analytics) B-Trees start to hurt. Every write means seeking around the tree to update leaves in place. LSM trees (Log-Structured Merge trees) flip the model.
+
+This is what powers Cassandra, RocksDB, LevelDB, ScyllaDB, and the storage layer of many modern databases.
+
+```
+Writes →  [ Memtable (in RAM, sorted) ]
+              │
+              │  flush when full
+              ▼
+          [ SSTable L0 ]  ← immutable, sorted on disk
+          [ SSTable L0 ]
+          [ SSTable L0 ]
+              │
+              │  compaction merges & sorts
+              ▼
+          [ SSTable L1 ] [ SSTable L1 ] ...
+              │
+              ▼
+          [ SSTable L2 ] ...
+```
+
+Here's the flow:
+
+1. **Writes go to memory first** (a sorted structure called the memtable) and a write-ahead log
+2. **When the memtable fills up**, it's flushed to disk as an immutable, sorted file (an SSTable)
+3. **Background compaction** runs periodically, merging SSTables and removing duplicates
+
+The win: writes are sequential and very fast. The cost: reads might have to check multiple SSTables across multiple levels. Bloom filters help skip files that definitely don't contain a key.
+
+### The tradeoff in one table
+
+| | B-Tree | LSM Tree |
+|---|---|---|
+| Reads | Fast, predictable | Slower, can touch many files |
+| Writes | Random I/O, slower at scale | Sequential I/O, very fast |
+| Space | Lower amplification | Higher (compaction overhead) |
+| Best for | OLTP, mixed workloads | Write-heavy, time-series, logs |
+
+Your Postgres database is a B-Tree shop. Your Kafka offsets, your Cassandra cluster, your Prometheus metrics: those are LSM trees.
+
+## Special index types worth knowing
+
+Once you understand the three core structures, the rest are variations.
+
+**Covering indexes (index-only scans).** Add extra columns to your index so the query can be answered from the index alone, without touching the table at all.
+
+```sql
+CREATE INDEX idx_orders_user_covering
+  ON orders(user_id) INCLUDE (status, total);
+
+-- This query never touches the orders heap
+SELECT status, total FROM orders WHERE user_id = 42;
+```
+
+**Composite indexes and the leftmost prefix rule.** A multi-column index is sorted left to right. The index is only useful if your `WHERE` clause includes the leftmost columns.
+
+```sql
+CREATE INDEX idx_orders_user_date ON orders(user_id, created_at);
+
+-- ✅ Uses the index
+WHERE user_id = 42 AND created_at > '2026-01-01'
+
+-- ✅ Uses the index (just the user_id part)
+WHERE user_id = 42
+
+-- ❌ Can't use the index efficiently
+WHERE created_at > '2026-01-01'
+```
+
+This one rule probably explains 60% of all "why isn't my index being used" questions.
+
+**Partial indexes.** Only index the rows that matter.
+
+```sql
+-- Only index unshipped orders, usually a tiny fraction
+CREATE INDEX idx_pending_orders ON orders(created_at)
+  WHERE status = 'pending';
+```
+
+**GIN and GiST.** These are for JSON, full-text search, geospatial data, and arrays. Different internal structures, but same `CREATE INDEX` syntax.
+
+## Why the wrong index is worse than no index
+
+Indexes aren't free, and over-indexing is a real problem. Three things go wrong:
+
+1. **Write amplification.** Every INSERT updates every index. A table with 8 indexes is doing 9 times the work on every write.
+2. **The planner picks the wrong one.** Query planners use statistics to decide. Bad statistics or too many similar indexes can lead them to make poor choices.
+3. **Index bloat.** Especially in Postgres, deleted rows leave dead entries in indexes. Indexes need maintenance (`REINDEX`, `VACUUM`) just like tables do.
+
+The rule I've internalized: **add an index when you have a measured slow query, not because a column "feels" indexable.**
+
+## Reading EXPLAIN like you mean it
+
+You can't tune what you can't see. Postgres's `EXPLAIN ANALYZE` is your microscope.
+
+```sql
+EXPLAIN ANALYZE
+SELECT * FROM users WHERE email = 'a@b.com';
+```
+
+Three outcomes you should recognize instantly:
+
+```
+Seq Scan on users  (cost=0.00..18334.00 rows=1)
+  Filter: (email = 'a@b.com'::text)
+  Rows Removed by Filter: 999999
+```
+
+That's a full table scan. Bad on a big table.
+
+```
+Index Scan using idx_users_email on users  (cost=0.42..8.44 rows=1)
+  Index Cond: (email = 'a@b.com'::text)
+```
+
+The index found the row, then went to the heap. Good.
+
+```
+Index Only Scan using idx_users_email_covering on users
+  Index Cond: (email = 'a@b.com'::text)
+  Heap Fetches: 0
+```
+
+Best case. The query was answered from the index alone.
+
+## Wrapping up
+
+An index is a tax on writes that you pay for cheaper reads. Pick the structure that matches your workload, the columns that match your queries, and the maintenance you can actually keep up with.
+
+Next time a query goes from 30 seconds to 30 milliseconds, you'll know exactly which sorted structure just saved your evening.
