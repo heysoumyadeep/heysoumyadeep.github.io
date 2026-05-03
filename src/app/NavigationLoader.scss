@@ -1,0 +1,46 @@
+// ── Navigation progress bar ───────────────────────────────────────────────────
+// Slim bar that appears at the very top of the viewport during route changes.
+// Content stays visible — this is purely a non-blocking indicator.
+
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  z-index: calc(var(--z-nav) + 10); // sits above the navbar
+  background: var(--gradient-accent);
+  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+  box-shadow: 0 0 8px var(--color-accent), 0 0 2px var(--color-accent);
+  pointer-events: none;
+  will-change: width, opacity;
+
+  // Mounted at width 0, no transition — just a starting point
+  &--start {
+    width: 0;
+    opacity: 1;
+    transition: none;
+  }
+
+  // Animate from 0 → 85% (fake progress while page renders)
+  &--filling {
+    width: 85%;
+    opacity: 1;
+    transition: width 400ms cubic-bezier(0.1, 0.6, 0.4, 1);
+  }
+
+  // Snap to 100%, then fade out
+  &--complete {
+    width: 100%;
+    opacity: 0;
+    transition:
+      width 150ms ease-out,
+      opacity 250ms ease-in 150ms;
+  }
+}
+
+// Respect reduced motion — skip animations, just show/hide instantly
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress {
+    transition: none !important;
+  }
+}

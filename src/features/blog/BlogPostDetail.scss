@@ -124,13 +124,33 @@
   margin-bottom: var(--space-6);
 }
 
-// ── Tags ──────────────────────────────────────────────────────────────────────
+// ── Tags footer ───────────────────────────────────────────────────────────────
+
+.blog-post__tags-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.blog-post__tags-label {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
 
 .blog-post__tags {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin-bottom: var(--space-6);
+  list-style: none;
 }
 
 .blog-post__tag span {
@@ -218,6 +238,13 @@
   &--h2 a { font-weight: 500; color: var(--color-text); }
   &--h3 { padding-left: var(--space-4); }
   &--h3 a { font-size: 13px; }
+}
+
+// ── Inline illustrations ──────────────────────────────────────────────────────
+
+.blog-post__body svg {
+  max-width: 100%;
+  height: auto;
 }
 
 // ── Body ──────────────────────────────────────────────────────────────────────
@@ -352,8 +379,8 @@
 // ── Feedback section ──────────────────────────────────────────────────────────
 
 .blog-feedback {
-  margin-top: var(--space-9);
-  padding-top: var(--space-7);
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
   border-top: 1px solid var(--color-border);
   max-width: 720px;
   margin-left: auto;

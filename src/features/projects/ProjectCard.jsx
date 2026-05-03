@@ -1,9 +1,17 @@
 import { GithubIcon, ExternalLinkIcon } from '@components';
 import './ProjectCard.scss';
 
-export default function ProjectCard({ project, featured = false }) {
+export default function ProjectCard({ project }) {
+  const cardHref = project.github || project.link || '#';
+
   return (
-    <article className={`project-card ${featured ? 'project-card--featured' : ''}`}>
+    <a
+      href={cardHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="project-card"
+      aria-label={project.title}
+    >
       <div className="project-card__top">
         <div className="project-card__icon" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
@@ -12,14 +20,17 @@ export default function ProjectCard({ project, featured = false }) {
           </svg>
         </div>
 
-        <div className="project-card__links">
+        <div className="project-card__links" onClick={(e) => e.stopPropagation()}>
+          {project.recentProject && (
+            <span className="project-card__recent-tag">Recent project</span>
+          )}
           {project.github && (
             <a href={project.github} target="_blank" rel="noreferrer"
                aria-label={`${project.title} source`}>
               <GithubIcon size={18} />
             </a>
           )}
-          {project.link && (
+          {project.link && project.link !== project.github && (
             <a href={project.link} target="_blank" rel="noreferrer"
                aria-label={`${project.title} live demo`}>
               <ExternalLinkIcon size={18} />
@@ -36,6 +47,6 @@ export default function ProjectCard({ project, featured = false }) {
           <li key={tech} className="mono">{tech}</li>
         ))}
       </ul>
-    </article>
+    </a>
   );
 }

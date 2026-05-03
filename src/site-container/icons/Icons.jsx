@@ -57,3 +57,10 @@ export const CheckIcon = ({ size = 18 }) => (
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
+
+export const ArrowRightIcon = ({ size = 14 }) => (
+  <svg {...baseProps(size)}>
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
+  </svg>
+);

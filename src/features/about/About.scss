@@ -20,6 +20,27 @@
   font-weight: 600;
 }
 
+.about__funfact {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--color-accent);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.about__funfact-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
 .about__skills {
   position: sticky;
   top: 110px;

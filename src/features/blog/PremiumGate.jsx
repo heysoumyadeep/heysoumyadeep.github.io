@@ -165,7 +165,7 @@ function PasscodeModal({ onClose, onSuccess }) {
       <div className="passcode-modal">
         <h2 className="passcode-modal__title">Enter Access Code</h2>
         <p className="passcode-modal__subtitle">
-          Enter the 8-digit code you received after supporting
+          Enter the 8-digit code you received via mail
         </p>
 
         <div className="passcode-modal__inputs" onPaste={handlePaste}>
@@ -207,7 +207,7 @@ function PasscodeModal({ onClose, onSuccess }) {
   );
 }
 
-export default function PremiumGate({ children, slug }) {
+export default function PremiumGate({ children, slug, tags = [] }) {
   const [unlocked, setUnlocked] = useState(() => isUnlocked(slug));
   const [showPasscode, setShowPasscode] = useState(false);
 
@@ -232,7 +232,22 @@ export default function PremiumGate({ children, slug }) {
 
   // If unlocked, render full content
   if (unlocked) {
-    return <>{children}</>;
+    return (
+      <>
+        {children}
+        {/* Tags - shown only when unlocked */}
+        {tags && tags.length > 0 && (
+          <div className="premium-gate__tags">
+            <span className="premium-gate__tags-label">Tags used here:</span>
+            <ul className="premium-gate__tags-list" aria-label="Post tags">
+              {tags.map((tag) => (
+                <li key={tag} className="premium-gate__tag"><span>{tag}</span></li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </>
+    );
   }
 
   // Otherwise show preview + gate

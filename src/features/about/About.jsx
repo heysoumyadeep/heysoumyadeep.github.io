@@ -14,6 +14,12 @@ export default function About() {
             {personalInfo.bio.map((paragraph, i) => (
               <p key={i} className="about__paragraph">{paragraph}</p>
             ))}
+            {personalInfo.funFact && (
+              <blockquote className="about__funfact">
+                <span className="about__funfact-label">Fun fact</span>
+                {personalInfo.funFact}
+              </blockquote>
+            )}
           </div>
 
           <aside className="about__skills reveal">

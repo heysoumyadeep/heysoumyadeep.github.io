@@ -27,7 +27,7 @@ export default function ExperienceTabs() {
             className={`exp-tabs__tab ${activeId === job.id ? 'exp-tabs__tab--active' : ''}`}
             onClick={() => setActiveId(job.id)}
           >
-            {job.shortName}
+            {job.company}
           </button>
         ))}
       </div>
@@ -42,7 +42,11 @@ export default function ExperienceTabs() {
         <h3 className="exp-tabs__role">
           {activeJob.role}{' '}
           <span className="exp-tabs__at">@</span>{' '}
-          <span className="exp-tabs__company">{activeJob.company}</span>
+          <span className="exp-tabs__company">
+              {activeJob.url
+                ? <a href={activeJob.url} target="_blank" rel="noopener noreferrer" className="exp-tabs__company-link">{activeJob.company}</a>
+                : activeJob.company}
+            </span>
         </h3>
 
         <p className="exp-tabs__period mono">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { SectionHeader } from '@components';
+import { SectionHeader, ArrowRightIcon } from '@components';
 import { getRecentPosts } from '@features/blog/PostRepository.js';
 import './Writing.scss';
 
@@ -17,7 +17,7 @@ export default function Writing() {
         <div className="writing__head">
           <SectionHeader number="04" label="Writing" title="Recent posts." />
           <Link to="/blog" className="writing__all">
-            All posts <span aria-hidden="true">→</span>
+            All posts <ArrowRightIcon size={14} />
           </Link>
         </div>
 
@@ -33,7 +33,7 @@ export default function Writing() {
                 <h3 className="writing__title">{post.title}</h3>
                 <p className="writing__excerpt">{post.excerpt}</p>
                 <span className="writing__cta">
-                  Read article <span aria-hidden="true">→</span>
+                  Read article <ArrowRightIcon size={13} />
                 </span>
               </Link>
             </li>

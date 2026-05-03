@@ -58,7 +58,7 @@ export default function ContactForm() {
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         {
-          to_email: values.email,   // recipient — the person who filled the form
+          to_email: values.email,   // recipient - the person who filled the form
           message: values.message,  // their message (available in template)
         },
         import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
