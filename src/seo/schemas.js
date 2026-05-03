@@ -172,7 +172,7 @@ export const profilePageSchema = {
     alternateName: ['Soumya Pradhan', 'Soumya', 'soumyadeep', 'heysoumyadeep'],
     url: BASE_URL,
     jobTitle: 'Full-Stack Developer',
-    description: 'Full-Stack Developer (SDE2) at JPMorgan Chase. Creator of CodeScope. Known online as heysoumyadeep.',
+    description: 'Full-Stack Developer (SDE2) at JPMorgan Chase. Known online as heysoumyadeep.',
     sameAs: [
       personalInfo.social.github,
       personalInfo.social.linkedin,

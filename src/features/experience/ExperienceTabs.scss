@@ -9,7 +9,25 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border-left: 2px solid var(--color-border);
+}
+
+// Desktop only: draw the left border only as tall as the tab list
+@media (min-width: 769px) {
+  .exp-tabs__list {
+    align-self: start;
+    overflow: hidden;
+  }
+
+  .exp-tabs__list::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--color-border);
+    border-radius: 2px;
+  }
 }
 
 .exp-tabs__tab {
@@ -37,7 +55,7 @@
 
 .exp-tabs__indicator {
   position: absolute;
-  left: -2px;
+  left: 0;
   top: 0;
   width: 2px;
   height: 48px;
@@ -70,6 +88,20 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 600;
+}
+
+.exp-tabs__company-link {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-hover) var(--ease);
+
+  &:hover {
+    border-bottom-color: var(--color-accent);
+  }
 }
 
 .exp-tabs__period {

@@ -2,15 +2,16 @@ export const experience = [
   {
     id: 'jpmc',
     company: 'JPMorgan Chase & Co.',
+    url: 'https://www.jpmorganchase.com/',
     shortName: 'JPMC',
     role: 'Software Engineer II',
     period: 'July 2022 - Present',
     location: 'Full-time',
     bullets: [
-      'Lead frontend and backend feature delivery on a platform team serving internal engineering tools.',
-      'Built CodeScope, an AI-powered codebase visualization and debugging assistant adopted across multiple teams.',
-      'Mentor junior engineers and review designs on cross-team architecture decisions.',
-      'Drive technical roadmap planning and sprint prioritization with product partners.',
+      'Part of the Chase Travel engineering team, contributing to consumer-facing travel booking experiences at scale.',
+      'Building and shipping full-stack features across internal platform tools, from backend APIs to polished UIs.',
+      'Mentored new joiners and reviewed designs on cross-team architecture decisions.',
+      'Drove technical roadmap planning and sprint prioritization with product partners.',
     ],
   },
   {
@@ -21,9 +22,9 @@ export const experience = [
     period: 'Summer 2021',
     location: 'Internship',
     bullets: [
-      'Built end-to-end web features as part of a small engineering team.',
-      'Picked up version control discipline, code review etiquette, and the rhythm of shipping.',
-      'Wrapped up a portfolio of intern projects that became the foundation for everything since.',
+      'Designed a dummy prototype of an optimized consumer-facing banking app with better UX, pitched it directly to one of the company\'s clients.',
+      'Picked up version control discipline, code review etiquette, and the rhythm of shipping in a real team environment.',
+      'Collaborated on end-to-end web features, getting hands-on with the full dev lifecycle from design to deployment.'
     ],
   }
 ];

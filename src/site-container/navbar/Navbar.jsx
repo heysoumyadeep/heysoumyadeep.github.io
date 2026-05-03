@@ -122,7 +122,7 @@ export default function Navbar() {
       <nav className={`navbar${scrolled || !isHomePage ? ' navbar--scrolled' : ''}`}>
         <div className="navbar__inner container">
 
-          {/* Logo — favicon SVG, theme-aware */}
+          {/* Logo - favicon SVG, theme-aware */}
           <Link to={ROUTES.HOME} className="navbar__logo" aria-label="Home" onClick={handleLogoClick}>
             <SiteLogo />
           </Link>
@@ -135,7 +135,7 @@ export default function Navbar() {
 
           <div className="navbar__actions">
             <ThemeToggle />
-            {/* Burger — only shown when menu is CLOSED */}
+            {/* Burger - only shown when menu is CLOSED */}
             {!menuOpen && (
               <button
                 type="button"
@@ -159,7 +159,7 @@ export default function Navbar() {
         aria-hidden={!menuOpen}
         inert={!menuOpen ? '' : undefined}
       >
-        {/* Close button inside the panel — always visible when open */}
+        {/* Close button inside the panel - always visible when open */}
         <button
           type="button"
           className="mobile-menu__close"
@@ -176,7 +176,7 @@ export default function Navbar() {
             ))}
           </ul>
 
-        {/* Aurora ribbons — decorative animation in the empty space */}
+        {/* Aurora ribbons - decorative animation in the empty space */}
         <div className="mobile-menu__aurora" aria-hidden="true">
           <div className="aurora__ribbon aurora__ribbon--1" />
           <div className="aurora__ribbon aurora__ribbon--2" />

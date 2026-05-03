@@ -1,14 +1,14 @@
 export const personalInfo = {
   name: 'Soumyadeep Pradhan',
-  role: 'Full-Stack Developer',
   tagline:
-    "I build thoughtful software across the stack, for the web and the developers who use it.",
+    "Building for the web. Writing about how things actually work.",
   bio: [
-    "I'm a Full-Stack Developer (SDE2) at JPMorgan Chase, where I build and debug real-world applications across both frontend and backend.",
-    "One project I'm especially proud of is CodeScope, an AI-powered tool I built to visualize codebases and surface intelligent debugging insights. It reflects what I love most: developer tools and the intersection of AI with day-to-day engineering.",
-    "Before JPMorgan Chase, I interned at The Sparks Foundation, which gave me my first hands-on taste of shipping software. Since then I've kept the learning loop tight, completing courses on the side to keep sharpening my skills.",
-    "Outside of work, you'll find me singing or chasing a creative side-project. There's more to me than the code I write.",
+    "I'm a Full-Stack Developer (SDE2) at JPMorgan Chase & Co., where I build and debug real-world applications across both frontend and backend.",
+    "I'm genuinely obsessed with AI, not the hype, but the part where it quietly makes engineering feel like cheating in the best way possible.",
+    "Outside of work, you'll find me singing, painting, or chasing a creative side-project. I'm also an avid traveller, always planning the next trip.",
+    "I've recently started writing blogs too. It turns out, explaining something clearly is the fastest way to realize you didn't fully understand it yourself.",
   ],
+  funFact: "I have travelled 18 states across India and counting. Every trip teaches me something a textbook never could.",
   email: 'contact@soumya.io',
   social: {
     github: 'https://github.com/heysoumyadeep',

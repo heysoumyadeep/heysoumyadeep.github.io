@@ -70,13 +70,10 @@ export const TECH_KEYWORDS = [
 // Your notable projects and what they do.
 
 export const PROJECT_KEYWORDS = [
-  'CodeScope',
-  'AI codebase visualization',
-  'codebase visualization tool',
-  'AI developer tools',
-  'OpenAI API',
-  'D3.js',
-  'developer tooling',
+  'developer tools',
+  'full stack web development',
+  'internal platform tooling',
+  'engineering productivity',
 ];
 
 // ── Blog topic keywords ───────────────────────────────────────────────────────
@@ -99,17 +96,6 @@ export const BLOG_KEYWORDS = [
 // Add an entry here whenever you publish a new post.
 
 export const POST_KEYWORDS = {
-  'building-codescope': [
-    'AI codebase visualization',
-    'visualizing codebases with AI',
-    'LLM code summarization',
-    'dependency graph visualization',
-    'CodeScope tool',
-    'codebase mental model',
-    'OpenAI structured outputs',
-    'developer tools AI',
-    'code understanding tool',
-  ],
   'sde2-lessons': [
     'SDE2 lessons learned',
     'first year SDE2',

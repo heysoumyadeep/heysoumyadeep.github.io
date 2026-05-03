@@ -7,12 +7,11 @@ Personal portfolio and blog built with React, Vite, MDX, and SCSS.
 ## Features
 
 - Single-page portfolio with smooth section scrolling
-- Blog powered by MDX — write posts in Markdown, rendered as React components
+- Blog powered by MDX - write posts in Markdown, rendered as React components
 - Light / dark mode with flash-free theme persistence
 - Parallax background with mouse-tracking orbs
 - Animated skill pills, tabbed experience section, working contact form
 - Full SEO: JSON-LD schemas, Open Graph, Twitter Card, sitemap, RSS feed, llms.txt
-- Module Federation — blog system exposed as a remote module
 - Two-tier blog loading: metadata eager, post bodies lazy per-post
 
 ---
@@ -28,19 +27,17 @@ Personal portfolio and blog built with React, Vite, MDX, and SCSS.
 | Blog / Content | MDX 3 (`@mdx-js/rollup`, `@mdx-js/react`) |
 | Routing | React Router DOM v6 |
 | SEO | React Helmet Async, JSON-LD, Open Graph, Twitter Card |
-| Module Federation | `vite-plugin-federation` |
-| Static Generation | Custom Vite plugins (sitemap, prerender) |
+| Static Generation | Custom Vite plugins (sitemap, prerender, OG images) |
 
 ---
 
 ## Key Concepts
 
-- **Module Federation** — the blog feature is exposed as a remote module (`remoteEntry.js`) via `vite-plugin-federation`, allowing it to be consumed independently by other apps
-- **Two-tier blog loading** — post metadata is loaded eagerly for listing; post body MDX is loaded lazily per-post to keep initial bundle small
-- **Flash-free theming** — theme is persisted to `localStorage` and applied before React hydrates, preventing a flash of wrong theme on load
-- **Path aliases** — `@`, `@app`, `@components`, `@features`, `@hooks`, `@pages`, `@styles`, `@data` configured in `vite.config.js` for clean imports
-- **Static SPA** — prerender plugin generates static HTML shells for each route at build time; sitemap plugin auto-generates `sitemap.xml` and RSS feed
-- **Design tokens** — all colors, spacing, and typography live in `src/styles/tokens.css` as CSS custom properties, consumed across all SCSS files
+- **Two-tier blog loading** - post metadata is loaded eagerly for listing; post body MDX is loaded lazily per-post to keep initial bundle small
+- **Flash-free theming** - theme is persisted to `localStorage` and applied before React hydrates, preventing a flash of wrong theme on load
+- **Path aliases** - `@`, `@app`, `@components`, `@features`, `@hooks`, `@pages`, `@styles`, `@data` configured in `vite.config.js` for clean imports
+- **Static SPA** - prerender plugin generates static HTML shells for each route at build time; sitemap plugin auto-generates `sitemap.xml` and RSS feed
+- **Design tokens** - all colors, spacing, and typography live in `src/styles/tokens.css` as CSS custom properties, consumed across all SCSS files
 
 ---
 
@@ -57,7 +54,7 @@ Personal portfolio and blog built with React, Vite, MDX, and SCSS.
     │   └── main.jsx              # React DOM entry point
     ├── config/
     │   └── site.js               # Site constants, nav items, route definitions
-    ├── data/                     # All content lives here — edit to update the site
+    ├── data/                     # All content lives here - edit to update the site
     │   ├── personal.js           # Name, bio, email, social links
     │   ├── skills.js             # Tech stack pills (name + brand color)
     │   ├── experience.js         # Work history tabs
@@ -103,7 +100,7 @@ Personal portfolio and blog built with React, Vite, MDX, and SCSS.
     │   ├── theme-toggle/
     │   └── index.js
     └── styles/
-        ├── tokens.css            # Design tokens — single source of truth for colors/spacing
+        ├── tokens.css            # Design tokens - single source of truth for colors/spacing
         └── global.css            # Reset, base styles, theme transitions, scrollbar, cursor glow
 ```
 
@@ -124,11 +121,11 @@ npm run preview    # preview the production build
 
 All content lives in `src/data/`. No component changes needed:
 
-- `personal.js` — name, bio, email, social links
-- `skills.js` — tech stack pills (name + brand color)
-- `experience.js` — work history tabs
-- `projects.js` — featured and secondary projects
-- `blog/posts/` — add a new `.mdx` file to publish a blog post
+- `personal.js` - name, bio, email, social links
+- `skills.js` - tech stack pills (name + brand color)
+- `experience.js` - work history tabs
+- `projects.js` - featured and secondary projects
+- `blog/posts/` - add a new `.mdx` file to publish a blog post
 
 ---
 
@@ -154,5 +151,5 @@ Copyright (c) 2025 Soumyadeep Pradhan. All Rights Reserved.
 This project is licensed under the
 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/).
 
-You may **not** copy, modify, distribute, or use this work — in whole or in part —
+You may **not** copy, modify, distribute, or use this work - in whole or in part -
 for any purpose without explicit written permission from the author.

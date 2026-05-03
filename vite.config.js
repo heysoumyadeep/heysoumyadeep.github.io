@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
-import federation from 'vite-plugin-federation';
 import sitemapPlugin from './scripts/vite-plugin-sitemap.js';
 import prerenderPlugin from './scripts/vite-plugin-prerender.js';
 import ogImagePlugin from './scripts/vite-plugin-og-image.js';
@@ -11,26 +10,6 @@ export default defineConfig(({ command }) => ({
   plugins: [
     { enforce: 'pre', ...mdx() },
     react(),
-    // Federation only runs during build - in dev mode it hijacks the root
-    // route and shows the MF debug UI instead of the actual app.
-    // Also disabled when VITE_DISABLE_FEDERATION=true (e.g. GitHub Pages deploy)
-    ...(command === 'build' && !process.env.VITE_DISABLE_FEDERATION ? [
-      federation({
-        name: 'blog-remote',
-        filename: 'remoteEntry.js',
-        exposes: {
-          './BlogIndex':      './src/features/blog/BlogIndex.jsx',
-          './BlogPostDetail': './src/features/blog/BlogPostDetail.jsx',
-          './PostRepository': './src/features/blog/PostRepository.js',
-          './ViewTracker':    './src/features/blog/ViewTracker.js',
-        },
-        shared: {
-          react:              { singleton: true, requiredVersion: '^18.3.1' },
-          'react-dom':        { singleton: true, requiredVersion: '^18.3.1' },
-          'react-router-dom': { singleton: true, requiredVersion: '^6.26.0' },
-        },
-      }),
-    ] : []),
     // Sitemap + prerender + OG image always run on build
     ...(command === 'build' ? [
       ogImagePlugin(),
