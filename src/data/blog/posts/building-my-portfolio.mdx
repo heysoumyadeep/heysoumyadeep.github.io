@@ -1,0 +1,278 @@
+export const frontmatter = {
+  title: "How I built my portfolio: Architecture decisions that matter",
+  date: "May 04, 2026",
+  readTime: "9 min",
+  excerpt: "Two-tier loading, flash-free theming, and custom Vite plugins. A technical breakdown of the patterns that make this site fast and maintainable.",
+  author: "Soumyadeep Pradhan",
+  tags: ["react", "vite", "architecture", "performance", "frontend"]
+}
+
+I rebuilt my portfolio from scratch recently. Not because the old one was broken, but because I wanted to solve specific problems: slow blog loading, theme flashing on page load, poor SEO for individual posts, and a codebase that felt harder to maintain than it should.
+
+This post is about the technical decisions that solved those problems. Not the surface-level "I used React and Vite" stuff, but the architecture patterns that actually moved the needle.
+
+<svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'0 0 2rem',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  {/* stack layers */}
+  <rect x="60" y="140" width="600" height="40" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="360" y="165" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">Vite + React 18 + React Router</text>
+  <rect x="100" y="90" width="520" height="40" rx="6" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="360" y="115" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">MDX + Custom Vite Plugins</text>
+  <rect x="140" y="40" width="440" height="40" rx="6" fill="var(--color-accent)" opacity="0.25" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="360" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">Two-tier loading + Flash-free theme + SEO</text>
+</svg>
+
+## The blog loading problem: two-tier architecture
+
+The first version of the blog loaded every post upfront. With 3 posts, that was fine. With 30, the blog index would be downloading hundreds of KB of MDX content that nobody asked for.
+
+The fix: split loading into two tiers.
+
+**Tier 1: Metadata only (eager).** The blog index only needs titles, dates, excerpts, and tags. Not the full post body. So I load just the frontmatter for all posts upfront. This is tiny, a few KB total, and lets me render the blog listing instantly.
+
+**Tier 2: Post body (lazy, per-post).** The full MDX component is loaded on demand only when someone opens a specific post. Vite code-splits each MDX file into its own chunk automatically.
+
+Here's the key part of the implementation:
+
+```js
+// Tier 1: eager metadata
+const metaModules = import.meta.glob('../../data/blog/posts/*.mdx', { eager: true });
+
+// Tier 2: lazy loaders (functions that trigger dynamic imports)
+const lazyLoaders = import.meta.glob('../../data/blog/posts/*.mdx');
+
+// Build metadata index once at module init
+const ALL_META = Object.entries(metaModules)
+  .map(([filePath, mod]) => buildMeta(mod, filePath))
+  .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+// Lazy load full post when needed
+export async function getPostBySlug(slug) {
+  const meta = ALL_META.find((p) => p.slug === slug);
+  if (!meta) return null;
+
+  const loaderEntry = Object.entries(lazyLoaders).find(
+    ([filePath]) => slugFromPath(filePath) === slug
+  );
+  const mod = await loaderEntry[1]();
+
+  return { ...meta, Component: mod.default };
+}
+```
+
+The result: opening post A never downloads the content of post B. The blog index loads in under 50ms regardless of how many posts exist.
+
+<svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  {/* before: one big bundle */}
+  <text x="180" y="30" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">before: one bundle</text>
+  <rect x="60" y="50" width="240" height="60" rx="6" fill="var(--color-border)" opacity="0.6" stroke="var(--color-border)" strokeWidth="1.2"/>
+  <text x="180" y="75" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">post-a.mdx</text>
+  <text x="180" y="90" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">post-b.mdx</text>
+  <text x="180" y="105" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">post-c.mdx</text>
+  <text x="180" y="130" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">320 KB on every page load</text>
+  {/* after: split chunks */}
+  <text x="540" y="30" textAnchor="middle" fontSize="13" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">after: code-split</text>
+  <rect x="420" y="50" width="100" height="30" rx="4" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1"/>
+  <text x="470" y="70" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">metadata</text>
+  <text x="470" y="95" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">5 KB, eager</text>
+  <rect x="540" y="50" width="100" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1"/>
+  <text x="590" y="70" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">post-a</text>
+  <text x="590" y="95" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">12 KB, lazy</text>
+  <rect x="540" y="110" width="100" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1"/>
+  <text x="590" y="130" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">post-b</text>
+  <rect x="540" y="150" width="100" height="30" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1"/>
+  <text x="590" y="170" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">post-c</text>
+  <text x="540" y="195" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">only load what you read</text>
+</svg>
+
+## Flash-free theming: the blocking script pattern
+
+Dark mode is table stakes now. But most implementations flash the wrong theme on page load. You load the page, see light mode for 100ms, then it snaps to dark. Jarring.
+
+The problem: React hydrates after the page loads. By the time your theme hook runs, the browser has already painted the default theme.
+
+The fix: apply the theme before React even starts. I inject a tiny blocking script in `index.html` that reads `localStorage` and sets the `data-theme` attribute on `<html>` synchronously, before any CSS is evaluated.
+
+```html
+<script>
+  (function() {
+    const saved = localStorage.getItem('portfolio:theme');
+    const theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+```
+
+This runs before the first paint. No flash. The React hook just syncs with what's already there.
+
+Bonus: I use the View Transitions API for the theme toggle. When you click the toggle, the new theme ripples out from the button position with a circular reveal. Smooth, native, no animation library needed.
+
+```js
+const transition = document.startViewTransition(() => {
+  setTheme(nextTheme);
+  document.documentElement.setAttribute('data-theme', nextTheme);
+});
+
+transition.ready.then(() => {
+  document.documentElement.animate(
+    { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`] },
+    { duration: 500, easing: 'ease-in-out', pseudoElement: '::view-transition-new(root)' }
+  );
+});
+```
+
+## Custom Vite plugins: prerender, sitemap, OG images
+
+SPAs are great for interactivity, terrible for SEO. Crawlers don't always execute JavaScript. Even when they do, they don't wait for async data fetching.
+
+The fix: static generation. I wrote three custom Vite plugins that run at build time:
+
+**1. Prerender plugin.** Copies `dist/index.html` to every route directory (`/blog/`, `/blog/post-slug/`, etc.) so every URL serves HTML immediately. No JS execution required.
+
+It also injects per-route Open Graph tags. Each blog post gets its own title, description, and image in the meta tags, so link previews on Twitter, LinkedIn, Slack, etc. show the correct content.
+
+```js
+function injectOgTags(html, { title, description, url, image }) {
+  html = html.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+  html = html.replace(
+    /<meta property="og:title" content="[^"]*"/,
+    `<meta property="og:title" content="${title}"`
+  );
+  // ... same for description, url, image
+  return html;
+}
+```
+
+**2. Sitemap plugin.** Auto-generates `sitemap.xml` and `rss.xml` by scanning the MDX posts directory. Add a new post, rebuild, and it's in the sitemap. No manual updates.
+
+**3. OG image plugin.** Generates a branded Open Graph image for each blog post using `@resvg/resvg-js`. Each post gets a PNG with the title overlaid on a gradient background. Fully automated.
+
+These three plugins turn a client-side SPA into a statically-generated site with full SEO coverage. Crawlers see HTML. Link previews work. RSS readers get a feed. All without a framework like Next.js or Astro.
+
+<svg viewBox="0 0 720 180" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  {/* build pipeline */}
+  <rect x="60" y="70" width="120" height="50" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="120" y="100" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">vite build</text>
+  <line x1="180" y1="95" x2="220" y2="95" stroke="var(--color-border)" strokeWidth="1.5" markerEnd="url(#arr1)"/>
+  <defs><marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--color-border)"/></marker></defs>
+  <rect x="220" y="30" width="100" height="40" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1.2"/>
+  <text x="270" y="55" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">prerender</text>
+  <rect x="220" y="80" width="100" height="40" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1.2"/>
+  <text x="270" y="105" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">sitemap</text>
+  <rect x="220" y="130" width="100" height="40" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1.2"/>
+  <text x="270" y="155" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">og-image</text>
+  <line x1="320" y1="50" x2="360" y2="95" stroke="var(--color-border)" strokeWidth="1.5" markerEnd="url(#arr1)"/>
+  <line x1="320" y1="100" x2="360" y2="95" stroke="var(--color-border)" strokeWidth="1.5" markerEnd="url(#arr1)"/>
+  <line x1="320" y1="150" x2="360" y2="95" stroke="var(--color-border)" strokeWidth="1.5" markerEnd="url(#arr1)"/>
+  <rect x="360" y="70" width="140" height="50" rx="6" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="430" y="92" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">dist/</text>
+  <text x="430" y="107" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">static HTML + assets</text>
+  <line x1="500" y1="95" x2="540" y2="95" stroke="var(--color-border)" strokeWidth="1.5" markerEnd="url(#arr1)"/>
+  <rect x="540" y="70" width="120" height="50" rx="6" fill="var(--color-accent)" opacity="0.25" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="600" y="100" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">deploy</text>
+</svg>
+
+## Design tokens: single source of truth
+
+Every color, spacing value, font size, and border radius lives in `src/styles/tokens.css` as CSS custom properties. Components never hardcode values.
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  {/* title */}
+  <text x="360" y="30" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">Color Palette</text>
+  {/* palette swatches */}
+  <rect x="60" y="50" width="120" height="80" rx="8" fill="#EE4540"/>
+  <text x="120" y="150" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">coral</text>
+  <text x="120" y="165" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">#EE4540</text>
+  <rect x="210" y="50" width="120" height="80" rx="8" fill="#C72C41"/>
+  <text x="270" y="150" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">crimson</text>
+  <text x="270" y="165" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">#C72C41</text>
+  <rect x="360" y="50" width="120" height="80" rx="8" fill="#801336"/>
+  <text x="420" y="150" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">burgundy</text>
+  <text x="420" y="165" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">#801336</text>
+  <rect x="510" y="50" width="90" height="80" rx="8" fill="#510A32"/>
+  <text x="555" y="150" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">plum</text>
+  <text x="555" y="165" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">#510A32</text>
+  <rect x="630" y="50" width="60" height="80" rx="8" fill="#2D142C"/>
+  <text x="660" y="150" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">deep</text>
+  <text x="660" y="165" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">#2D142C</text>
+  {/* gradient example */}
+  <text x="360" y="200" textAnchor="middle" fontSize="12" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">Accent Gradient</text>
+  <defs>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#EE4540"/>
+      <stop offset="100%" stopColor="#C72C41"/>
+    </linearGradient>
+  </defs>
+  <rect x="60" y="215" width="600" height="50" rx="8" fill="url(#accentGrad)"/>
+  <text x="360" y="245" textAnchor="middle" fontSize="11" fill="#ffffff" fontFamily="monospace" fontWeight="600">linear-gradient(135deg, coral to crimson)</text>
+</svg>
+
+```css
+:root {
+  --color-accent: #c72c41;
+  --color-bg: #fdf6f0;
+  --color-text: #2d142c;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --radius-md: 10px;
+}
+
+[data-theme="dark"] {
+  --color-bg: #1c031b;
+  --color-text: #fdf6f0;
+}
+```
+
+Every SCSS file references these tokens. Want to change the accent color? One line. Want to adjust spacing? One file. No find-and-replace across 40 components.
+
+This also makes theming trivial. Light and dark modes are just different values for the same variables. The components don't care.
+
+## Path aliases: clean imports
+
+Instead of this:
+
+```js
+import { Button } from '../../../site-container/button/Button';
+import { personalInfo } from '../../../data/personal';
+```
+
+I use this:
+
+```js
+import { Button } from '@components/button/Button';
+import { personalInfo } from '@data';
+```
+
+Configured in `vite.config.js`:
+
+```js
+resolve: {
+  alias: {
+    '@': fileURLToPath(new URL('./src', import.meta.url)),
+    '@components': fileURLToPath(new URL('./src/site-container', import.meta.url)),
+    '@data': fileURLToPath(new URL('./src/data', import.meta.url)),
+    '@features': fileURLToPath(new URL('./src/features', import.meta.url)),
+  },
+}
+```
+
+Cleaner, easier to refactor, no relative path hell.
+
+## What I'd do differently
+
+**Custom plugins are fragile.** The prerender and sitemap plugins work, but they're tightly coupled to the project structure. If I move the posts directory or change the frontmatter format, they break. A more robust solution would use a plugin API or a separate config file.
+
+**MDX has sharp edges.** MDX 3 is powerful, but the integration with Vite and React Router required careful setup. The two-tier loading pattern works, but it's not obvious from the docs. I spent a day debugging why eager imports weren't code-splitting properly.
+
+**Could have used a framework.** Next.js or Astro would have handled SEO, static generation, and routing out of the box. But building custom plugins taught me more about how these tools work under the hood, and I got exactly the behavior I wanted without framework constraints.
+
+## What worked
+
+**Two-tier loading was the right call.** The blog index is instant, and individual posts load fast. This pattern scales to hundreds of posts without degrading performance.
+
+**Flash-free theming is a detail that matters.** Users notice. The blocking script is 5 lines of code and eliminates a jarring visual bug.
+
+**Static generation without a framework is viable.** Custom Vite plugins gave me full control over the build output. I got the SEO benefits of static generation without the constraints of a framework.
+
+**Design tokens make iteration fast.** Changing the color scheme or spacing scale is a one-file edit. This paid off when I redesigned the blog layout halfway through the project.
+
+That's my take on building a portfolio that's fast, maintainable, and SEO-friendly. The patterns here (two-tier loading, flash-free theming, custom build plugins, design tokens) work beyond portfolios. I've used variations of them in production apps at scale. Thanks and peace.

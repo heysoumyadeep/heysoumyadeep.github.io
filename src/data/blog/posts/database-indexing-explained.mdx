@@ -1,14 +1,12 @@
 export const frontmatter = {
   title: "Ever Wondered How Indexing Works in Databases?",
   slug: "database-indexing-explained",
-  date: "May 03, 2026",
+  date: "Dec 03, 2025",
   readTime: "9 min",
   excerpt: "B-Trees, hash indexes, LSM trees, and what your database is really doing when you CREATE INDEX.",
   author: "Soumyadeep Pradhan",
   tags: ["databases", "backend", "performance", "deep-dive"]
 }
-
-# Ever Wondered How Indexing Works in Databases?
 
 Every backend engineer has had this moment. A query that ran in 40 milliseconds in dev is now taking 30 seconds in production. You add an index. Suddenly it's back to 40 milliseconds. Feels like magic.
 
@@ -77,7 +75,7 @@ A hundred million rows in **four disk reads**. That's why your `WHERE id = ?` qu
 B+Trees go one step further. The leaf nodes are linked together in a sorted linked list.
 
 ```
-[10, 12, 15] → [18, 20, 22] → [27, 29, 31] → ...
+[10, 12, 15] -> [18, 20, 22] -> [27, 29, 31] -> ...
 ```
 
 Once you find your starting point, you just walk the list. That's why this query is fast on a B-Tree:
@@ -95,7 +93,7 @@ Range scans, `ORDER BY`, `LIMIT` with sorting: all of these lean on this leaf-le
 A hash index is simpler. You hash the key, look it up in a hash table, and get the row pointer.
 
 ```
-hash("a@b.com") → bucket 47 → row at page 12, offset 8192
+hash("a@b.com") -> bucket 47 -> row at page 12, offset 8192
 ```
 
 Lookups are O(1) instead of O(log n). So why aren't they the default?
@@ -114,19 +112,19 @@ If your workload is write-heavy (think time-series data, event logs, analytics) 
 This is what powers Cassandra, RocksDB, LevelDB, ScyllaDB, and the storage layer of many modern databases.
 
 ```
-Writes →  [ Memtable (in RAM, sorted) ]
-              │
-              │  flush when full
-              ▼
-          [ SSTable L0 ]  ← immutable, sorted on disk
+Writes ->  [ Memtable (in RAM, sorted) ]
+              |
+              |  flush when full
+              v
+          [ SSTable L0 ]  <- immutable, sorted on disk
           [ SSTable L0 ]
           [ SSTable L0 ]
-              │
-              │  compaction merges & sorts
-              ▼
+              |
+              |  compaction merges & sorts
+              v
           [ SSTable L1 ] [ SSTable L1 ] ...
-              │
-              ▼
+              |
+              v
           [ SSTable L2 ] ...
 ```
 
@@ -168,13 +166,13 @@ SELECT status, total FROM orders WHERE user_id = 42;
 ```sql
 CREATE INDEX idx_orders_user_date ON orders(user_id, created_at);
 
--- ✅ Uses the index
+-- Uses the index
 WHERE user_id = 42 AND created_at > '2026-01-01'
 
--- ✅ Uses the index (just the user_id part)
+-- Uses the index (just the user_id part)
 WHERE user_id = 42
 
--- ❌ Can't use the index efficiently
+-- Can't use the index efficiently
 WHERE created_at > '2026-01-01'
 ```
 
@@ -234,8 +232,4 @@ Index Only Scan using idx_users_email_covering on users
 
 Best case. The query was answered from the index alone.
 
-## Wrapping up
-
-An index is a tax on writes that you pay for cheaper reads. Pick the structure that matches your workload, the columns that match your queries, and the maintenance you can actually keep up with.
-
-Next time a query goes from 30 seconds to 30 milliseconds, you'll know exactly which sorted structure just saved your evening.
+That's my take on database indexing. An index is a tax on writes that you pay for cheaper reads. Pick the structure that matches your workload, the columns that match your queries, and the maintenance you can actually keep up with. Next time a query goes from 30 seconds to 30 milliseconds, you'll know exactly which sorted structure just saved your evening. Thanks and peace.

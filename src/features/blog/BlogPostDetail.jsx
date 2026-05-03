@@ -84,7 +84,7 @@ function BlogFeedback({ slug, title }) {
         </h3>
         <p className="blog-feedback__lede">
           Spotted something off, have a question, or want to add a point?
-          Drop it here — I read every note.
+          Drop it here - I read every note.
         </p>
 
         {status === 'sent' ? (
@@ -98,7 +98,7 @@ function BlogFeedback({ slug, title }) {
               <input
                 type="email"
                 className={`blog-feedback__email-input${emailErr ? ' has-error' : ''}`}
-                placeholder="Your email (optional — if you'd like a reply)"
+                placeholder="Your email (optional - if you'd like a reply)"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setEmailErr(''); }}
                 aria-label="Your email address (optional)"
@@ -240,19 +240,11 @@ export default function BlogPostDetail({ slug }) {
 
                 <p className="blog-post__excerpt">{post.excerpt}</p>
 
-                {post.tags?.length > 0 && (
-                  <ul className="blog-post__tags" aria-label="Post tags">
-                    {post.tags.map((tag) => (
-                      <li key={tag} className="blog-post__tag"><span>{tag}</span></li>
-                    ))}
-                  </ul>
-                )}
-
                 <div className="blog-post__body" ref={bodyRef}>
                   {post.Component && (
                     post.isPremium
                       ? (
-                        <PremiumGate slug={slug}>
+                        <PremiumGate slug={slug} tags={post.tags}>
                           <post.Component />
                         </PremiumGate>
                       )
@@ -265,7 +257,7 @@ export default function BlogPostDetail({ slug }) {
                 <p className="blog-post__missing-code mono">404</p>
                 <h1 className="blog-post__missing-title">No blog at this URL.</h1>
                 <p className="blog-post__missing-lede">
-                  That post doesn't exist — it may have been moved or the URL is off.
+                  That post doesn't exist. It may have been moved or the URL is off.
                 </p>
                 <Link to="/blog" className="blog-post__missing-btn">
                   Browse all articles →
@@ -273,7 +265,19 @@ export default function BlogPostDetail({ slug }) {
               </div>
             )}
 
-            {/* Feedback section — always shown at the bottom */}
+            {/* Tags - shown after body for non-premium posts only; premium posts show tags after unlock */}
+            {post?.tags?.length > 0 && !post.isPremium && (
+              <div className="blog-post__tags-footer">
+                <span className="blog-post__tags-label">Tags used here:</span>
+                <ul className="blog-post__tags" aria-label="Post tags">
+                  {post.tags.map((tag) => (
+                    <li key={tag} className="blog-post__tag"><span>{tag}</span></li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Feedback section - always shown at the bottom */}
             {post && <BlogFeedback slug={slug} title={post.title} />}
           </article>
         </div>

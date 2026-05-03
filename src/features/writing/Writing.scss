@@ -23,6 +23,7 @@
   -webkit-text-fill-color: transparent;
   transition: gap var(--duration-hover) var(--ease);
 
+  svg { color: var(--color-accent); -webkit-text-fill-color: initial; }
   &:hover { gap: 12px; }
 }
 
@@ -106,4 +107,6 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
   transition: gap var(--duration-hover) var(--ease);
+
+  svg { color: var(--color-accent); -webkit-text-fill-color: initial; }
 }

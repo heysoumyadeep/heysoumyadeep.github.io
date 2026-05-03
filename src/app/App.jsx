@@ -4,6 +4,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from '@hooks';
 import { ROUTES } from '@config/site';
 import Loader from './Loader';
+import NavigationLoader from './NavigationLoader';
+import ScrollToTop from './ScrollToTop';
 
 // Lazy-load pages so each route is a separate chunk
 const HomePage = lazy(() => import('@pages/HomePage'));
@@ -22,7 +24,11 @@ export default function App() {
     <HelmetProvider>
       <ThemeProvider>
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ScrollToTop />
+          {/* Shows loader on first-load chunk fetches */}
           <Suspense fallback={<Loader />}>
+            {/* Shows loader on subsequent navigations between cached pages */}
+            <NavigationLoader />
             <Routes>
               <Route path={ROUTES.HOME} element={<HomePage />} />
               <Route path={ROUTES.BLOG} element={<BlogPage />} />
