@@ -1,4 +1,4 @@
-# Soumyadeep Pradhan — Portfolio
+# Soumyadeep's Portfolio
 
 Personal portfolio and blog built with React, Vite, MDX, and SCSS.
 
