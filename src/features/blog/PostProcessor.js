@@ -36,6 +36,5 @@ export function buildPost(mod, filePath) {
     author: fm.author != null ? String(fm.author) : '',
     tags: Array.isArray(fm.tags) ? fm.tags.map(String) : [],
     Component: mod.default,
-    faqs: Array.isArray(mod.faqs) ? mod.faqs : [],
   };
 }

@@ -42,7 +42,7 @@ export const personSchema = {
   name: 'Soumyadeep Pradhan',
   alternateName: ['Soumya Pradhan', 'Soumya', 'soumyadeep', 'heysoumyadeep'],
   url: BASE_URL,
-  image: `${BASE_URL}/og-image.svg`,
+  image: `${BASE_URL}/og-image.png`,
   jobTitle: personalInfo.role,
   worksFor: {
     '@type': 'Organization',
@@ -115,7 +115,7 @@ export function blogPostingSchema(post) {
     },
     image: {
       '@type': 'ImageObject',
-      url: `${BASE_URL}/og-image.svg`,
+      url: `${BASE_URL}/og-image.png`,
       width: 1200,
       height: 630,
     },

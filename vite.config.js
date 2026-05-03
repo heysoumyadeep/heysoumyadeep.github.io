@@ -4,6 +4,7 @@ import mdx from '@mdx-js/rollup';
 import federation from 'vite-plugin-federation';
 import sitemapPlugin from './scripts/vite-plugin-sitemap.js';
 import prerenderPlugin from './scripts/vite-plugin-prerender.js';
+import ogImagePlugin from './scripts/vite-plugin-og-image.js';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig(({ command }) => ({
@@ -30,8 +31,9 @@ export default defineConfig(({ command }) => ({
         },
       }),
     ] : []),
-    // Sitemap + prerender always run on build (needed for GitHub Pages SPA routing)
+    // Sitemap + prerender + OG image always run on build
     ...(command === 'build' ? [
+      ogImagePlugin(),
       sitemapPlugin(),
       prerenderPlugin(),
     ] : []),

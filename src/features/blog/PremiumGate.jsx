@@ -270,7 +270,7 @@ export default function PremiumGate({ children, slug }) {
           className="premium-gate__passcode-link"
           onClick={() => setShowPasscode(true)}
         >
-          Already bought a coffee? Enter code
+          Already bought a coffee?
         </button>
       </div>
 

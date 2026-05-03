@@ -7,13 +7,25 @@
     <language>en-us</language>
     <managingEditor>contact@soumya.io (Soumyadeep Pradhan)</managingEditor>
     <webMaster>contact@soumya.io (Soumyadeep Pradhan)</webMaster>
-    <lastBuildDate>Mon, 21 Apr 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 03 May 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://soumya.io/rss.xml" rel="self" type="application/rss+xml" />
     <image>
-      <url>https://soumya.io/og-image.svg</url>
+      <url>https://soumya.io/og-image.png</url>
       <title>Soumyadeep Pradhan - Blog</title>
       <link>https://soumya.io/blog</link>
     </image>
+    <item>
+      <title>Ever Wondered How Indexing Works in Databases?</title>
+      <link>https://soumya.io/blog/database-indexing-explained</link>
+      <guid isPermaLink="true">https://soumya.io/blog/database-indexing-explained</guid>
+      <pubDate>Sat, 03 May 2026 00:00:00 +0000</pubDate>
+      <description>B-Trees, hash indexes, LSM trees, and what your database is really doing when you CREATE INDEX.</description>
+      <author>contact@soumya.io (Soumyadeep Pradhan)</author>
+      <category>databases</category>
+      <category>backend</category>
+      <category>performance</category>
+      <category>deep-dive</category>
+    </item>
     <item>
       <title>Building CodeScope: Visualizing Codebases with AI</title>
       <link>https://soumya.io/blog/building-codescope</link>

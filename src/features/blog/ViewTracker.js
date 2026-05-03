@@ -1,76 +1,88 @@
 /**
  * ViewTracker.js
  *
- * Tracks per-post view counts using localStorage.
- * All counts are stored under a single key "blog_views" as a JSON object
- * keyed by post slug: { [slug]: number }
+ * Tracks per-post view counts using Supabase (Postgres).
+ * Table schema:
+ *   post_views (slug text primary key, views integer default 0, updated_at timestamptz)
  *
- * All localStorage access is wrapped in try/catch:
- *   - getViews returns 0 on any error
- *   - incrementView is a silent no-op on any error
- * If JSON.parse fails on the stored value, the entry is reset to {} and
- * processing continues.
+ * Uses the anon/public key — only view counts are stored, no sensitive data.
+ * RLS policies on the table restrict operations to select + upsert only.
+ *
+ * Required env vars:
+ *   VITE_SUPABASE_URL        – Project URL from Supabase → Settings → API
+ *   VITE_SUPABASE_ANON_KEY   – anon public key from Supabase → Settings → API
  */
 
-const STORAGE_KEY = 'blog_views';
+import { createClient } from '@supabase/supabase-js';
 
-/**
- * Read the current view store from localStorage.
- * Returns an empty object if the key is absent, unreadable, or unparseable.
- * @returns {{ [slug: string]: number }}
- */
-function readStore() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw === null) return {};
-  try {
-    const parsed = JSON.parse(raw);
-    // Ensure the parsed value is a plain object; if not, treat as corrupt
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      return {};
-    }
-    return parsed;
-  } catch {
-    // JSON.parse failed — reset to empty
-    return {};
-  }
-}
+const supabaseUrl   = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnon  = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-/**
- * Write the view store back to localStorage.
- * @param {{ [slug: string]: number }} store
- */
-function writeStore(store) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+// Lazily initialise — returns null if env vars are missing (dev without config)
+let _client = null;
+function getClient() {
+  if (_client) return _client;
+  if (!supabaseUrl || !supabaseAnon) return null;
+  _client = createClient(supabaseUrl, supabaseAnon);
+  return _client;
 }
 
 /**
  * Return the current view count for the given slug.
- * Returns 0 if the slug has no recorded views or if localStorage is unavailable.
+ * Returns 0 if the row doesn't exist yet or on any error.
  * @param {string} slug
- * @returns {number}
+ * @returns {Promise<number>}
  */
-export function getViews(slug) {
+export async function getViews(slug) {
   try {
-    const store = readStore();
-    const count = store[slug];
-    return typeof count === 'number' ? count : 0;
+    const client = getClient();
+    if (!client) return 0;
+
+    const { data, error } = await client
+      .from('post_views')
+      .select('views')
+      .eq('slug', slug)
+      .single();
+
+    if (error || !data) return 0;
+    return data.views ?? 0;
   } catch {
     return 0;
   }
 }
 
 /**
- * Increment the view count for the given slug by 1.
- * If localStorage is unavailable or any error occurs, this is a silent no-op.
+ * Increment the view count for the given slug by 1 and return the new count.
+ * Uses an upsert + Postgres function for an atomic increment.
+ * Returns 0 on any error.
  * @param {string} slug
+ * @returns {Promise<number>}
  */
-export function incrementView(slug) {
+export async function incrementView(slug) {
   try {
-    const store = readStore();
-    const current = typeof store[slug] === 'number' ? store[slug] : 0;
-    store[slug] = current + 1;
-    writeStore(store);
+    const client = getClient();
+    if (!client) return 0;
+
+    // Upsert: insert row if it doesn't exist, otherwise increment views by 1
+    const { data, error } = await client.rpc('increment_post_view', { post_slug: slug });
+
+    if (error) {
+      // Fallback: if the RPC doesn't exist yet, do a manual upsert
+      const { data: upserted, error: upsertError } = await client
+        .from('post_views')
+        .upsert(
+          { slug, views: 1, updated_at: new Date().toISOString() },
+          { onConflict: 'slug', ignoreDuplicates: false }
+        )
+        .select('views')
+        .single();
+
+      if (upsertError || !upserted) return 0;
+      return upserted.views ?? 0;
+    }
+
+    return typeof data === 'number' ? data : 0;
   } catch {
-    // Silent no-op on error
+    return 0;
   }
 }

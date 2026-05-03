@@ -297,14 +297,48 @@
 .blog-post__missing {
   text-align: center;
   padding: var(--space-9) 0;
+}
 
-  h1 {
-    font-size: 40px;
-    margin-bottom: var(--space-3);
-    color: var(--color-text);
+.blog-post__missing-code {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-3);
+}
+
+.blog-post__missing-title {
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+}
+
+.blog-post__missing-lede {
+  font-size: 16px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: var(--space-6);
+}
+
+.blog-post__missing-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  background: var(--gradient-accent);
+  color: #ffffff;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 500;
+  transition: opacity var(--duration-hover) var(--ease),
+              transform var(--duration-hover) var(--ease);
+
+  &:hover {
+    opacity: 0.88;
+    transform: translateY(-2px);
   }
-
-  p { color: var(--color-text-muted); }
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────────

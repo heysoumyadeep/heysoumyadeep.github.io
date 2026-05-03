@@ -4,53 +4,11 @@ import emailjs from '@emailjs/browser';
 import SEO from '@/seo/SEO';
 import { blogPostingSchema, breadcrumbSchema, websiteSchema } from '@/seo/schemas';
 import { SITE_CONFIG } from '@config/site';
+import { personalInfo } from '@data';
 import { getPostBySlug } from './PostRepository.js';
-import { getViews, incrementView } from './ViewTracker.js';
+import { incrementView } from './ViewTracker.js';
 import PremiumGate from './PremiumGate.jsx';
 import './BlogPostDetail.scss';
-
-// ── Table of Contents ────────────────────────────────────────────────────────
-
-function TableOfContents({ headings, onClose }) {
-  if (!headings.length) return null;
-  return (
-    <nav className="blog-toc" aria-label="Table of contents">
-      <div className="blog-toc__header">
-        <span className="blog-toc__title">Contents</span>
-        <button
-          type="button"
-          className="blog-toc__hide"
-          onClick={onClose}
-          aria-label="Hide table of contents"
-        >
-          Hide
-        </button>
-      </div>
-      <ol className="blog-toc__list">
-        {headings.map((h) => (
-          <li key={h.id} className={`blog-toc__item blog-toc__item--h${h.level}`}>
-            <a href={`#${h.id}`}>{h.text}</a>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
-
-// Extract h2/h3 headings from the rendered DOM after the MDX component mounts
-function useHeadings(bodyRef) {
-  const [headings, setHeadings] = useState([]);
-  useEffect(() => {
-    if (!bodyRef.current) return;
-    const els = bodyRef.current.querySelectorAll('h2, h3');
-    const items = Array.from(els).map((el, i) => {
-      if (!el.id) el.id = `heading-${i}`;
-      return { id: el.id, text: el.textContent, level: parseInt(el.tagName[1], 10) };
-    });
-    setHeadings(items);
-  }, [bodyRef]);
-  return headings;
-}
 
 // ── Feedback / suggestions form ──────────────────────────────────────────────
 
@@ -171,7 +129,7 @@ function BlogFeedback({ slug, title }) {
               </button>
               <span className="blog-feedback__hint">
                 Or{' '}
-                <a href="/#contact" className="blog-feedback__contact-link">
+                <a href={`mailto:${personalInfo.email}`} className="blog-feedback__contact-link">
                   contact me directly
                 </a>
               </span>
@@ -200,9 +158,7 @@ export default function BlogPostDetail({ slug }) {
   const [post, setPost] = useState(null);
   const [views, setViews] = useState(0);
   const [expanded, setExpanded] = useState(false);
-  const [tocVisible, setTocVisible] = useState(true);
   const bodyRef = useRef(null);
-  const headings = useHeadings(bodyRef);
 
   // Guard against StrictMode double-invoke and fast navigation
   const viewTrackedRef = useRef(false);
@@ -210,12 +166,13 @@ export default function BlogPostDetail({ slug }) {
   useEffect(() => {
     viewTrackedRef.current = false; // reset on slug change
     getPostBySlug(slug)
-      .then((p) => {
+      .then(async (p) => {
         setPost(p);
         if (p && !viewTrackedRef.current) {
           viewTrackedRef.current = true;
-          incrementView(slug);
-          setViews(getViews(slug));
+          // incrementView returns the new count directly from Redis
+          const newCount = await incrementView(slug);
+          setViews(newCount);
         }
       })
       .catch(console.error);
@@ -291,23 +248,6 @@ export default function BlogPostDetail({ slug }) {
                   </ul>
                 )}
 
-                {/* Table of contents — shown when headings exist */}
-                {tocVisible && headings.length > 0 && (
-                  <TableOfContents
-                    headings={headings}
-                    onClose={() => setTocVisible(false)}
-                  />
-                )}
-                {!tocVisible && headings.length > 0 && (
-                  <button
-                    type="button"
-                    className="blog-toc__show"
-                    onClick={() => setTocVisible(true)}
-                  >
-                    Show contents
-                  </button>
-                )}
-
                 <div className="blog-post__body" ref={bodyRef}>
                   {post.Component && (
                     post.isPremium
@@ -322,8 +262,14 @@ export default function BlogPostDetail({ slug }) {
               </>
             ) : (
               <div className="blog-post__missing">
-                <h1>Post not found</h1>
-                <p>That article doesn&rsquo;t exist, or hasn&rsquo;t been written yet.</p>
+                <p className="blog-post__missing-code mono">404</p>
+                <h1 className="blog-post__missing-title">No blog at this URL.</h1>
+                <p className="blog-post__missing-lede">
+                  That post doesn't exist — it may have been moved or the URL is off.
+                </p>
+                <Link to="/blog" className="blog-post__missing-btn">
+                  Browse all articles →
+                </Link>
               </div>
             )}
 
