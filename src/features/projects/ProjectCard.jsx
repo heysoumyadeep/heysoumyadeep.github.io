@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { GithubIcon, ExternalLinkIcon } from '@components';
 import './ProjectCard.scss';
 
-export default function ProjectCard({ project }) {
+const ProjectCard = memo(function ProjectCard({ project }) {
   const cardHref = project.github || project.link || '#';
 
   return (
@@ -49,4 +50,6 @@ export default function ProjectCard({ project }) {
       </ul>
     </a>
   );
-}
+});
+
+export default ProjectCard;

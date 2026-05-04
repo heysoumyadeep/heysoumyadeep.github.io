@@ -38,7 +38,7 @@ function getPostSlugs(postsDir) {
  * Returns { title, excerpt, date, tags } or null if not found.
  */
 function extractFrontmatter(content) {
-  const block = content.match(/export const frontmatter\s*=\s*\{([\s\S]*?)\};/);
+  const block = content.match(/export const frontmatter\s*=\s*\{([\s\S]*?)\};?/);
   if (!block) return null;
 
   const get = (key) => {
@@ -105,6 +105,7 @@ function injectOgTags(html, { title, description, url, image, type = 'article' }
     'og:description': safeDescription,
     'og:url':         safeUrl,
     'og:image':       safeImage,
+    'og:image:secure_url': safeImage,
   };
 
   for (const [prop, value] of Object.entries(ogReplacements)) {

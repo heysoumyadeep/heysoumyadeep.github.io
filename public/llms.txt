@@ -52,6 +52,15 @@ Suite of internal tools for release management and observability.
 
 ## Blog Posts (full text available at URLs below)
 
+### How I built my portfolio: Architecture decisions that matter
+- URL: https://soumya.io/blog/building-my-portfolio
+- Date: May 4, 2026
+- Read time: 9 minutes
+- Tags: react, vite, architecture, performance, frontend
+- Summary: Technical breakdown of building a fast, maintainable portfolio with two-tier MDX loading,
+  flash-free theming, custom Vite plugins for SEO (prerender, sitemap, OG images), design tokens,
+  and performance optimizations including memory leak fixes, race condition guards, and scroll throttling.
+
 ### Building CodeScope: Visualizing Codebases with AI
 - URL: https://soumya.io/blog/building-codescope
 - Date: April 21, 2026

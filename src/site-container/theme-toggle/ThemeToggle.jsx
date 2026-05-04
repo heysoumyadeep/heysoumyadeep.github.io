@@ -17,10 +17,10 @@ export default function ThemeToggle() {
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
-      <span className={`theme-toggle__icon ${isDark ? 'is-hidden' : ''}`}>
+      <span className={`theme-toggle__icon ${!isDark ? 'is-hidden' : ''}`}>
         <SunIcon />
       </span>
-      <span className={`theme-toggle__icon ${!isDark ? 'is-hidden' : ''}`}>
+      <span className={`theme-toggle__icon ${isDark ? 'is-hidden' : ''}`}>
         <MoonIcon />
       </span>
     </button>

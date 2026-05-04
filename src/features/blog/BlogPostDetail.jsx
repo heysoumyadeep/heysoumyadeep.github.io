@@ -164,18 +164,22 @@ export default function BlogPostDetail({ slug }) {
   const viewTrackedRef = useRef(false);
 
   useEffect(() => {
+    let mounted = true;
     viewTrackedRef.current = false; // reset on slug change
+
     getPostBySlug(slug)
       .then(async (p) => {
+        if (!mounted) return;
         setPost(p);
         if (p && !viewTrackedRef.current) {
           viewTrackedRef.current = true;
-          // incrementView returns the new count directly from Redis
           const newCount = await incrementView(slug);
-          setViews(newCount);
+          if (mounted) setViews(newCount);
         }
       })
       .catch(console.error);
+
+    return () => { mounted = false; };
   }, [slug]);
 
   const isoDate = post?.date ? new Date(post.date).toISOString() : undefined;
@@ -187,6 +191,7 @@ export default function BlogPostDetail({ slug }) {
           title={post.title}
           description={post.excerpt}
           canonical={`/blog/${slug}`}
+          image={`${SITE_CONFIG.url}/og-images/${slug}.png`}
           imageAlt={`${post.title} - ${post.author}`}
           type="article"
           article={{ publishedTime: isoDate, author: post.author, tags: post.tags }}

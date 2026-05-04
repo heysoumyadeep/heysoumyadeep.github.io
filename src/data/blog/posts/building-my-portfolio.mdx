@@ -1,6 +1,6 @@
 export const frontmatter = {
   title: "How I built my portfolio: Architecture decisions that matter",
-  date: "May 04, 2026",
+  date: "2026-05-04",
   readTime: "9 min",
   excerpt: "Two-tier loading, flash-free theming, and custom Vite plugins. A technical breakdown of the patterns that make this site fast and maintainable.",
   author: "Soumyadeep Pradhan",
@@ -265,6 +265,24 @@ Cleaner, easier to refactor, no relative path hell.
 
 **Could have used a framework.** Next.js or Astro would have handled SEO, static generation, and routing out of the box. But building custom plugins taught me more about how these tools work under the hood, and I got exactly the behavior I wanted without framework constraints.
 
+## Performance optimizations that actually mattered
+
+After the initial build, I ran a full audit and found several performance issues hiding in plain sight. Here's what I fixed:
+
+**Memory leak in scroll reveal.** The IntersectionObserver cleanup was inside a `requestAnimationFrame` callback. If a component unmounted before the rAF fired, the observer never disconnected. Fixed by creating the observer upfront so cleanup always runs.
+
+**Race conditions on navigation.** Fast navigation between blog posts caused state updates on unmounted components. Added a mounted flag to guard async operations.
+
+**Unnecessary re-renders.** Project cards re-rendered on every parent update, restarting animations. Wrapped them in `React.memo` to prevent this.
+
+**Scroll jank.** The navbar scroll listener fired on every scroll event, causing layout thrashing. Throttled it with `requestAnimationFrame` — now it's 60fps smooth.
+
+**Search lag.** Blog search filtered on every keystroke. Added a 300ms debounce so it only filters after you stop typing.
+
+**Blocking scripts.** The Buy Me a Coffee widget loaded synchronously, blocking page render. Made it async.
+
+These weren't architectural changes — just careful attention to how React actually works. The result: no memory leaks, smooth scrolling, instant search, and faster page loads.
+
 ## What worked
 
 **Two-tier loading was the right call.** The blog index is instant, and individual posts load fast. This pattern scales to hundreds of posts without degrading performance.
@@ -275,4 +293,6 @@ Cleaner, easier to refactor, no relative path hell.
 
 **Design tokens make iteration fast.** Changing the color scheme or spacing scale is a one-file edit. This paid off when I redesigned the blog layout halfway through the project.
 
-That's my take on building a portfolio that's fast, maintainable, and SEO-friendly. The patterns here (two-tier loading, flash-free theming, custom build plugins, design tokens) work beyond portfolios. I've used variations of them in production apps at scale. Thanks and peace.
+**Performance audits catch real bugs.** The memory leak and race conditions weren't obvious during development. Running a thorough audit after launch found issues that would have caused problems at scale.
+
+That's my take on building a portfolio that's fast, maintainable, and SEO-friendly. The patterns here (two-tier loading, flash-free theming, custom build plugins, design tokens, performance-first React) work beyond portfolios. I've used variations of them in production apps at scale. Thanks and peace.

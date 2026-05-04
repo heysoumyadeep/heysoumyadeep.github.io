@@ -115,7 +115,7 @@ export function blogPostingSchema(post) {
     },
     image: {
       '@type': 'ImageObject',
-      url: `${BASE_URL}/og-image.png`,
+      url: `${BASE_URL}/og-images/${post.slug}.png`,
       width: 1200,
       height: 630,
     },

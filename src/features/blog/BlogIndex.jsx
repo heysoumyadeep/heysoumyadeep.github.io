@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '@/seo/SEO';
 import { blogSchema, websiteSchema } from '@/seo/schemas';
@@ -8,20 +8,31 @@ import './BlogIndex.scss';
 export default function BlogIndex() {
   const [posts, setPosts] = useState([]);
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllPosts().then(setPosts).catch(console.error);
+    getAllPosts()
+      .then(setPosts)
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [...posts]; // spread to ensure new reference on clear
+    const q = debouncedQuery.trim().toLowerCase();
+    if (!q) return [...posts];
     return posts.filter(
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.excerpt.toLowerCase().includes(q)
     );
-  }, [posts, query]);
+  }, [posts, debouncedQuery]);
 
   return (
     <>
@@ -54,9 +65,11 @@ export default function BlogIndex() {
             </div>
           </header>
 
-          {filtered.length === 0 ? (
+          {loading ? (
+            <p className="blog-index__loading">Loading articles...</p>
+          ) : filtered.length === 0 ? (
             <p className="blog-index__empty">
-              No articles match &ldquo;{query}&rdquo;. Try a different search.
+              {query ? `No articles match "${query}". Try a different search.` : 'No articles yet.'}
             </p>
           ) : (
             <ul className="blog-index__list">

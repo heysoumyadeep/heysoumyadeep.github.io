@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
+import rehypeHighlight from 'rehype-highlight';
 import sitemapPlugin from './scripts/vite-plugin-sitemap.js';
 import prerenderPlugin from './scripts/vite-plugin-prerender.js';
 import ogImagePlugin from './scripts/vite-plugin-og-image.js';
@@ -8,7 +9,12 @@ import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig(({ command }) => ({
   plugins: [
-    { enforce: 'pre', ...mdx() },
+    { 
+      enforce: 'pre', 
+      ...mdx({
+        rehypePlugins: [rehypeHighlight],
+      })
+    },
     react(),
     // Sitemap + prerender + OG image always run on build
     ...(command === 'build' ? [

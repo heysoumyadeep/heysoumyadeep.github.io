@@ -27,7 +27,7 @@ export default function App() {
           <ScrollToTop />
           {/* Shows loader on first-load chunk fetches */}
           <Suspense fallback={<Loader />}>
-            {/* Shows loader on subsequent navigations between cached pages */}
+            {/* Shows progress bar on subsequent navigations between cached pages */}
             <NavigationLoader />
             <Routes>
               <Route path={ROUTES.HOME} element={<HomePage />} />

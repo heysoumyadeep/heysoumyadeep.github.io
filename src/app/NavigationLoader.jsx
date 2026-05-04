@@ -44,7 +44,7 @@ export default function NavigationLoader() {
           timers.current.push(
             setTimeout(() => setPhase('idle'), 400)
           );
-        }, 420) // slightly longer than the fill transition
+        }, 600) // longer fill — covers slower mobile render times
       );
     });
 
