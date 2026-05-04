@@ -1,11 +1,30 @@
 export const frontmatter = {
   title: "Ever wondered how indexing works in databases?",
-  slug: "database-indexing-explained",
   date: "2025-12-03",
   readTime: "9 min",
   excerpt: "B-Trees, hash indexes, LSM trees, and what your database is really doing when you CREATE INDEX.",
   author: "Soumyadeep Pradhan",
   tags: ["databases", "backend", "performance", "deep-dive"]
+}
+
+export function PreviewImage() {
+  return (
+    <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'100%',display:'block'}}>
+      <defs><marker id="pi-arrow1" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L10,4 z" fill="var(--color-accent)"/></marker></defs>
+      <text x="360" y="30" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">query performance: before and after indexing</text>
+      <text x="180" y="65" textAnchor="middle" fontSize="12" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">without index</text>
+      <rect x="60" y="80" width="240" height="60" rx="6" fill="var(--color-border)" opacity="0.4" stroke="var(--color-border)" strokeWidth="1.2"/>
+      <text x="180" y="105" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">scan all 10M rows</text>
+      <text x="180" y="125" textAnchor="middle" fontSize="14" fill="var(--color-text-dim)" fontFamily="monospace" fontWeight="600">30 seconds</text>
+      <text x="540" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">with index</text>
+      <rect x="420" y="80" width="240" height="60" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+      <text x="540" y="105" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">~3 disk reads</text>
+      <text x="540" y="125" textAnchor="middle" fontSize="14" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">40 milliseconds</text>
+      <line x1="300" y1="110" x2="420" y2="110" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#pi-arrow1)"/>
+      <text x="360" y="100" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">CREATE INDEX</text>
+      <text x="360" y="175" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">750x faster: not magic, just the right data structure</text>
+    </svg>
+  );
 }
 
 Every backend engineer has had this moment. A query that ran in 40 milliseconds in dev is now taking 30 seconds in production. You add an index. Suddenly it's back to 40 milliseconds. Feels like magic.

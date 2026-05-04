@@ -6,6 +6,9 @@ dist
 dist-ssr
 build
 
+# Generated assets (created at dev/build time by vite-plugin-og-image)
+public/og-images/
+
 # Vite temp files
 .__mf__temp
 .vite-temp

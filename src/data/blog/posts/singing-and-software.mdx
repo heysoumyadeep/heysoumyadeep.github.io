@@ -7,6 +7,35 @@ export const frontmatter = {
   tags: ["essay", "creativity", "software-craft", "hobbies"]
 }
 
+export function PreviewImage() {
+  return (
+    <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'100%',display:'block'}}>
+      {[60,76,92,108,124].map((y,i) => (
+        <line key={i} x1="60" y1={y} x2="480" y2={y} stroke="var(--color-border)" strokeWidth="1.2"/>
+      ))}
+      <path d="M 40 130 Q 38 90 45 70 Q 52 50 48 80 Q 44 110 50 120 Q 56 130 50 140 Q 44 150 48 160" stroke="var(--color-accent)" strokeWidth="2" fill="none" opacity="0.7"/>
+      <ellipse cx="120" cy="108" rx="9" ry="6" fill="var(--color-accent)" opacity="0.8" transform="rotate(-15,120,108)"/>
+      <line x1="129" y1="108" x2="129" y2="60" stroke="var(--color-accent)" strokeWidth="1.5" opacity="0.8"/>
+      <ellipse cx="200" cy="92" rx="9" ry="6" fill="var(--color-accent)" opacity="0.8" transform="rotate(-15,200,92)"/>
+      <line x1="209" y1="92" x2="209" y2="60" stroke="var(--color-accent)" strokeWidth="1.5" opacity="0.8"/>
+      <text x="265" y="105" fontSize="28" fill="var(--color-text-dim)" fontFamily="serif" opacity="0.5">𝄽</text>
+      <ellipse cx="330" cy="76" rx="9" ry="6" fill="var(--color-accent)" opacity="0.8" transform="rotate(-15,330,76)"/>
+      <line x1="339" y1="76" x2="339" y2="60" stroke="var(--color-accent)" strokeWidth="1.5" opacity="0.8"/>
+      <ellipse cx="400" cy="108" rx="9" ry="6" fill="var(--color-accent)" opacity="0.6" transform="rotate(-15,400,108)"/>
+      <line x1="409" y1="108" x2="409" y2="60" stroke="var(--color-accent)" strokeWidth="1.5" opacity="0.6"/>
+      <text x="510" y="75" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" opacity="0.9">function</text>
+      <text x="510" y="93" fontSize="13" fill="var(--color-accent)" fontFamily="monospace" opacity="0.9">  practice(</text>
+      <text x="510" y="111" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" opacity="0.9">    attention</text>
+      <text x="510" y="129" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" opacity="0.9">  )</text>
+      <text x="510" y="147" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" opacity="0.9">{"{"}</text>
+      <text x="510" y="165" fontSize="13" fill="var(--color-accent)" fontFamily="monospace" opacity="0.9">  return skill</text>
+      <text x="510" y="183" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" opacity="0.9">{"}"}</text>
+      <line x1="490" y1="50" x2="490" y2="190" stroke="var(--color-border)" strokeWidth="1" strokeDasharray="4,4"/>
+      <text x="360" y="210" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">music and code: different notation, same discipline</text>
+    </svg>
+  );
+}
+
 <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'0 0 2rem',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
   {/* staff lines */}
   {[60,76,92,108,124].map((y,i) => (

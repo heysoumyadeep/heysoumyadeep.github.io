@@ -134,16 +134,93 @@ function buildPostOgSvg({ title, excerpt, readTime }) {
 </svg>`;
 }
 
+// ── Shared generation logic ───────────────────────────────────────────────────
+
+async function generateOgImages(ogImagesDir, postsDir, logPrefix) {
+  let Resvg;
+  try {
+    ({ Resvg } = await import('@resvg/resvg-js'));
+  } catch {
+    console.warn('[og-image] @resvg/resvg-js not found — skipping PNG generation');
+    console.warn('[og-image] Run: npm install @resvg/resvg-js --save-dev');
+    return;
+  }
+
+  // Collect font directories that actually exist on this system.
+  // This ensures text renders correctly on Windows, macOS, and Linux CI.
+  const candidateFontDirs = [
+    '/usr/share/fonts',        // Ubuntu / Debian (GitHub Actions runners)
+    '/usr/local/share/fonts',  // Linux user-installed fonts
+    '/System/Library/Fonts',   // macOS
+    'C:\\Windows\\Fonts',      // Windows
+  ];
+  const fontDirs = candidateFontDirs.filter((dir) => existsSync(dir));
+
+  const renderPng = (svg) => {
+    const r = new Resvg(svg, {
+      fitTo: { mode: 'width', value: 1200 },
+      font: { loadSystemFonts: true, fontDirs },
+    });
+    return r.render().asPng();
+  };
+
+  mkdirSync(ogImagesDir, { recursive: true });
+
+  let mdxFiles = [];
+  try {
+    mdxFiles = readdirSync(postsDir)
+      .filter((f) => basename(f) === f && f.endsWith('.mdx'));
+  } catch {
+    console.warn('[og-image] Could not read posts directory');
+  }
+
+  for (const file of mdxFiles) {
+    const rawSlug = file.replace(/\.mdx$/, '');
+    const slug    = rawSlug.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    if (!SAFE_SLUG_RE.test(slug)) continue;
+
+    let fm = null;
+    try {
+      const content = readFileSync(join(postsDir, file), 'utf-8');
+      fm = extractFrontmatter(content);
+    } catch {
+      console.warn(`[og-image] Could not read ${file}`);
+    }
+
+    try {
+      const svg = buildPostOgSvg({
+        title:    fm?.title,
+        excerpt:  fm?.excerpt,
+        readTime: fm?.readTime,
+      });
+      const png = renderPng(svg);
+      writeFileSync(join(ogImagesDir, `${slug}.png`), png);
+      console.log(`[og-image] ✓ ${logPrefix}/${slug}.png`);
+    } catch (err) {
+      console.warn(`[og-image] Could not generate PNG for ${slug}: ${err.message}`);
+    }
+  }
+
+  return renderPng;
+}
+
 // ── Plugin ────────────────────────────────────────────────────────────────────
 
 export default function ogImagePlugin() {
   return {
     name: 'vite-plugin-og-image',
-    apply: 'build',
 
+    // ── Dev: generate into public/og-images/ so Vite serves them at /og-images/
+    async configureServer() {
+      const postsDir   = resolve(process.cwd(), 'src/data/blog/posts');
+      const ogImagesDir = resolve(process.cwd(), 'public/og-images');
+      await generateOgImages(ogImagesDir, postsDir, 'public/og-images');
+    },
+
+    // ── Build: generate into dist/og-images/
     async closeBundle() {
-      const outDir   = resolve(process.cwd(), 'dist');
-      const postsDir = resolve(process.cwd(), 'src/data/blog/posts');
+      const outDir     = resolve(process.cwd(), 'dist');
+      const postsDir   = resolve(process.cwd(), 'src/data/blog/posts');
 
       let Resvg;
       try {
@@ -154,13 +231,11 @@ export default function ogImagePlugin() {
         return;
       }
 
-      // Collect font directories that actually exist on this system.
-      // This ensures text renders correctly on Windows, macOS, and Linux CI.
       const candidateFontDirs = [
-        '/usr/share/fonts',        // Ubuntu / Debian (GitHub Actions runners)
-        '/usr/local/share/fonts',  // Linux user-installed fonts
-        '/System/Library/Fonts',   // macOS
-        'C:\\Windows\\Fonts',      // Windows
+        '/usr/share/fonts',
+        '/usr/local/share/fonts',
+        '/System/Library/Fonts',
+        'C:\\Windows\\Fonts',
       ];
       const fontDirs = candidateFontDirs.filter((dir) => existsSync(dir));
 
@@ -186,42 +261,7 @@ export default function ogImagePlugin() {
 
       // ── Per-post OG images ────────────────────────────────────────────────
       const ogImagesDir = join(outDir, 'og-images');
-      mkdirSync(ogImagesDir, { recursive: true });
-
-      let mdxFiles = [];
-      try {
-        mdxFiles = readdirSync(postsDir)
-          .filter((f) => basename(f) === f && f.endsWith('.mdx'));
-      } catch {
-        console.warn('[og-image] Could not read posts directory');
-      }
-
-      for (const file of mdxFiles) {
-        const rawSlug = file.replace(/\.mdx$/, '');
-        const slug    = rawSlug.toLowerCase().replace(/[^a-z0-9-]/g, '');
-        if (!SAFE_SLUG_RE.test(slug)) continue;
-
-        let fm = null;
-        try {
-          const content = readFileSync(join(postsDir, file), 'utf-8');
-          fm = extractFrontmatter(content);
-        } catch {
-          console.warn(`[og-image] Could not read ${file}`);
-        }
-
-        try {
-          const svg = buildPostOgSvg({
-            title:    fm?.title,
-            excerpt:  fm?.excerpt,
-            readTime: fm?.readTime,
-          });
-          const png = renderPng(svg);
-          writeFileSync(join(ogImagesDir, `${slug}.png`), png);
-          console.log(`[og-image] ✓ dist/og-images/${slug}.png`);
-        } catch (err) {
-          console.warn(`[og-image] Could not generate PNG for ${slug}: ${err.message}`);
-        }
-      }
+      await generateOgImages(ogImagesDir, postsDir, 'dist/og-images');
     },
   };
 }

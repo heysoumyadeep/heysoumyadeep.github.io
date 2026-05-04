@@ -4,7 +4,20 @@ export const frontmatter = {
   readTime: "9 min",
   excerpt: "Two-tier loading, flash-free theming, and custom Vite plugins. A technical breakdown of the patterns that make this site fast and maintainable.",
   author: "Soumyadeep Pradhan",
-  tags: ["react", "vite", "architecture", "performance", "frontend"]
+  tags: ["react", "career", "hobbies", "performance", "frontend"]
+}
+
+export function PreviewImage() {
+  return (
+    <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'100%',display:'block'}}>
+      <rect x="60" y="140" width="600" height="40" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+      <text x="360" y="165" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">Vite + React 18 + React Router</text>
+      <rect x="100" y="90" width="520" height="40" rx="6" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.2"/>
+      <text x="360" y="115" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">MDX + Custom Vite Plugins</text>
+      <rect x="140" y="40" width="440" height="40" rx="6" fill="var(--color-accent)" opacity="0.25" stroke="var(--color-accent)" strokeWidth="1.2"/>
+      <text x="360" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">Two-tier loading + Flash-free theme + SEO</text>
+    </svg>
+  );
 }
 
 I rebuilt my portfolio from scratch recently. Not because the old one was broken, but because I wanted to solve specific problems: slow blog loading, theme flashing on page load, poor SEO for individual posts, and a codebase that felt harder to maintain than it should.
@@ -144,9 +157,29 @@ function injectOgTags(html, { title, description, url, image }) {
 
 **2. Sitemap plugin.** Auto-generates `sitemap.xml` and `rss.xml` by scanning the MDX posts directory. Add a new post, rebuild, and it's in the sitemap. No manual updates.
 
-**3. OG image plugin.** Generates a branded Open Graph image for each blog post using `@resvg/resvg-js`. Each post gets a PNG with the title overlaid on a gradient background. Fully automated.
+**3. OG image plugin.** Generates a branded Open Graph image for each blog post using `@resvg/resvg-js`. Each post gets a 1200×630 PNG with the title and excerpt overlaid on a warm gradient background. These are the images that appear when you share a link on WhatsApp, LinkedIn, or Slack. Fully automated — add a post, rebuild, done.
 
 These three plugins turn a client-side SPA into a statically-generated site with full SEO coverage. Crawlers see HTML. Link previews work. RSS readers get a feed. All without a framework like Next.js or Astro.
+
+## Blog card preview images
+
+The OG images are for social sharing. The blog index cards needed something different — a visual that reflects the actual content of the post, not a generic branded template.
+
+The solution: each MDX post exports a `PreviewImage` React component alongside its frontmatter. It's just the first SVG diagram from the post, extracted into a named export:
+
+```mdx
+export function PreviewImage() {
+  return (
+    <svg viewBox="0 0 720 200" ...>
+      {/* the illustration */}
+    </svg>
+  );
+}
+```
+
+`PostRepository` picks it up from the eager import and stores it in the metadata bundle. `BlogIndex` renders it directly inside the card — no image files, no network requests. Because it's a React component using CSS custom properties, it responds to light/dark mode automatically, exactly as it looks inside the post itself.
+
+Posts without a `PreviewImage` fall back to a gradient color. The pattern is opt-in and adds zero build complexity.
 
 <svg viewBox="0 0 720 180" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
   {/* build pipeline */}

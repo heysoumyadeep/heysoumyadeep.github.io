@@ -42,9 +42,11 @@ Live at [soumya.io](https://soumya.io)
 ## Key Concepts
 
 - **Two-tier blog loading** — post metadata is loaded eagerly for listing; post body MDX is loaded lazily per-post to keep the initial bundle small
+- **Inline blog preview images** — each MDX post exports a `PreviewImage` React component (an SVG illustration) that is rendered directly in the blog index card. Because it's a React component, it uses CSS custom properties and responds to light/dark mode automatically — no static image files needed
 - **Flash-free theming** — theme is persisted to `localStorage` and applied before React hydrates, preventing a flash of wrong theme on load. Uses the View Transitions API for a circular reveal animation
-- **Build-time OG images** — `vite-plugin-og-image.js` generates a branded PNG for every blog post at build time using `@resvg/resvg-js`. No browser, no Puppeteer, no runtime image service
+- **Build-time OG images** — `vite-plugin-og-image.js` generates a branded PNG for every blog post at build time using `@resvg/resvg-js`. No browser, no Puppeteer, no runtime image service. These are the social share images (WhatsApp, LinkedIn, Slack) — separate from the in-card `PreviewImage`
 - **Pre-rendered static HTML** — `vite-plugin-prerender.js` writes a static `index.html` per route with OG/Twitter meta tags baked in. WhatsApp, LinkedIn, and Slack scrapers get the correct image and title without executing any JavaScript
+- **Premium content gate** — posts with `isPremium: true` in frontmatter are gated behind a paywall. Unlock codes are stored in `VITE_PREMIUM_CODES` (comma-separated 8-digit codes). Unlock state is encrypted in `localStorage` using `VITE_ENCRYPTION_KEY`
 - **Path aliases** — `@`, `@app`, `@components`, `@features`, `@hooks`, `@pages`, `@styles`, `@data`, `@config` configured in `vite.config.js` for clean imports
 - **Design tokens** — all colors, spacing, and typography live in `src/styles/tokens.css` as CSS custom properties, consumed across all SCSS files
 - **Performance-first React** — memoized components, throttled scroll handlers, debounced search, and careful async cleanup prevent memory leaks and ensure 60fps scrolling
@@ -171,15 +173,30 @@ export const frontmatter = {
   readTime: "5 min",
   excerpt: "A short description shown in the listing and used as the OG description.",
   author: "Soumyadeep Pradhan",
-  tags: ["tag1", "tag2"]
+  tags: ["tag1", "tag2"],
+  isPremium: false,   // set to true to gate content behind the premium paywall
+}
+
+export function PreviewImage() {
+  // This SVG is shown as the card thumbnail on the blog index.
+  // Use CSS variables (var(--color-accent) etc.) — it's theme-aware.
+  return (
+    <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg"
+      style={{width:'100%',height:'100%',display:'block'}}>
+      {/* your preview illustration */}
+    </svg>
+  );
 }
 
 Your post content in Markdown here...
 ```
 
-**Note:** Use ISO 8601 date format (`YYYY-MM-DD`) for consistent parsing. The slug is automatically derived from the filename.
-
-The OG image, sitemap entry, and pre-rendered HTML are all generated automatically on the next build.
+**Notes:**
+- The slug is automatically derived from the filename — do not add a `slug` field to frontmatter.
+- Use ISO 8601 date format (`YYYY-MM-DD`) for consistent parsing.
+- `PreviewImage` is a React component rendered inline in the blog card. It has access to all CSS custom properties so it responds to light/dark mode automatically.
+- If `PreviewImage` is omitted, the card falls back to a gradient color.
+- The OG image (for WhatsApp/LinkedIn previews), sitemap entry, and pre-rendered HTML are all generated automatically on the next build.
 
 ---
 

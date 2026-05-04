@@ -156,6 +156,7 @@ function BlogFeedback({ slug, title }) {
 
 export default function BlogPostDetail({ slug }) {
   const [post, setPost] = useState(null);
+  const [nextPost, setNextPost] = useState(null);
   const [views, setViews] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const bodyRef = useRef(null);
@@ -178,6 +179,17 @@ export default function BlogPostDetail({ slug }) {
         }
       })
       .catch(console.error);
+
+    // Get next post
+    import('./PostRepository.js').then(({ getAllPosts }) => {
+      getAllPosts().then((allPosts) => {
+        if (!mounted) return;
+        const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+        if (currentIndex !== -1 && currentIndex < allPosts.length - 1) {
+          setNextPost(allPosts[currentIndex + 1]);
+        }
+      });
+    });
 
     return () => { mounted = false; };
   }, [slug]);
@@ -273,13 +285,22 @@ export default function BlogPostDetail({ slug }) {
             {/* Tags - shown after body for non-premium posts only; premium posts show tags after unlock */}
             {post?.tags?.length > 0 && !post.isPremium && (
               <div className="blog-post__tags-footer">
-                <span className="blog-post__tags-label">Tags used here:</span>
+                <span className="blog-post__tags-label">TAGS</span>
                 <ul className="blog-post__tags" aria-label="Post tags">
                   {post.tags.map((tag) => (
-                    <li key={tag} className="blog-post__tag"><span>{tag}</span></li>
+                    <li key={tag} className="blog-post__tag">{tag}</li>
                   ))}
                 </ul>
               </div>
+            )}
+
+            {/* Next Article Navigation */}
+            {nextPost && (
+              <Link to={`/blog/${nextPost.slug}`} className="blog-post__next-article">
+                <span className="blog-post__next-label">NEXT ARTICLE</span>
+                <h3 className="blog-post__next-title">{nextPost.title}</h3>
+                <span className="blog-post__next-arrow" aria-hidden="true">→</span>
+              </Link>
             )}
 
             {/* Feedback section - always shown at the bottom */}

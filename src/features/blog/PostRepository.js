@@ -28,7 +28,6 @@ import { slugFromPath } from './PostProcessor.js';
 // separate chunk that isn't evaluated until it's actually rendered.
 
 const metaModules = import.meta.glob('../../data/blog/posts/*.mdx', { eager: true });
-
 // ── Tier 2: lazy loaders (one per post) ──────────────────────────────────────
 // These are functions — calling them triggers a dynamic import of that post's
 // chunk. Vite generates a separate JS file per post at build time.
@@ -42,13 +41,16 @@ function buildMeta(mod, filePath) {
   const fm = mod.frontmatter ?? {};
   return {
     slug,
-    title:    fm.title    != null ? String(fm.title)    : '',
-    date:     fm.date     != null ? String(fm.date)     : '',
-    readTime: fm.readTime != null ? String(fm.readTime) : '',
-    excerpt:  fm.excerpt  != null ? String(fm.excerpt)  : '',
-    author:   fm.author   != null ? String(fm.author)   : '',
-    tags:     Array.isArray(fm.tags) ? fm.tags.map(String) : [],
-    isPremium: fm.isPremium === true,
+    title:        fm.title      != null ? String(fm.title)      : '',
+    date:         fm.date       != null ? String(fm.date)       : '',
+    readTime:     fm.readTime   != null ? String(fm.readTime)   : '',
+    excerpt:      fm.excerpt    != null ? String(fm.excerpt)    : '',
+    author:       fm.author     != null ? String(fm.author)     : '',
+    tags:         Array.isArray(fm.tags) ? fm.tags.map(String) : [],
+    isPremium:    fm.isPremium === true,
+    coverImage:   fm.coverImage != null ? String(fm.coverImage) : null,
+    // PreviewImage is a tiny SVG component — safe to keep in the metadata bundle
+    PreviewImage: mod.PreviewImage ?? null,
     // Component is NOT stored here — loaded lazily via getPostBySlug
   };
 }

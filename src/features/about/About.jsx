@@ -1,5 +1,5 @@
 import { SectionHeader } from '@components';
-import { personalInfo, skills } from '@data';
+import { personalInfo, skillCategories } from '@data';
 import SkillPill from './SkillPill';
 import './About.scss';
 
@@ -27,13 +27,23 @@ export default function About() {
               <span className="gradient-text">Tech</span> I reach for
             </h3>
             <p className="about__skills-lede">
-              The tools I use day-to-day, and the ones I keep on speed dial.
+              A short, honest list — not everything I've ever touched.
             </p>
-            <ul className="about__skills-list">
-              {skills.map((skill, index) => (
-                <SkillPill key={skill.name} skill={skill} index={index} />
-              ))}
-            </ul>
+            
+            {skillCategories.map((category, catIndex) => (
+              <div key={category.category} className="about__skills-category">
+                <h4 className="about__skills-category-title">{category.category}</h4>
+                <ul className="about__skills-list">
+                  {category.skills.map((skill, index) => (
+                    <SkillPill 
+                      key={skill.name} 
+                      skill={skill} 
+                      index={catIndex * 10 + index} 
+                    />
+                  ))}
+                </ul>
+              </div>
+            ))}
           </aside>
         </div>
       </div>

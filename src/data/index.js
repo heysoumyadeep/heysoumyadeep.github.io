@@ -1,4 +1,4 @@
 export { personalInfo } from './personal';
-export { skills } from './skills';
+export { skills, skillCategories } from './skills';
 export { experience } from './experience';
 export { projects } from './projects';

@@ -16,9 +16,10 @@ export default defineConfig(({ command }) => ({
       })
     },
     react(),
-    // Sitemap + prerender + OG image always run on build
+    // OG image plugin runs in both dev (configureServer) and build (closeBundle)
+    ogImagePlugin(),
+    // Sitemap + prerender only run on build
     ...(command === 'build' ? [
-      ogImagePlugin(),
       sitemapPlugin(),
       prerenderPlugin(),
     ] : []),
