@@ -2,7 +2,7 @@ export const frontmatter = {
   title: "How I built my portfolio: Architecture decisions that matter",
   date: "2026-05-04",
   readTime: "9 min",
-  excerpt: "Two-tier loading, flash-free theming, and custom Vite plugins. A technical breakdown of the patterns that make this site fast and maintainable — including a deep design token system that covers everything from spacing to z-index.",
+  excerpt: "*Two-tier loading, flash-free theming, and custom Vite plugins. A technical breakdown of the patterns that make this site fast and maintainable, including a deep design token system that covers everything from spacing to z-index.*",
   author: "Soumyadeep Pradhan",
   tags: ["react", "career", "hobbies", "performance", "frontend"]
 }
@@ -15,7 +15,7 @@ export function PreviewImage() {
       <rect x="100" y="90" width="520" height="40" rx="6" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.2"/>
       <text x="360" y="115" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">MDX + Custom Vite Plugins</text>
       <rect x="140" y="40" width="440" height="40" rx="6" fill="var(--color-accent)" opacity="0.25" stroke="var(--color-accent)" strokeWidth="1.2"/>
-      <text x="360" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">Two-tier loading + Flash-free theme + SEO</text>
+      <text x="360" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">Two-tier loading + Flash-free theme + SSG</text>
     </svg>
   );
 }
@@ -31,7 +31,7 @@ This post is about the technical decisions that solved those problems. Not the s
   <rect x="100" y="90" width="520" height="40" rx="6" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.2"/>
   <text x="360" y="115" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">MDX + Custom Vite Plugins</text>
   <rect x="140" y="40" width="440" height="40" rx="6" fill="var(--color-accent)" opacity="0.25" stroke="var(--color-accent)" strokeWidth="1.2"/>
-  <text x="360" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">Two-tier loading + Flash-free theme + SEO</text>
+  <text x="360" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">Two-tier loading + Flash-free theme + SSG</text>
 </svg>
 
 ## The blog loading problem: two-tier architecture
@@ -133,13 +133,13 @@ transition.ready.then(() => {
 });
 ```
 
-## Custom Vite plugins: prerender, sitemap, OG images
+## Custom Vite plugins: SSG, sitemap, OG images
 
 SPAs are great for interactivity, terrible for SEO. Crawlers don't always execute JavaScript. Even when they do, they don't wait for async data fetching.
 
-The fix: static generation. I wrote three custom Vite plugins that run at build time:
+The fix: static site generation. I wrote three custom Vite plugins that run at build time:
 
-**1. Prerender plugin.** Copies `dist/index.html` to every route directory (`/blog/`, `/blog/post-slug/`, etc.) so every URL serves HTML immediately. No JS execution required.
+**1. SSG plugin.** Copies `dist/index.html` to every route directory (`/blog/`, `/blog/post-slug/`, etc.) so every URL serves HTML immediately. No JS execution required.
 
 It also injects per-route Open Graph tags. Each blog post gets its own title, description, and image in the meta tags, so link previews on Twitter, LinkedIn, Slack, etc. show the correct content.
 
@@ -157,13 +157,13 @@ function injectOgTags(html, { title, description, url, image }) {
 
 **2. Sitemap plugin.** Auto-generates `sitemap.xml` and `rss.xml` by scanning the MDX posts directory. Add a new post, rebuild, and it's in the sitemap. No manual updates.
 
-**3. OG image plugin.** Generates a branded Open Graph image for each blog post using `@resvg/resvg-js`. Each post gets a 1200×630 PNG with the title and excerpt overlaid on a warm gradient background. These are the images that appear when you share a link on WhatsApp, LinkedIn, or Slack. Fully automated — add a post, rebuild, done.
+**3. OG image plugin.** Generates a branded Open Graph image for each blog post using `@resvg/resvg-js`. Each post gets a 1200×630 PNG with the title and excerpt overlaid on a warm gradient background. These are the images that appear when you share a link on WhatsApp, LinkedIn, or Slack. Fully automated - add a post, rebuild, done.
 
 These three plugins turn a client-side SPA into a statically-generated site with full SEO coverage. Crawlers see HTML. Link previews work. RSS readers get a feed. All without a framework like Next.js or Astro.
 
 ## Blog card preview images
 
-The OG images are for social sharing. The blog index cards needed something different — a visual that reflects the actual content of the post, not a generic branded template.
+The OG images are for social sharing. The blog index cards needed something different - a visual that reflects the actual content of the post, not a generic branded template.
 
 The solution: each MDX post exports a `PreviewImage` React component alongside its frontmatter. It's just the first SVG diagram from the post, extracted into a named export:
 
@@ -177,7 +177,7 @@ export function PreviewImage() {
 }
 ```
 
-`PostRepository` picks it up from the eager import and stores it in the metadata bundle. `BlogIndex` renders it directly inside the card — no image files, no network requests. Because it's a React component using CSS custom properties, it responds to light/dark mode automatically, exactly as it looks inside the post itself.
+`PostRepository` picks it up from the eager import and stores it in the metadata bundle. `BlogIndex` renders it directly inside the card - no image files, no network requests. Because it's a React component using CSS custom properties, it responds to light/dark mode automatically, exactly as it looks inside the post itself.
 
 Posts without a `PreviewImage` fall back to a gradient color. The pattern is opt-in and adds zero build complexity.
 
@@ -188,7 +188,7 @@ Posts without a `PreviewImage` fall back to a gradient color. The pattern is opt
   <line x1="180" y1="95" x2="220" y2="95" stroke="var(--color-border)" strokeWidth="1.5" markerEnd="url(#arr1)"/>
   <defs><marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--color-border)"/></marker></defs>
   <rect x="220" y="30" width="100" height="40" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1.2"/>
-  <text x="270" y="55" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">prerender</text>
+  <text x="270" y="55" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">ssg</text>
   <rect x="220" y="80" width="100" height="40" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1.2"/>
   <text x="270" y="105" textAnchor="middle" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace">sitemap</text>
   <rect x="220" y="130" width="100" height="40" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1.2"/>
@@ -206,7 +206,7 @@ Posts without a `PreviewImage` fall back to a gradient color. The pattern is opt
 
 ## Design tokens: single source of truth
 
-Every color, spacing value, font size, border radius, animation duration, and z-index lives in `src/styles/tokens.css` as CSS custom properties. Components never hardcode values — not even `gap: 8px` or `padding: 11px 22px`.
+Every color, spacing value, font size, border radius, animation duration, and z-index lives in `src/styles/tokens.css` as CSS custom properties. Components never hardcode values - not even `gap: 8px` or `padding: 11px 22px`.
 
 <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
   {/* title */}
@@ -228,9 +228,9 @@ Every color, spacing value, font size, border radius, animation duration, and z-
   <text x="660" y="150" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">deep</text>
   <text x="660" y="165" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace">#2D142C</text>
   {/* button color example */}
-  <text x="360" y="200" textAnchor="middle" fontSize="12" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">Primary Button — flat coral</text>
+  <text x="360" y="200" textAnchor="middle" fontSize="12" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">Primary Button - flat coral</text>
   <rect x="60" y="215" width="600" height="50" rx="8" fill="#EE4540"/>
-  <text x="360" y="245" textAnchor="middle" fontSize="11" fill="#ffffff" fontFamily="monospace" fontWeight="600">--palette-coral · #EE4540</text>
+  <text x="360" y="245" textAnchor="middle" fontSize="11" fill="#ffffff" fontFamily="monospace" fontWeight="600">--palette-coral, #EE4540</text>
 </svg>
 
 The token file is organized into clear groups — palette, semantic colors, gradients, button sizing, control sizing, spacing, typography, animation, and z-index. That last part matters: instead of scattering `z-index: 999999` across files, every layer has a named token.
@@ -309,7 +309,7 @@ Cleaner, easier to refactor, no relative path hell.
 
 ## What I'd do differently
 
-**Custom plugins are fragile.** The prerender and sitemap plugins work, but they're tightly coupled to the project structure. If I move the posts directory or change the frontmatter format, they break. A more robust solution would use a plugin API or a separate config file.
+**Custom plugins are fragile.** The SSG and sitemap plugins work, but they're tightly coupled to the project structure. If I move the posts directory or change the frontmatter format, they break. A more robust solution would use a plugin API or a separate config file.
 
 **MDX has sharp edges.** MDX 3 is powerful, but the integration with Vite and React Router required careful setup. The two-tier loading pattern works, but it's not obvious from the docs. I spent a day debugging why eager imports weren't code-splitting properly.
 
