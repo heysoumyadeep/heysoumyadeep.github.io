@@ -5,12 +5,13 @@ import SEO from '@/seo/SEO';
 import { blogPostingSchema, breadcrumbSchema, websiteSchema } from '@/seo/schemas';
 import { SITE_CONFIG } from '@config/site';
 import { personalInfo } from '@data';
+import { Button } from '@components';
 import { getPostBySlug } from './PostRepository.js';
 import { incrementView } from './ViewTracker.js';
 import PremiumGate from './PremiumGate.jsx';
 import './BlogPostDetail.scss';
 
-// ── Feedback / suggestions form ──────────────────────────────────────────────
+// Feedback form
 
 const MAX_FEEDBACK_LENGTH = 2000;
 
@@ -34,7 +35,6 @@ function BlogFeedback({ slug, title }) {
     setStatus('sending');
 
     try {
-      // If reader left an email, send them the thank-you email too
       if (email.trim()) {
         await emailjs.send(
           import.meta.env.VITE_EMAILJS_SERVICE_ID,
@@ -46,8 +46,7 @@ function BlogFeedback({ slug, title }) {
           import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
         );
       } else {
-        // No email — still notify you via a second template or the same one
-        // sent to yourself so you don't miss anonymous feedback
+        // No email — notify via same template sent to yourself
         await emailjs.send(
           import.meta.env.VITE_EMAILJS_SERVICE_ID,
           import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
@@ -59,7 +58,7 @@ function BlogFeedback({ slug, title }) {
         );
       }
 
-      // Also persist locally as a backup
+      // Persist locally as backup
       try {
         const key = 'blog_feedback';
         const existing = JSON.parse(localStorage.getItem(key) || '[]');
@@ -97,8 +96,7 @@ function BlogFeedback({ slug, title }) {
             <div className="blog-feedback__field">
               <input
                 type="email"
-                className={`blog-feedback__email-input${emailErr ? ' has-error' : ''}`}
-                placeholder="Your email (optional - if you'd like a reply)"
+                className={`blog-feedback__email-input${emailErr ? ' has-error' : ''}`}                placeholder="Your email (optional - if you'd like a reply)"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setEmailErr(''); }}
                 aria-label="Your email address (optional)"
@@ -120,13 +118,14 @@ function BlogFeedback({ slug, title }) {
             />
 
             <div className="blog-feedback__actions">
-              <button
+              <Button
+                variant="primary"
                 type="submit"
                 className="blog-feedback__submit"
                 disabled={!value.trim() || status === 'sending'}
               >
                 {status === 'sending' ? 'Sending…' : 'Send feedback →'}
-              </button>
+              </Button>
               <span className="blog-feedback__hint">
                 Or{' '}
                 <a href={`mailto:${personalInfo.email}`} className="blog-feedback__contact-link">
@@ -152,7 +151,7 @@ function BlogFeedback({ slug, title }) {
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
+// Main component
 
 export default function BlogPostDetail({ slug }) {
   const [post, setPost] = useState(null);
@@ -161,7 +160,7 @@ export default function BlogPostDetail({ slug }) {
   const [expanded, setExpanded] = useState(false);
   const bodyRef = useRef(null);
 
-  // Guard against StrictMode double-invoke and fast navigation
+  // Guard against StrictMode double-invoke
   const viewTrackedRef = useRef(false);
 
   useEffect(() => {
@@ -282,7 +281,7 @@ export default function BlogPostDetail({ slug }) {
               </div>
             )}
 
-            {/* Tags - shown after body for non-premium posts only; premium posts show tags after unlock */}
+            {/* Tags — non-premium only; premium shows tags after unlock */}
             {post?.tags?.length > 0 && !post.isPremium && (
               <div className="blog-post__tags-footer">
                 <span className="blog-post__tags-label">TAGS</span>
@@ -294,7 +293,7 @@ export default function BlogPostDetail({ slug }) {
               </div>
             )}
 
-            {/* Next Article Navigation */}
+            {/* Next article */}
             {nextPost && (
               <Link to={`/blog/${nextPost.slug}`} className="blog-post__next-article">
                 <span className="blog-post__next-label">NEXT ARTICLE</span>
@@ -303,7 +302,7 @@ export default function BlogPostDetail({ slug }) {
               </Link>
             )}
 
-            {/* Feedback section - always shown at the bottom */}
+            {/* Feedback */}
             {post && <BlogFeedback slug={slug} title={post.title} />}
           </article>
         </div>

@@ -1,15 +1,24 @@
 <!doctype html>
 <html lang="en" dir="ltr">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3Z2WHP8V6S"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-3Z2WHP8V6S');
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Security headers -->
+    <!-- Security -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
 
-    <!-- Primary SEO -->
+    <!-- SEO -->
     <title>Soumyadeep Pradhan - Full-Stack Developer | soumya.io</title>
     <meta name="description" content="Soumyadeep Pradhan (heysoumyadeep) - Full-Stack Developer (SDE2) at JPMorgan Chase. Building thoughtful software with React, Node.js, Java, Spring Boot, and AWS. Based in India." />
     <meta name="author" content="Soumyadeep Pradhan" />
@@ -18,7 +27,7 @@
     <meta name="bingbot" content="index, follow" />
     <link rel="canonical" href="https://soumya.io" />
 
-    <!-- Open Graph (Facebook, LinkedIn, WhatsApp, Slack) -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Soumyadeep Pradhan - Full-Stack Developer" />
     <meta property="og:description" content="Full-Stack Developer (SDE2) at JPMorgan Chase. Building thoughtful software across the stack." />
@@ -32,7 +41,7 @@
     <meta property="og:site_name" content="Soumyadeep Pradhan" />
     <meta property="og:locale" content="en_US" />
 
-    <!-- Twitter / X Card -->
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@heysoumyadeep" />
     <meta name="twitter:creator" content="@heysoumyadeep" />
@@ -42,8 +51,7 @@
     <meta name="twitter:image:alt" content="Soumyadeep Pradhan - Full-Stack Developer" />
 
     <!-- Theme / PWA -->
-    <meta name="theme-color" content="#fdf6f0" />
-    <meta name="theme-color" content="#fdf6f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#fdf6f0" />    <meta name="theme-color" content="#fdf6f0" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1c031b" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="dark light" />
     <meta name="msapplication-TileColor" content="#c72c41" />
@@ -59,7 +67,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Keywords (Bing, DuckDuckGo, Yandex, Baidu still use these) -->
+    <!-- Keywords -->
     <meta name="keywords" content="Soumyadeep Pradhan, Soumya Pradhan, Soumya, soumyadeep, heysoumyadeep, Pradhan, soumya.io, Full-Stack Developer, Full Stack Developer, Software Engineer, SDE2, Software Engineer II, JPMorgan Chase, JPMC, software engineer India, developer portfolio, React, React developer, Node.js, JavaScript, TypeScript, Java, Spring Boot, AWS, Docker, PostgreSQL, Redis, Kafka, Python, REST API, microservices, full stack web development, developer tools, engineering productivity, software engineering blog, engineering career advice, SDE2 lessons, mid-level engineering, software craft, developer growth, code review best practices, AI in software development" />
 
     <!-- Extended meta signals -->
@@ -99,14 +107,9 @@
     <meta name="geo.position" content="20.5937;78.9629" />
     <meta name="ICBM" content="20.5937, 78.9629" />
 
-    <!-- Search Engine Verification -->
-    <!-- Google Search Console: Get your code from https://search.google.com/search-console -->
+    <!-- Search console verification (add codes when ready) -->
     <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_CODE" /> -->
-
-    <!-- Bing Webmaster Tools: Get your code from https://www.bing.com/webmasters -->
     <!-- <meta name="msvalidate.01" content="YOUR_BING_CODE" /> -->
-
-    <!-- Yandex Webmaster: Get your code from https://webmaster.yandex.com -->
     <!-- <meta name="yandex-verification" content="YOUR_YANDEX_CODE" /> -->
 
     <!-- RSS feed -->
@@ -118,16 +121,29 @@
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://cdnjs.buymeacoffee.com" />
 
-    <!-- Fonts -->
+    <!-- Fonts - async loading to prevent blocking -->
     <link
+      rel="preload"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    
+    <!-- Fallback font stack for instant text rendering -->
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+    </style>
 
-    <!-- Theme init - runs before first paint to prevent flash -->
+    <!-- Theme init — prevents flash before first paint -->
     <script>
       (function() {
         try {
@@ -141,7 +157,8 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/app/main.jsx"></script>
-    <!-- Buy Me a Coffee Widget - controlled by React component -->
-    <script async data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="heysoumyadeep" data-description="Support me on Buy me a coffee!" data-message="" data-color="#C72C41" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+    
+    <!-- BMC widget — controlled by React -->
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="heysoumyadeep" data-description="Support me on Buy me a coffee!" data-message="" data-color="#C72C41" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
   </body>
 </html>

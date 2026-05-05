@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SectionHeader, ArrowRightIcon } from '@components';
 import { getRecentPosts } from '@features/blog/PostRepository.js';
+import PostCard from '@features/blog/PostCard.jsx';
 import './Writing.scss';
 
 export default function Writing() {
@@ -22,20 +23,9 @@ export default function Writing() {
         </div>
 
         <ul className="writing__list reveal">
-          {posts.map((post) => (
+          {posts.map((post, index) => (
             <li key={post.slug}>
-              <Link to={`/blog/${post.slug}`} className="writing__item">
-                <div className="writing__meta mono">
-                  <span>{post.date}</span>
-                  <span>·</span>
-                  <span>{post.readTime} read</span>
-                </div>
-                <h3 className="writing__title">{post.title}</h3>
-                <p className="writing__excerpt">{post.excerpt}</p>
-                <span className="writing__cta">
-                  Read article <ArrowRightIcon size={13} />
-                </span>
-              </Link>
+              <PostCard post={post} index={index} showImage={true} showTags={false} />
             </li>
           ))}
         </ul>

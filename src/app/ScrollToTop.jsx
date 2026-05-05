@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-/**
- * ScrollToTop component
- *
- * Scrolls window to top on every route change.
- */
+// Scroll to top on route change
 export default function ScrollToTop() {
   const { pathname } = useLocation();
 

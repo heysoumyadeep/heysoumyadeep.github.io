@@ -4,7 +4,7 @@ import ThemeToggle from '../theme-toggle/ThemeToggle';
 import { NAV_ITEMS, ROUTES } from '@config/site';
 import './Navbar.scss';
 
-function NavLink({ item, onNavigate }) {
+function NavLink({ item, onNavigate, isMobile = false }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,22 +26,29 @@ function NavLink({ item, onNavigate }) {
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // Determine if this link is active
+  const isActive = item.type === 'route' 
+    ? location.pathname === item.href
+    : location.pathname === ROUTES.HOME && location.hash === item.href;
+
+  const linkClass = `navbar__link${isMobile && isActive ? ' navbar__link--active' : ''}`;
+
   if (item.type === 'route') {
     return (
-      <Link to={item.href} className="navbar__link" onClick={handleClick}>
+      <Link to={item.href} className={linkClass} onClick={handleClick}>
         {item.label}
       </Link>
     );
   }
 
   return (
-    <a href={item.href} className="navbar__link" onClick={handleClick}>
+    <a href={item.href} className={linkClass} onClick={handleClick}>
       {item.label}
     </a>
   );
 }
 
-// Theme-aware animated logo with crazy effects
+// Theme-aware animated logo
 function SiteLogo() {
   return (
     <svg
@@ -122,7 +129,6 @@ export default function Navbar() {
   const handleLogoClick = (e) => {
     e.preventDefault();
     navigate(ROUTES.HOME);
-    // Scroll to top after navigation
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 0);
@@ -130,10 +136,10 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`navbar${scrolled || !isHomePage ? ' navbar--scrolled' : ''}`}>
+      <nav className={`navbar${scrolled || !isHomePage ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}`}>
         <div className="navbar__inner container">
 
-          {/* Logo - favicon SVG, theme-aware */}
+          {/* Logo */}
           <Link to={ROUTES.HOME} className="navbar__logo" aria-label="Home" onClick={handleLogoClick}>
             <SiteLogo />
           </Link>
@@ -146,60 +152,50 @@ export default function Navbar() {
 
           <div className="navbar__actions">
             <ThemeToggle />
-            {/* Burger - only shown when menu is CLOSED */}
-            {!menuOpen && (
-              <button
-                type="button"
-                className="navbar__burger"
-                aria-label="Open menu"
-                aria-expanded={false}
-                aria-controls="mobile-menu"
-                onClick={() => setMenuOpen(true)}
-              >
-                <span /><span /><span />
-              </button>
-            )}
+            {/* Hamburger — mobile only */}
+            <button
+              type="button"
+              className="navbar__burger navbar__burger--navbar"
+              aria-label="Open menu"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
+              onClick={() => setMenuOpen(true)}
+            >
+              <span /><span /><span />
+            </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile menu panel */}
+      {/* Mobile menu */}
       <div
         id="mobile-menu"
         className={`mobile-menu ${menuOpen ? 'mobile-menu--open' : ''}`}
         aria-hidden={!menuOpen}
         inert={!menuOpen ? '' : undefined}
       >
-        {/* Close button inside the panel - always visible when open */}
+        {/* Close button */}
         <button
           type="button"
-          className="mobile-menu__close"
+          className="navbar__burger navbar__burger--close"
           aria-label="Close menu"
-          onClick={closeMenu}
+          onClick={() => setMenuOpen(false)}
         >
-          <span />
-          <span />
+          <span /><span /><span />
         </button>
 
         <ul className="mobile-menu__list">
             {NAV_ITEMS.filter(item => !(isHomePage && !scrolled && item.href === '#home')).map((item) => (
-              <li key={item.label}><NavLink item={item} onNavigate={closeMenu} /></li>
+              <li key={item.label}><NavLink item={item} onNavigate={closeMenu} isMobile={true} /></li>
             ))}
           </ul>
 
-        {/* Aurora ribbons - decorative animation in the empty space */}
-        <div className="mobile-menu__aurora" aria-hidden="true">
-          <div className="aurora__ribbon aurora__ribbon--1" />
-          <div className="aurora__ribbon aurora__ribbon--2" />
-          <div className="aurora__ribbon aurora__ribbon--3" />
+        {/* Aurora orbs */}
+        <div className="mobile-menu__aurora" aria-hidden="true">          <div className="mobile-menu__orb mobile-menu__orb--1" />
+          <div className="mobile-menu__orb mobile-menu__orb--2" />
+          <div className="mobile-menu__orb mobile-menu__orb--3" />
         </div>
       </div>
-
-      <div
-        className={`mobile-menu__backdrop ${menuOpen ? 'mobile-menu__backdrop--open' : ''}`}
-        onClick={closeMenu}
-        aria-hidden="true"
-      />
     </>
   );
 }

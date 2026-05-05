@@ -20,15 +20,7 @@ const validate = (data) => {
   return next;
 };
 
-/**
- * Controlled contact form.
- * On submit: validates → sends thank-you email via EmailJS → shows success state.
- *
- * Required env vars (add to .env and GitHub Actions secrets):
- *   VITE_EMAILJS_SERVICE_ID   – your EmailJS service ID
- *   VITE_EMAILJS_TEMPLATE_ID  – your EmailJS template ID
- *   VITE_EMAILJS_PUBLIC_KEY   – your EmailJS public key
- */
+// EmailJS env vars: VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, VITE_EMAILJS_PUBLIC_KEY
 export default function ContactForm() {
   const [values, setValues] = useState(initialState);
   const [errors, setErrors] = useState({});
@@ -58,8 +50,8 @@ export default function ContactForm() {
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         {
-          to_email: values.email,   // recipient - the person who filled the form
-          message: values.message,  // their message (available in template)
+          to_email: values.email,
+          message: values.message,
         },
         import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
       );

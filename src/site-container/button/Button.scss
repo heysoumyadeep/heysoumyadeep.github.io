@@ -1,65 +1,150 @@
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10%       { transform: translate(-2%, -3%); }
+  20%       { transform: translate(3%, 2%); }
+  30%       { transform: translate(-1%, 4%); }
+  40%       { transform: translate(4%, -1%); }
+  50%       { transform: translate(-3%, 3%); }
+  60%       { transform: translate(2%, -4%); }
+  70%       { transform: translate(-4%, 1%); }
+  80%       { transform: translate(1%, -2%); }
+  90%       { transform: translate(3%, 4%); }
+}
+
 .btn {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 22px;
+  gap: var(--btn-gap);
+  padding: var(--btn-padding-y) var(--btn-padding-x);
   border-radius: var(--radius-pill);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.005em;
+  font-size: var(--btn-font-size);
+  font-weight: 600;
+  letter-spacing: 0.01em;
   font-family: inherit;
   white-space: nowrap;
   text-decoration: none;
-  border: 1px solid transparent;
+  border: none;
+  cursor: pointer;
   overflow: hidden;
-  transition: transform var(--duration-hover) var(--ease),
-              box-shadow var(--duration-hover) var(--ease),
-              background-color var(--duration-theme) var(--ease),
-              color var(--duration-theme) var(--ease),
-              border-color var(--duration-theme) var(--ease);
+  transition:
+    transform var(--duration-slow) var(--ease-spring),
+    padding   var(--duration-slow) var(--ease-spring),
+    box-shadow var(--duration-hover) var(--ease-out),
+    background var(--duration-hover) var(--ease-out),
+    border-color var(--duration-hover) var(--ease-out),
+    color var(--duration-hover) var(--ease-out);
 
-  &:active { transform: scale(0.98); }
+  /* Grain texture */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    animation: grain 7s steps(1) infinite;
+    pointer-events: none;
+    z-index: 2;
+  }
 
+  &:active {
+    transform: scale(0.95);
+    transition-duration: var(--duration-fast);
+  }
+
+  /* Primary */
   &--primary {
-    background: var(--gradient-accent);
-    color: #ffffff;
-    box-shadow: 0 4px 14px -4px var(--color-shadow);
+    background: var(--gradient-btn);
+    color: var(--color-white);
+    box-shadow:
+      0 var(--border-width) var(--space-1) rgba(0, 0, 0, 0.3),
+      0 var(--space-1) var(--space-5) var(--color-btn-shadow);
 
-    &::before {
+    /* Top-light arc */
+    &::after {
       content: '';
       position: absolute;
-      inset: 0;
-      background: var(--gradient-accent-strong);
-      opacity: 0;
-      transition: opacity var(--duration-hover) var(--ease);
+      top: 0; left: 10%; right: 10%;
+      height: 45%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+      border-radius: 0 0 50% 50%;
+      pointer-events: none;
+      z-index: 1;
     }
 
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px -8px var(--color-shadow);
-
-      &::before { opacity: 1; }
+      background: var(--gradient-btn-hover);
+      padding-left: var(--btn-padding-x-wide);
+      padding-right: var(--btn-padding-x-wide);
+      transform: translateY(-3px) scale(1.04);
+      box-shadow:
+        0 var(--border-width-thick) var(--space-3) rgba(0, 0, 0, 0.25),
+        0 14px 36px var(--color-btn-shadow),
+        0 0 0 5px var(--color-btn-glow);
     }
   }
 
+  /* Ghost — dark mode base */
   &--ghost {
     background: transparent;
     color: var(--color-text);
-    border-color: var(--color-border-strong);
+    border: 1.5px solid var(--color-border-strong);
+    box-shadow: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
+      border-radius: 0 0 50% 50%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity var(--duration-hover) var(--ease-out);
+    }
 
     &:hover {
-      background: var(--gradient-accent);
-      color: #ffffff;
-      border-color: transparent;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px -8px var(--color-shadow);
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+      padding-left: var(--btn-padding-x-wide);
+      padding-right: var(--btn-padding-x-wide);
+      transform: translateY(-3px) scale(1.04);
+      box-shadow:
+        0 0 0 var(--space-1) rgba(212, 43, 74, 0.12),
+        0 var(--space-2) 28px rgba(212, 43, 74, 0.2);
+    }
+  }
+
+  /* Ghost — glass effect (light mode) */
+  :root:not([data-theme='dark']) &--ghost {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: rgba(128, 19, 54, 0.2);
+    box-shadow:
+      inset 0 var(--border-width) 0 rgba(255, 255, 255, 0.7),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.04),
+      0 var(--space-1) var(--space-4) rgba(0, 0, 0, 0.07);
+
+    &::after { opacity: 1; }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.6);
+      border-color: var(--color-accent);
+      box-shadow:
+        inset 0 var(--border-width) 0 rgba(255, 255, 255, 0.8),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.04),
+        0 0 0 var(--space-1) rgba(212, 43, 74, 0.1),
+        0 var(--space-2) 28px rgba(212, 43, 74, 0.18);
     }
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.45;
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
@@ -68,8 +153,8 @@
 
 .btn__label {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }

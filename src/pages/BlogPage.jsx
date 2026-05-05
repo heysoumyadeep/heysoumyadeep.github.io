@@ -9,7 +9,7 @@ export default function BlogPage() {
   useScrollReveal();
   const { slug } = useParams();
 
-  // Scroll to top immediately on route change - useLayoutEffect runs before paint
+  // Scroll to top before paint on route change
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);

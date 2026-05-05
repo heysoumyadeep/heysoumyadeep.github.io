@@ -1,25 +1,11 @@
-/**
- * vite-plugin-og-image.js
- *
- * Generates OG images at build time:
- *   dist/og-image.png              — homepage / fallback (from public/og-image.svg)
- *   dist/og-images/{slug}.png      — per-post image with title + excerpt
- *
- * Design: light theme matching the website
- *   Background : #fdf6f0 warm white + blurred coral/crimson orbs (no bars)
- *   Text       : #2d142c deep plum
- *   Accent     : #c72c41 → #ee4540 crimson/coral
- *   Layout     : content left, large "S" logo mark right
- *
- * Uses @resvg/resvg-js — Rust-based SVG renderer, no browser needed.
- */
+// Generates OG images at build time
+//   dist/og-image.png          — homepage fallback (from public/og-image.svg)
+//   dist/og-images/{slug}.png  — per-post with title + excerpt
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { join, resolve, basename } from 'node:path';
 
 const SAFE_SLUG_RE = /^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$/;
-
-// ── Frontmatter extraction ────────────────────────────────────────────────────
 
 function extractFrontmatter(content) {
   const block = content.match(/export const frontmatter\s*=\s*\{([\s\S]*?)\};?/);
@@ -30,8 +16,6 @@ function extractFrontmatter(content) {
   };
   return { title: get('title'), excerpt: get('excerpt'), readTime: get('readTime') };
 }
-
-// ── Text wrapping for SVG ─────────────────────────────────────────────────────
 
 function wrapText(text, maxChars) {
   if (!text) return [];
@@ -58,41 +42,31 @@ function escapeSvg(str) {
     .replace(/"/g, '&quot;');
 }
 
-// ── Blog post OG SVG ──────────────────────────────────────────────────────────
-
 function buildPostOgSvg({ title, excerpt, readTime }) {
   const safeTitle    = escapeSvg(title    ?? 'Untitled');
   const safeExcerpt  = escapeSvg(excerpt  ?? '');
   const safeReadTime = escapeSvg(readTime ?? '');
 
-  // Title: wrap at ~32 chars, max 3 lines
   const titleLines   = wrapText(safeTitle, 32).slice(0, 3);
-  // Excerpt: wrap at ~72 chars, max 2 lines
   const excerptLines = wrapText(safeExcerpt, 72).slice(0, 2);
 
   const titleFontSize   = 64;
   const titleLineHeight = 78;
-  // Start title lower to leave room for the logo + role line above
   const titleStartY     = 240;
-
   const excerptFontSize   = 24;
   const excerptLineHeight = 36;
   const excerptStartY = titleStartY + titleLines.length * titleLineHeight + 32;
+  const metaY = 572;
 
   const titleSvg = titleLines
     .map((line, i) =>
       `<text x="80" y="${titleStartY + i * titleLineHeight}" font-family="Arial, sans-serif" font-size="${titleFontSize}" font-weight="700" fill="#2d142c" letter-spacing="-1.5">${line}</text>`
-    )
-    .join('\n  ');
+    ).join('\n  ');
 
   const excerptSvg = excerptLines
     .map((line, i) =>
       `<text x="80" y="${excerptStartY + i * excerptLineHeight}" font-family="Arial, sans-serif" font-size="${excerptFontSize}" font-weight="400" fill="rgba(45,20,44,0.55)">${line}</text>`
-    )
-    .join('\n  ');
-
-  // Read time at bottom
-  const metaY = 572;
+    ).join('\n  ');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
@@ -134,33 +108,23 @@ function buildPostOgSvg({ title, excerpt, readTime }) {
 </svg>`;
 }
 
-// ── Shared generation logic ───────────────────────────────────────────────────
-
 async function generateOgImages(ogImagesDir, postsDir, logPrefix) {
   let Resvg;
   try {
     ({ Resvg } = await import('@resvg/resvg-js'));
   } catch {
-    console.warn('[og-image] @resvg/resvg-js not found — skipping PNG generation');
-    console.warn('[og-image] Run: npm install @resvg/resvg-js --save-dev');
+    console.warn('[og-image] @resvg/resvg-js not found — run: npm install @resvg/resvg-js --save-dev');
     return;
   }
 
-  // Collect font directories that actually exist on this system.
-  // This ensures text renders correctly on Windows, macOS, and Linux CI.
   const candidateFontDirs = [
-    '/usr/share/fonts',        // Ubuntu / Debian (GitHub Actions runners)
-    '/usr/local/share/fonts',  // Linux user-installed fonts
-    '/System/Library/Fonts',   // macOS
-    'C:\\Windows\\Fonts',      // Windows
+    '/usr/share/fonts', '/usr/local/share/fonts',
+    '/System/Library/Fonts', 'C:\\Windows\\Fonts',
   ];
   const fontDirs = candidateFontDirs.filter((dir) => existsSync(dir));
 
   const renderPng = (svg) => {
-    const r = new Resvg(svg, {
-      fitTo: { mode: 'width', value: 1200 },
-      font: { loadSystemFonts: true, fontDirs },
-    });
+    const r = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 }, font: { loadSystemFonts: true, fontDirs } });
     return r.render().asPng();
   };
 
@@ -168,8 +132,7 @@ async function generateOgImages(ogImagesDir, postsDir, logPrefix) {
 
   let mdxFiles = [];
   try {
-    mdxFiles = readdirSync(postsDir)
-      .filter((f) => basename(f) === f && f.endsWith('.mdx'));
+    mdxFiles = readdirSync(postsDir).filter((f) => basename(f) === f && f.endsWith('.mdx'));
   } catch {
     console.warn('[og-image] Could not read posts directory');
   }
@@ -181,20 +144,14 @@ async function generateOgImages(ogImagesDir, postsDir, logPrefix) {
 
     let fm = null;
     try {
-      const content = readFileSync(join(postsDir, file), 'utf-8');
-      fm = extractFrontmatter(content);
+      fm = extractFrontmatter(readFileSync(join(postsDir, file), 'utf-8'));
     } catch {
       console.warn(`[og-image] Could not read ${file}`);
     }
 
     try {
-      const svg = buildPostOgSvg({
-        title:    fm?.title,
-        excerpt:  fm?.excerpt,
-        readTime: fm?.readTime,
-      });
-      const png = renderPng(svg);
-      writeFileSync(join(ogImagesDir, `${slug}.png`), png);
+      const svg = buildPostOgSvg({ title: fm?.title, excerpt: fm?.excerpt, readTime: fm?.readTime });
+      writeFileSync(join(ogImagesDir, `${slug}.png`), renderPng(svg));
       console.log(`[og-image] ✓ ${logPrefix}/${slug}.png`);
     } catch (err) {
       console.warn(`[og-image] Could not generate PNG for ${slug}: ${err.message}`);
@@ -204,64 +161,54 @@ async function generateOgImages(ogImagesDir, postsDir, logPrefix) {
   return renderPng;
 }
 
-// ── Plugin ────────────────────────────────────────────────────────────────────
-
 export default function ogImagePlugin() {
   return {
     name: 'vite-plugin-og-image',
 
-    // ── Dev: generate into public/og-images/ so Vite serves them at /og-images/
+    // Dev: generate into public/og-images/
     async configureServer() {
-      const postsDir   = resolve(process.cwd(), 'src/data/blog/posts');
+      const postsDir    = resolve(process.cwd(), 'src/data/blog/posts');
       const ogImagesDir = resolve(process.cwd(), 'public/og-images');
       await generateOgImages(ogImagesDir, postsDir, 'public/og-images');
     },
 
-    // ── Build: generate into dist/og-images/
+    // Build: generate into dist/og-images/
     async closeBundle() {
-      const outDir     = resolve(process.cwd(), 'dist');
-      const postsDir   = resolve(process.cwd(), 'src/data/blog/posts');
+      const outDir   = resolve(process.cwd(), 'dist');
+      const postsDir = resolve(process.cwd(), 'src/data/blog/posts');
 
       let Resvg;
       try {
         ({ Resvg } = await import('@resvg/resvg-js'));
       } catch {
-        console.warn('[og-image] @resvg/resvg-js not found — skipping PNG generation');
-        console.warn('[og-image] Run: npm install @resvg/resvg-js --save-dev');
+        console.warn('[og-image] @resvg/resvg-js not found — run: npm install @resvg/resvg-js --save-dev');
         return;
       }
 
       const candidateFontDirs = [
-        '/usr/share/fonts',
-        '/usr/local/share/fonts',
-        '/System/Library/Fonts',
-        'C:\\Windows\\Fonts',
+        '/usr/share/fonts', '/usr/local/share/fonts',
+        '/System/Library/Fonts', 'C:\\Windows\\Fonts',
       ];
       const fontDirs = candidateFontDirs.filter((dir) => existsSync(dir));
 
       const renderPng = (svg) => {
-        const r = new Resvg(svg, {
-          fitTo: { mode: 'width', value: 1200 },
-          font: { loadSystemFonts: true, fontDirs },
-        });
+        const r = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 }, font: { loadSystemFonts: true, fontDirs } });
         return r.render().asPng();
       };
 
-      // ── Homepage OG image (from public/og-image.svg) ──────────────────────
+      // Homepage OG image
       const svgPath = resolve(process.cwd(), 'public/og-image.svg');
       if (existsSync(svgPath)) {
         try {
-          const svg = readFileSync(svgPath, 'utf-8');
-          writeFileSync(join(outDir, 'og-image.png'), renderPng(svg));
+          writeFileSync(join(outDir, 'og-image.png'), renderPng(readFileSync(svgPath, 'utf-8')));
           console.log('[og-image] ✓ dist/og-image.png');
         } catch (err) {
           console.warn(`[og-image] Could not generate homepage PNG: ${err.message}`);
         }
       }
 
-      // ── Per-post OG images ────────────────────────────────────────────────
-      const ogImagesDir = join(outDir, 'og-images');
-      await generateOgImages(ogImagesDir, postsDir, 'dist/og-images');
+      // Per-post OG images
+      await generateOgImages(join(outDir, 'og-images'), postsDir, 'dist/og-images');
     },
   };
 }

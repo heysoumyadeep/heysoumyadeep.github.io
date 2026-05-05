@@ -7,13 +7,12 @@ import Loader from './Loader';
 import NavigationLoader from './NavigationLoader';
 import ScrollToTop from './ScrollToTop';
 
-// Lazy-load pages so each route is a separate chunk
+// Lazy-load pages
 const HomePage = lazy(() => import('@pages/HomePage'));
 const BlogPage = lazy(() => import('@pages/BlogPage'));
 const NotFoundPage = lazy(() => import('@pages/NotFoundPage'));
 
 export default function App() {
-  // Set scroll restoration to manual globally
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
@@ -25,9 +24,8 @@ export default function App() {
       <ThemeProvider>
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <ScrollToTop />
-          {/* Shows loader on first-load chunk fetches */}
           <Suspense fallback={<Loader />}>
-            {/* Shows progress bar on subsequent navigations between cached pages */}
+            {/* Progress bar on cached-page navigations */}
             <NavigationLoader />
             <Routes>
               <Route path={ROUTES.HOME} element={<HomePage />} />

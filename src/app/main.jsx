@@ -3,10 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import '@styles/global.css';
 
-// Single rAF-throttled mousemove listener shared by:
-//   1. Cursor glow (CSS custom properties --mouse-x / --mouse-y)
-//   2. ParallaxBackground (reads the same event via its own listener)
-// Throttling prevents layout thrashing on high-frequency pointer events.
+// rAF-throttled mouse tracker for cursor glow + parallax
 let rafPending = false;
 document.addEventListener('mousemove', (e) => {
   if (rafPending) return;

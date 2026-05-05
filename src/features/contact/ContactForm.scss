@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--space-4);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   transition: border-color var(--duration-hover) var(--ease),
@@ -29,7 +29,7 @@
       font-size: 22px;
       font-weight: 600;
       color: var(--color-text);
-      margin-bottom: 6px;
+      margin-bottom: var(--space-1);
     }
 
     p {
@@ -42,7 +42,7 @@
   }
 }
 
-.contact-form__field { display: flex; flex-direction: column; gap: 8px; }
+.contact-form__field { display: flex; flex-direction: column; gap: var(--space-2); }
 
 .contact-form__label {
   font-family: var(--font-mono);
@@ -56,7 +56,7 @@
   width: 100%;
   padding: 12px 14px;
   background: var(--color-bg);
-  border: 1px solid var(--color-border);
+  border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: 15px;
   color: var(--color-text);
@@ -71,7 +71,7 @@
   &:focus {
     border-color: var(--color-accent);
     background: var(--color-surface);
-    box-shadow: 0 0 0 3px var(--color-accent-soft);
+    box-shadow: 0 0 0 var(--border-width-accent) var(--color-accent-soft);
   }
 
   &--textarea {
@@ -82,29 +82,24 @@
   }
 
   &.has-error {
-    border-color: #e24b4a;
-    background: rgba(226, 75, 74, 0.04);
+    border-color: var(--color-error);
+    background: var(--color-error-soft);
 
-    &:focus {
-      box-shadow: 0 0 0 3px rgba(226, 75, 74, 0.15);
-    }
+    &:focus { box-shadow: 0 0 0 var(--border-width-accent) rgba(226, 75, 74, 0.15); }
   }
 }
 
-.contact-form__error {
-  font-size: 12px;
-  color: #e24b4a;
-}
+.contact-form__error { font-size: 12px; color: var(--color-error); }
 
 .contact-form__success-icon {
   width: 56px;
   height: 56px;
   border-radius: 50%;
   background: var(--gradient-accent);
-  color: #ffffff;
+  color: var(--color-white);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-bottom: var(--space-3);
-  box-shadow: 0 8px 20px -8px var(--color-shadow);
+  box-shadow: 0 var(--space-2) 20px -8px var(--color-shadow);
 }

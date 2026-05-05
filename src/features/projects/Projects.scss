@@ -13,8 +13,8 @@
 .projects__see-more {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  gap: var(--space-1);
+  font-size: var(--btn-font-size);
   font-weight: 500;
   margin-bottom: var(--space-7);
   background: var(--gradient-accent);
@@ -24,7 +24,7 @@
   transition: gap var(--duration-hover) var(--ease);
 
   svg { color: var(--color-accent); -webkit-text-fill-color: initial; }
-  &:hover { gap: 12px; }
+  &:hover { gap: var(--space-3); }
 }
 
 .projects__grid {

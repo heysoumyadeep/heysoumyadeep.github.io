@@ -29,7 +29,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-
 .hero__tagline {
   font-size: clamp(18px, 2vw, 22px);
   line-height: 1.5;
@@ -45,10 +44,10 @@
   color: var(--color-text-dim);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-right: 4px;
+  margin-right: var(--space-1);
 }
 
-.hero__tagline-divider { color: var(--color-accent); margin: 0 4px; }
+.hero__tagline-divider { color: var(--color-accent); margin: 0 var(--space-1); }
 
 .hero__cta { display: flex; gap: var(--space-3); flex-wrap: wrap; }
 
@@ -56,7 +55,6 @@
   .hero { padding-top: 130px; }
   .hero__cta {
     width: 100%;
-
     .btn { flex: 1; }
   }
 }

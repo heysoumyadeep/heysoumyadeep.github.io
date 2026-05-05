@@ -1,7 +1,4 @@
-/**
- * Site-wide configuration constants.
- */
-
+// Site-wide config
 export const SITE_CONFIG = {
   name: 'Soumyadeep Pradhan',
   shortName: 'Soumyadeep',

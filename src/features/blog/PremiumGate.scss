@@ -1,20 +1,14 @@
-// ── Premium Gate ──────────────────────────────────────────────────────────────
+// Premium gate
 
-.premium-gate {
-  position: relative;
-  margin-top: var(--space-6);
-}
+.premium-gate { position: relative; margin-top: var(--space-6); }
 
-// Preview: shows content with increasing blur toward bottom
 .premium-gate__preview {
   position: relative;
   max-height: 350px;
   overflow: hidden;
   mask-image: linear-gradient(to bottom, black 0%, black 40%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 0%, black 40%, transparent 100%);
-  filter: blur(0);
 
-  // Gradual blur effect
   &::after {
     content: '';
     position: absolute;
@@ -33,7 +27,6 @@
   }
 }
 
-// Fully blurred section below preview
 .premium-gate__blurred {
   position: relative;
   min-height: 200px;
@@ -53,18 +46,16 @@
   }
 }
 
-// Divider line with centered button
 .premium-gate__divider {
   position: relative;
   margin: var(--space-7) 0 var(--space-5);
-  
+
   &::before {
     content: '';
     position: absolute;
     top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
+    left: 0; right: 0;
+    height: var(--border-width);
     background: var(--color-border-strong);
     transform: translateY(-50%);
   }
@@ -75,29 +66,28 @@
   z-index: 1;
   display: block;
   margin: 0 auto;
-  padding: 12px 32px;
+  padding: var(--space-3) var(--space-6);
   background: var(--gradient-accent);
-  color: #fff;
+  color: var(--color-white);
   font-size: 15px;
   font-weight: 600;
   border: none;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  box-shadow: 0 8px 24px -8px var(--color-shadow);
-  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 var(--space-2) var(--space-5) -8px var(--color-shadow);
+  transition: opacity var(--duration-hover) ease,
+              transform var(--duration-hover) ease,
+              box-shadow var(--duration-hover) ease;
 
   &:hover {
     opacity: 0.9;
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px -8px var(--color-shadow);
+    box-shadow: 0 var(--space-3) var(--space-6) -8px var(--color-shadow);
   }
 
-  &:active {
-    transform: translateY(0);
-  }
+  &:active { transform: translateY(0); }
 }
 
-// Footer with passcode link
 .premium-gate__footer {
   text-align: center;
   margin-top: var(--space-4);
@@ -110,40 +100,38 @@
   color: var(--color-text-muted);
   cursor: pointer;
   text-decoration: underline;
-  text-underline-offset: 2px;
-  padding: 4px 8px;
+  text-underline-offset: var(--space-1);
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
   transition: color 0.2s ease;
 
-  &:hover {
-    color: var(--color-accent);
-  }
+  &:hover { color: var(--color-accent); }
 }
 
-// ── Passcode Modal ────────────────────────────────────────────────────────────
+// Passcode modal
 
 .passcode-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 300;
-  background: rgba(0, 0, 0, 0.6);
+  z-index: var(--z-modal);
+  background: var(--color-black-overlay);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-5);
-  animation: backdrop-fade-in 0.2s ease;
+  animation: backdrop-fade-in var(--duration-hover) ease;
 }
 
 @keyframes backdrop-fade-in {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 .passcode-modal {
   background: var(--color-surface);
-  border: 1px solid var(--color-border-strong);
+  border: var(--border-width) solid var(--color-border-strong);
   border-radius: var(--radius-xl);
   padding: var(--space-7) var(--space-6);
   max-width: 480px;
@@ -153,14 +141,8 @@
 }
 
 @keyframes modal-slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .passcode-modal__title {
@@ -180,7 +162,7 @@
 
 .passcode-modal__inputs {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   justify-content: center;
   margin-bottom: var(--space-5);
 }
@@ -194,18 +176,17 @@
   font-family: var(--font-mono);
   color: var(--color-text);
   background: var(--color-surface-alt);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-thick) solid var(--color-border);
   border-radius: var(--radius-md);
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
 
   &:focus {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px var(--color-accent-soft);
+    box-shadow: 0 0 0 var(--border-width-accent) var(--color-accent-soft);
     background: var(--color-surface);
   }
 
-  // Hide spinner on number inputs
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -222,21 +203,18 @@
 
 .passcode-modal__submit {
   width: 100%;
-  padding: 14px 24px;
+  padding: 14px var(--space-5);
   background: var(--gradient-accent);
-  color: #fff;
+  color: var(--color-white);
   font-size: 15px;
   font-weight: 600;
   border: none;
   border-radius: var(--radius-pill);
   cursor: pointer;
   margin-bottom: var(--space-3);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity var(--duration-hover) ease, transform var(--duration-hover) ease;
 
-  &:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
+  &:hover { opacity: 0.9; transform: translateY(-1px); }
 }
 
 .passcode-modal__cancel {
@@ -245,28 +223,17 @@
   font-size: 13px;
   color: var(--color-text-dim);
   cursor: pointer;
-  padding: 6px 12px;
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-sm);
-  transition: color 0.2s ease;
+  transition: color var(--duration-hover) ease;
 
-  &:hover {
-    color: var(--color-text-muted);
-  }
+  &:hover { color: var(--color-text-muted); }
 }
 
-// Mobile adjustments
+/* Mobile */
+
 @media (max-width: 480px) {
-  .premium-gate__preview {
-    max-height: 280px;
-  }
-
-  .passcode-modal__inputs {
-    gap: 6px;
-  }
-
-  .passcode-modal__input {
-    width: 40px;
-    height: 50px;
-    font-size: 20px;
-  }
+  .premium-gate__preview { max-height: 280px; }
+  .passcode-modal__inputs { gap: var(--space-1); }
+  .passcode-modal__input { width: 40px; height: 50px; font-size: 20px; }
 }

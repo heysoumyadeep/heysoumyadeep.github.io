@@ -1,4 +1,3 @@
-// Styles for .blog-page, .blog-index__*, and .blog-post__* have been moved to:
-//   src/features/blog/BlogIndex.scss      (blog-page + blog-index__*)
-//   src/features/blog/BlogPostDetail.scss (blog-post__*)
-// They are imported automatically via BlogIndex.jsx and BlogPostDetail.jsx.
+// Styles for .blog-page, .blog-index__*, and .blog-post__* live in:
+//   src/features/blog/BlogIndex.scss
+//   src/features/blog/BlogPostDetail.scss

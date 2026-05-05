@@ -2,17 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '@/seo/SEO';
 import { blogSchema, websiteSchema } from '@/seo/schemas';
+import { Button } from '@components';
 import { getAllPosts } from './PostRepository.js';
+import PostCard from './PostCard.jsx';
 import './BlogIndex.scss';
-
-// Gradient colors for preview cards (fallback if no image)
-const GRADIENT_COLORS = [
-  'linear-gradient(135deg, #801336 0%, #ee4540 100%)',
-  'linear-gradient(135deg, #510a32 0%, #9333ea 100%)',
-  'linear-gradient(135deg, #78350f 0%, #f59e0b 100%)',
-  'linear-gradient(135deg, #064e3b 0%, #10b981 100%)',
-  'linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%)',
-];
 
 export default function BlogIndex() {
   const [posts, setPosts] = useState([]);
@@ -28,7 +21,7 @@ export default function BlogIndex() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (showDropdown && !e.target.closest('.blog-index__filter')) {
@@ -39,27 +32,23 @@ export default function BlogIndex() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [showDropdown]);
 
-  // Get unique categories from all posts
   const categories = useMemo(() => {
     const allTags = posts.flatMap(p => p.tags || []);
-    const unique = ['All', ...new Set(allTags)];
-    return unique;
+    return ['All', ...new Set(allTags)];
   }, [posts]);
 
-  // Show first 3 categories as pills, rest in dropdown
+  // First 4 visible, rest in dropdown
   const visibleCategories = categories.slice(0, 4);
   const dropdownCategories = categories.slice(4);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let result = [...posts];
-    
-    // Filter by category
+
     if (selectedCategory !== 'All') {
       result = result.filter(p => p.tags?.includes(selectedCategory));
     }
-    
-    // Filter by search query
+
     if (q) {
       result = result.filter(
         (p) =>
@@ -67,7 +56,7 @@ export default function BlogIndex() {
           p.excerpt.toLowerCase().includes(q)
       );
     }
-    
+
     return result;
   }, [posts, selectedCategory, query]);
 
@@ -191,13 +180,13 @@ export default function BlogIndex() {
             </p>
           ) : (
             <>
-              {/* Featured Post */}
+              {/* Featured */}
               {featuredPost && (
                 <Link to={`/blog/${featuredPost.slug}`} className="blog-index__featured">
                   <div className="blog-index__featured-preview">
                     {featuredPost.PreviewImage
                       ? <featuredPost.PreviewImage />
-                      : <div className="blog-index__preview-fallback" style={{ background: GRADIENT_COLORS[0] }} />
+                      : <div className="blog-index__preview-fallback" style={{ background: 'linear-gradient(135deg, var(--palette-coral) 0%, var(--palette-crimson) 100%)' }} />
                     }
                     <span className="blog-index__featured-label">
                       ARTICLE PREVIEW
@@ -220,52 +209,19 @@ export default function BlogIndex() {
                       <span aria-hidden="true">·</span>
                       <span>{featuredPost.readTime} read</span>
                     </div>
-                    <button className="blog-index__featured-btn">
+                    <Button variant="primary" className="blog-index__featured-btn">
                       Read article →
-                    </button>
+                    </Button>
                   </div>
                 </Link>
               )}
 
-              {/* Other Posts Grid */}
+              {/* Post grid */}
               {otherPosts.length > 0 && (
                 <ul className="blog-index__grid">
                   {otherPosts.map((post, index) => (
                     <li key={post.slug}>
-                      <Link to={`/blog/${post.slug}`} className="blog-index__card">
-                        <div className="blog-index__card-preview">
-                          {post.PreviewImage
-                            ? <post.PreviewImage />
-                            : <div className="blog-index__preview-fallback" style={{ background: GRADIENT_COLORS[(index + 1) % GRADIENT_COLORS.length] }} />
-                          }
-                          {post.isPremium && (
-                            <span className="blog-index__premium-badge" aria-label="Premium article">
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <path d="M12 1C8.676 1 6 3.676 6 7v1H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v1H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/>
-                              </svg>
-                              Premium
-                            </span>
-                          )}
-                        </div>
-                        <div className="blog-index__card-content">
-                          <div className="blog-index__card-meta mono">
-                            <span>{post.date}</span>
-                            <span aria-hidden="true">·</span>
-                            <span>{post.readTime} read</span>
-                            {post.tags?.[0] && (
-                              <>
-                                <span aria-hidden="true">·</span>
-                                <span>{post.tags[0]}</span>
-                              </>
-                            )}
-                          </div>
-                          <h3 className="blog-index__card-title">{post.title}</h3>
-                          <p className="blog-index__card-excerpt">{post.excerpt}</p>
-                          <span className="blog-index__card-cta">
-                            Read article →
-                          </span>
-                        </div>
-                      </Link>
+                      <PostCard post={post} index={index + 1} showImage={true} showTags={true} />
                     </li>
                   ))}
                 </ul>

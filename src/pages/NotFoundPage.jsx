@@ -6,11 +6,6 @@ import './NotFoundPage.scss';
 export default function NotFoundPage() {
   return (
     <>
-      <SEO
-        title="Page not found"
-        description="The page you're looking for doesn't exist."
-        canonical="/404"
-      />
       <ParallaxBackground />
       <Navbar />
       <main className="not-found">

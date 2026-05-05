@@ -1,13 +1,4 @@
-/**
- * schemas.js
- *
- * JSON-LD structured data builders.
- * Used by Google for rich results and by LLMs for semantic understanding.
- *
- * References:
- *  - https://schema.org
- *  - https://developers.google.com/search/docs/appearance/structured-data
- */
+// JSON-LD structured data builders
 
 import { SITE_CONFIG } from '@config/site';
 import { personalInfo } from '@data';
@@ -15,27 +6,17 @@ import { KNOWS_ABOUT, getPostKeywords } from './keywords.js';
 
 const BASE_URL = SITE_CONFIG.url;
 
-// ── WebSite ───────────────────────────────────────────────────────────────────
-// Goes on every page. Enables Google Sitelinks Searchbox.
-
+// WebSite — every page
 export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: SITE_CONFIG.name,
   url: BASE_URL,
   description: `Personal portfolio and blog of ${SITE_CONFIG.name}, Full-Stack Developer at JPMorgan Chase.`,
-  author: {
-    '@type': 'Person',
-    name: SITE_CONFIG.name,
-    url: BASE_URL,
-  },
+  author: { '@type': 'Person', name: SITE_CONFIG.name, url: BASE_URL },
 };
 
-// ── Person ────────────────────────────────────────────────────────────────────
-// Goes on the homepage. Tells Google and LLMs who this site is about.
-// NOTE: email is intentionally omitted from JSON-LD — it's publicly crawlable
-// and would expose it to scrapers. Use the contact form instead.
-
+// Person — homepage
 export const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -60,9 +41,7 @@ export const personSchema = {
   knowsAbout: KNOWS_ABOUT,
 };
 
-// ── BreadcrumbList ────────────────────────────────────────────────────────────
-// Enables breadcrumb display in Google search results.
-
+// BreadcrumbList
 export function breadcrumbSchema(items) {
   return {
     '@context': 'https://schema.org',
@@ -76,20 +55,11 @@ export function breadcrumbSchema(items) {
   };
 }
 
-// ── BlogPosting ───────────────────────────────────────────────────────────────
-// Goes on each individual blog post page.
-// Most important schema for Google rich results and LLM data sourcing.
-
+// BlogPosting — individual post page
 export function blogPostingSchema(post) {
-  const isoDate = post.date ? new Date(post.date).toISOString() : undefined;
-
-  // Parse readTime safely — "8 min" → 8, "8" → 8, "" → null
-  const readMinutes = post.readTime
-    ? parseInt(post.readTime, 10) || null
-    : null;
-
-  // Estimate word count from readTime (200 wpm standard)
-  const wordCount = readMinutes ? readMinutes * 200 : undefined;
+  const isoDate    = post.date ? new Date(post.date).toISOString() : undefined;
+  const readMinutes = post.readTime ? parseInt(post.readTime, 10) || null : null;
+  const wordCount   = readMinutes ? readMinutes * 200 : undefined;
 
   return {
     '@context': 'https://schema.org',
@@ -98,43 +68,23 @@ export function blogPostingSchema(post) {
     description: post.excerpt,
     url: `${BASE_URL}/blog/${post.slug}`,
     datePublished: isoDate,
-    dateModified: isoDate,   // update this if you track edits separately
-    author: {
-      '@type': 'Person',
-      name: post.author || SITE_CONFIG.name,
-      url: BASE_URL,
-    },
-    publisher: {
-      '@type': 'Person',
-      name: SITE_CONFIG.name,
-      url: BASE_URL,
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `${BASE_URL}/blog/${post.slug}`,
-    },
-    image: {
-      '@type': 'ImageObject',
-      url: `${BASE_URL}/og-images/${post.slug}.png`,
-      width: 1200,
-      height: 630,
-    },
+    dateModified: isoDate,
+    author: { '@type': 'Person', name: post.author || SITE_CONFIG.name, url: BASE_URL },
+    publisher: { '@type': 'Person', name: SITE_CONFIG.name, url: BASE_URL },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}/blog/${post.slug}` },
+    image: { '@type': 'ImageObject', url: `${BASE_URL}/og-images/${post.slug}.png`, width: 1200, height: 630 },
     keywords: [...(post.tags ?? []), ...getPostKeywords(post.slug)].join(', '),
     articleSection: 'Engineering',
     inLanguage: 'en-US',
     isAccessibleForFree: true,
-    // timeRequired: ISO 8601 duration — only set when we have a valid number
     ...(readMinutes ? { timeRequired: `PT${readMinutes}M` } : {}),
-    // wordCount helps Google understand content depth
-    ...(wordCount ? { wordCount } : {}),
+    ...(wordCount   ? { wordCount } : {}),
   };
 }
 
-// ── Blog (collection) ─────────────────────────────────────────────────────────
-// Goes on the /blog index page. Only rendered once posts have loaded.
-
+// Blog collection — /blog index
 export function blogSchema(posts) {
-  if (!posts?.length) return null; // don't emit empty schema
+  if (!posts?.length) return null;
 
   return {
     '@context': 'https://schema.org',
@@ -142,11 +92,7 @@ export function blogSchema(posts) {
     name: `${SITE_CONFIG.name} - Blog`,
     url: `${BASE_URL}/blog`,
     description: 'Notes on engineering, software craft, and the occasional detour into other things.',
-    author: {
-      '@type': 'Person',
-      name: SITE_CONFIG.name,
-      url: BASE_URL,
-    },
+    author: { '@type': 'Person', name: SITE_CONFIG.name, url: BASE_URL },
     blogPost: posts.map((post) => ({
       '@type': 'BlogPosting',
       headline: post.title,
@@ -157,10 +103,7 @@ export function blogSchema(posts) {
   };
 }
 
-// ── ProfilePage ───────────────────────────────────────────────────────────────
-// Signals to Google that this is a profile page for a named person.
-// Helps connect partial name searches ("Soumya") to the Knowledge Graph entity.
-
+// ProfilePage — homepage
 export const profilePageSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfilePage',
@@ -182,9 +125,7 @@ export const profilePageSchema = {
   },
 };
 
-// ── SiteNavigationElement ─────────────────────────────────────────────────────
-// Helps Google understand the site structure and navigation hierarchy.
-
+// SiteNavigationElement
 export const siteNavigationSchema = {
   '@context': 'https://schema.org',
   '@type': 'SiteNavigationElement',
@@ -198,4 +139,3 @@ export const siteNavigationSchema = {
     `${BASE_URL}/#contact`,
   ],
 };
-

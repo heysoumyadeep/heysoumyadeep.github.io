@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
 import rehypeHighlight from 'rehype-highlight';
 import sitemapPlugin from './scripts/vite-plugin-sitemap.js';
-import prerenderPlugin from './scripts/vite-plugin-prerender.js';
+import ssgPlugin from './scripts/vite-plugin-ssg.js';
 import ogImagePlugin from './scripts/vite-plugin-og-image.js';
 import { fileURLToPath, URL } from 'node:url';
 
@@ -18,10 +18,10 @@ export default defineConfig(({ command }) => ({
     react(),
     // OG image plugin runs in both dev (configureServer) and build (closeBundle)
     ogImagePlugin(),
-    // Sitemap + prerender only run on build
+    // Sitemap + SSG only run on build
     ...(command === 'build' ? [
       sitemapPlugin(),
-      prerenderPlugin(),
+      ssgPlugin(),
     ] : []),
   ],
   resolve: {

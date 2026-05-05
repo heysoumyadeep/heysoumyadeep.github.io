@@ -7,14 +7,12 @@
   z-index: 2;
 }
 
-.not-found__inner {
-  text-align: center;
-}
+.not-found__inner { text-align: center; }
 
 .not-found__code {
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 3px;
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--color-accent);
   margin-bottom: var(--space-4);
@@ -39,17 +37,14 @@
 
 .not-found__btn {
   display: inline-block;
-  padding: 12px 28px;
+  padding: var(--btn-padding-y) 28px;
   background: var(--gradient-accent);
-  color: #ffffff;
+  color: var(--color-white);
   border-radius: var(--radius-pill);
   font-size: 15px;
   font-weight: 500;
   transition: opacity var(--duration-hover) var(--ease),
               transform var(--duration-hover) var(--ease);
 
-  &:hover {
-    opacity: 0.88;
-    transform: translateY(-2px);
-  }
+  &:hover { opacity: 0.88; transform: translateY(-2px); }
 }
