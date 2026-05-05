@@ -1,0 +1,283 @@
+export const frontmatter = {
+  title: "Chunking and embeddings: the part of RAG nobody teaches you",
+  date: "2026-05-06",
+  readTime: "7 min",
+  excerpt: "Why your RAG chatbot hallucinates, and how chunking strategy and embedding choice quietly decide whether it works.",
+  author: "Soumyadeep Pradhan",
+  tags: ["llm", "rag", "embeddings", "ai-engineering", "deep-dive"]
+}
+
+export function PreviewImage() {
+  return (
+    <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'100%',display:'block'}}>
+      <defs><marker id="pi-arrow1" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L10,4 z" fill="var(--color-accent)"/></marker></defs>
+      <text x="360" y="30" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">same question, two RAG systems</text>
+      <text x="180" y="65" textAnchor="middle" fontSize="12" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">naive chunking</text>
+      <rect x="60" y="80" width="240" height="60" rx="6" fill="var(--color-border)" opacity="0.4" stroke="var(--color-border)" strokeWidth="1.2"/>
+      <text x="180" y="105" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">retrieves wrong context</text>
+      <text x="180" y="125" textAnchor="middle" fontSize="14" fill="var(--color-text-dim)" fontFamily="monospace" fontWeight="600">hallucinates</text>
+      <text x="540" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">smart chunking</text>
+      <rect x="420" y="80" width="240" height="60" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+      <text x="540" y="105" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">retrieves right context</text>
+      <text x="540" y="125" textAnchor="middle" fontSize="14" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">accurate answer</text>
+      <line x1="300" y1="110" x2="420" y2="110" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#pi-arrow1)"/>
+      <text x="360" y="100" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">chunking + embeddings</text>
+      <text x="360" y="175" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">same LLM, same prompt: only the retrieval changed</text>
+    </svg>
+  );
+}
+
+A friend asked me last month why his customer support bot kept giving wrong answers. The LLM was fine. The prompt was fine. The docs were all loaded into the vector database. But ask "how do I cancel my subscription?" and it would confidently make up steps that didn't exist.
+
+The issue wasn't the LLM. It was *what the LLM was being shown*. His chunking was splitting documents mid-sentence, and his embeddings were retrieving the wrong paragraphs.
+
+If you've built anything with RAG (Retrieval-Augmented Generation), you've probably seen this exact movie. The model is only as good as the context it gets. And the two things that decide what context it gets are **chunking** and **embeddings**.
+
+<svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'0 0 2rem',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  <defs><marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L10,4 z" fill="var(--color-accent)"/></marker></defs>
+  <text x="360" y="30" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">same question, two RAG systems</text>
+  <text x="180" y="65" textAnchor="middle" fontSize="12" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">naive chunking</text>
+  <rect x="60" y="80" width="240" height="60" rx="6" fill="var(--color-border)" opacity="0.4" stroke="var(--color-border)" strokeWidth="1.2"/>
+  <text x="180" y="105" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">retrieves wrong context</text>
+  <text x="180" y="125" textAnchor="middle" fontSize="14" fill="var(--color-text-dim)" fontFamily="monospace" fontWeight="600">hallucinates</text>
+  <text x="540" y="65" textAnchor="middle" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">smart chunking</text>
+  <rect x="420" y="80" width="240" height="60" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="540" y="105" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">retrieves right context</text>
+  <text x="540" y="125" textAnchor="middle" fontSize="14" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">accurate answer</text>
+  <line x1="300" y1="110" x2="420" y2="110" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#arrow1)"/>
+  <text x="360" y="100" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">chunking + embeddings</text>
+  <text x="360" y="175" textAnchor="middle" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">same LLM, same prompt: only the retrieval changed</text>
+</svg>
+
+## What an embedding actually is
+
+Imagine you had to plot every word in the English language on a map. Words with similar meanings should be close together. "Dog" and "puppy" sit next to each other. "Cat" is nearby. "Skyscraper" is on the other side of town.
+
+That's an embedding. It's a list of numbers (a vector) that represents the meaning of a piece of text as a coordinate in space. Real embeddings live in 384, 768, or 1536 dimensions, but the idea is the same as a 2D map.
+
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  <text x="360" y="25" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">embeddings: meaning as coordinates</text>
+  <line x1="60" y1="270" x2="660" y2="270" stroke="var(--color-border)" strokeWidth="1"/>
+  <line x1="60" y1="60" x2="60" y2="270" stroke="var(--color-border)" strokeWidth="1"/>
+  <text x="60" y="290" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">animals →</text>
+  <text x="35" y="65" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">↑ buildings</text>
+  <circle cx="160" cy="220" r="6" fill="var(--color-accent)" opacity="0.7"/>
+  <text x="170" y="225" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">dog</text>
+  <circle cx="190" cy="235" r="6" fill="var(--color-accent)" opacity="0.7"/>
+  <text x="200" y="240" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">puppy</text>
+  <circle cx="220" cy="210" r="6" fill="var(--color-accent)" opacity="0.7"/>
+  <text x="230" y="215" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">cat</text>
+  <circle cx="180" cy="195" r="6" fill="var(--color-accent)" opacity="0.5"/>
+  <text x="190" y="200" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">kitten</text>
+  <ellipse cx="195" cy="215" rx="75" ry="40" fill="var(--color-accent)" opacity="0.08" stroke="var(--color-accent)" strokeDasharray="3,3" strokeWidth="1"/>
+  <text x="195" y="172" textAnchor="middle" fontSize="9" fill="var(--color-accent)" fontFamily="monospace">pets cluster</text>
+  <circle cx="500" cy="100" r="6" fill="var(--color-accent)" opacity="0.7"/>
+  <text x="510" y="105" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">skyscraper</text>
+  <circle cx="540" cy="120" r="6" fill="var(--color-accent)" opacity="0.7"/>
+  <text x="550" y="125" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">tower</text>
+  <circle cx="510" cy="135" r="6" fill="var(--color-accent)" opacity="0.5"/>
+  <text x="520" y="140" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">building</text>
+  <ellipse cx="525" cy="120" rx="80" ry="35" fill="var(--color-accent)" opacity="0.08" stroke="var(--color-accent)" strokeDasharray="3,3" strokeWidth="1"/>
+  <text x="525" y="80" textAnchor="middle" fontSize="9" fill="var(--color-accent)" fontFamily="monospace">structures cluster</text>
+  <circle cx="380" cy="160" r="6" fill="var(--color-accent)" opacity="0.5"/>
+  <text x="390" y="165" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">car</text>
+  <circle cx="350" cy="180" r="6" fill="var(--color-accent)" opacity="0.5"/>
+  <text x="360" y="185" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace">truck</text>
+  <line x1="160" y1="220" x2="220" y2="210" stroke="var(--color-accent)" strokeWidth="1" strokeDasharray="2,2" opacity="0.4"/>
+  <text x="180" y="247" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">small distance = similar meaning</text>
+</svg>
+
+When two texts are about similar things, their vectors point in similar directions. We measure that with **cosine similarity** — basically, the angle between the two arrows. Small angle, similar meaning.
+
+This is the foundation of RAG. You convert your documents into vectors, store them in a vector database, and when a user asks a question, you convert their question into a vector too. Then you find the document vectors closest to the question vector. Those become the LLM's context.
+
+## The full RAG flow in one picture
+
+<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  <defs><marker id="ragarrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L10,4 z" fill="var(--color-accent)"/></marker></defs>
+  <text x="360" y="25" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">RAG: from question to answer</text>
+  <text x="60" y="55" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">offline (one time)</text>
+  <rect x="60" y="65" width="600" height="100" rx="8" fill="var(--color-surface)" stroke="var(--color-border)" strokeDasharray="3,3" strokeWidth="1.2"/>
+  <rect x="80" y="85" width="100" height="50" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="130" y="105" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">documents</text>
+  <text x="130" y="122" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">PDFs, docs, web</text>
+  <line x1="180" y1="110" x2="220" y2="110" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#ragarrow)"/>
+  <rect x="220" y="85" width="100" height="50" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="270" y="105" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">chunk</text>
+  <text x="270" y="122" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">split into pieces</text>
+  <line x1="320" y1="110" x2="360" y2="110" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#ragarrow)"/>
+  <rect x="360" y="85" width="100" height="50" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="410" y="105" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">embed</text>
+  <text x="410" y="122" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">text → vector</text>
+  <line x1="460" y1="110" x2="500" y2="110" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#ragarrow)"/>
+  <rect x="500" y="85" width="140" height="50" rx="6" fill="var(--color-accent)" opacity="0.25" stroke="var(--color-accent)" strokeWidth="1.5"/>
+  <text x="570" y="105" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">vector DB</text>
+  <text x="570" y="122" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">Pinecone, pgvector</text>
+  <text x="60" y="190" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">runtime (every query)</text>
+  <rect x="60" y="200" width="600" height="140" rx="8" fill="var(--color-surface)" stroke="var(--color-border)" strokeDasharray="3,3" strokeWidth="1.2"/>
+  <rect x="80" y="220" width="100" height="40" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="130" y="244" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">user query</text>
+  <line x1="180" y1="240" x2="220" y2="240" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#ragarrow)"/>
+  <rect x="220" y="220" width="100" height="40" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="270" y="244" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">embed query</text>
+  <line x1="320" y1="240" x2="360" y2="240" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#ragarrow)"/>
+  <rect x="360" y="220" width="120" height="40" rx="6" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="420" y="240" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">find top-k</text>
+  <text x="420" y="253" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">nearest vectors</text>
+  <line x1="480" y1="240" x2="520" y2="240" stroke="var(--color-accent)" strokeWidth="2" markerEnd="url(#ragarrow)"/>
+  <rect x="520" y="220" width="120" height="40" rx="6" fill="var(--color-accent)" opacity="0.25" stroke="var(--color-accent)" strokeWidth="1.5"/>
+  <text x="580" y="244" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">retrieved chunks</text>
+  <line x1="580" y1="260" x2="580" y2="285" stroke="var(--color-border)" strokeWidth="1.5" markerEnd="url(#ragarrow)"/>
+  <rect x="220" y="285" width="360" height="40" rx="6" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.5"/>
+  <text x="400" y="305" textAnchor="middle" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">LLM (chunks + question → answer)</text>
+  <line x1="220" y1="305" x2="190" y2="305" stroke="var(--color-border)" strokeWidth="1.5" markerEnd="url(#ragarrow)"/>
+  <text x="155" y="309" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">answer</text>
+</svg>
+
+The whole pipeline is just two phases. Offline, you prepare the index once. At runtime, you embed the question, find the nearest chunks, and hand them to the LLM as context.
+
+Notice where everything depends on the chunks. If your chunks are bad, the search returns the wrong stuff, and the LLM either hallucinates or answers the wrong question confidently. Garbage in, garbage out.
+
+## Why chunking is the whole game
+
+Why not just embed the whole document as one vector? Two reasons.
+
+First, LLMs have **context windows**. You can't fit a 500-page manual into a single prompt, even with modern long-context models. You have to pick the most relevant pieces.
+
+Second, embeddings get fuzzy at scale. A vector representing 50 pages of text averages out everything. The specific paragraph about "cancelling subscriptions" gets diluted by 49 other pages about pricing, features, and team plans. Search will never surface it.
+
+So you split. But how you split matters a lot.
+
+## Chunking strategies
+
+<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  <text x="360" y="25" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">three ways to chunk a document</text>
+  <text x="60" y="60" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">1. Fixed-size</text>
+  <text x="60" y="76" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">split every N characters, ignore meaning</text>
+  <rect x="60" y="85" width="180" height="35" rx="4" fill="var(--color-accent)" opacity="0.18" stroke="var(--color-accent)" strokeWidth="1"/>
+  <text x="150" y="107" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">"...subscription. To can"</text>
+  <rect x="245" y="85" width="180" height="35" rx="4" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1"/>
+  <text x="335" y="107" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">"cel, go to Settings"</text>
+  <rect x="430" y="85" width="180" height="35" rx="4" fill="var(--color-accent)" opacity="0.12" stroke="var(--color-accent)" strokeWidth="1"/>
+  <text x="520" y="107" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">" → Billing → Cancel"</text>
+  <text x="635" y="107" fontSize="11" fill="var(--color-text-dim)" fontFamily="monospace">✗ cuts mid-word</text>
+  <text x="60" y="160" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">2. Recursive (most common)</text>
+  <text x="60" y="176" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">split by paragraphs, then sentences, then words</text>
+  <rect x="60" y="185" width="280" height="35" rx="4" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="200" y="207" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">"To cancel, go to Settings → Billing."</text>
+  <rect x="345" y="185" width="265" height="35" rx="4" fill="var(--color-accent)" opacity="0.16" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="475" y="207" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">"Click Cancel. Confirm twice."</text>
+  <text x="635" y="207" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">✓ keeps sentences</text>
+  <text x="60" y="260" fontSize="12" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">3. Semantic</text>
+  <text x="60" y="276" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">embed each sentence, group by topic similarity</text>
+  <rect x="60" y="285" width="240" height="35" rx="4" fill="var(--color-accent)" opacity="0.22" stroke="var(--color-accent)" strokeWidth="1.5"/>
+  <text x="180" y="307" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">[everything about cancellation]</text>
+  <rect x="305" y="285" width="200" height="35" rx="4" fill="var(--color-accent)" opacity="0.18" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="405" y="307" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">[pricing tiers]</text>
+  <rect x="510" y="285" width="100" height="35" rx="4" fill="var(--color-accent)" opacity="0.15" stroke="var(--color-accent)" strokeWidth="1"/>
+  <text x="560" y="307" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">[support]</text>
+  <text x="635" y="307" fontSize="11" fill="var(--color-accent)" fontFamily="monospace">✓✓ topic-aware</text>
+  <text x="60" y="355" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace" fontStyle="italic">recursive is the practical default. semantic is best but more expensive to compute.</text>
+</svg>
+
+**Fixed-size** is the naive approach. Pick a number (say 500 characters), slice the document every 500 characters. Fast and dumb. Cuts sentences in half. Useful only as a baseline.
+
+**Recursive chunking** is the practical default and what most production systems use. It tries to split on paragraph breaks first. If a paragraph is too big, it splits on sentences. If a sentence is too big, it splits on words. The result: chunks that respect natural boundaries.
+
+**Semantic chunking** is the smartest. You embed every sentence, then group consecutive sentences whose embeddings are similar (same topic). You stop a chunk when the topic shifts. Slower and more expensive at index time, but the chunks are coherent units of meaning.
+
+For most projects, start with recursive chunking at around 500-800 tokens. Upgrade to semantic only if quality isn't good enough.
+
+## The overlap trick
+
+Even with smart chunking, you'll lose context at boundaries. Imagine a document that says:
+
+> "Click Cancel. **You'll see a confirmation dialog.** Confirm by typing your email."
+
+If your chunk boundary lands right after "Cancel", the next chunk loses the "Click Cancel" context. A user asking "what happens after I click Cancel?" might retrieve the wrong chunk.
+
+The fix is **overlap**: each chunk shares its first or last few sentences with its neighbors.
+
+<svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  <text x="360" y="25" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">chunk overlap: keeping context across boundaries</text>
+  <text x="60" y="60" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">no overlap (loses context)</text>
+  <rect x="60" y="70" width="280" height="40" rx="4" fill="var(--color-accent)" opacity="0.18" stroke="var(--color-accent)" strokeWidth="1"/>
+  <text x="200" y="94" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">"Click Cancel. You'll see..."</text>
+  <rect x="345" y="70" width="280" height="40" rx="4" fill="var(--color-accent)" opacity="0.18" stroke="var(--color-accent)" strokeWidth="1"/>
+  <text x="485" y="94" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">"Confirm by typing your email."</text>
+  <text x="60" y="135" fontSize="11" fill="var(--color-accent)" fontFamily="monospace" fontWeight="600">with overlap (50 tokens)</text>
+  <rect x="60" y="145" width="320" height="40" rx="4" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="220" y="169" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">"Click Cancel. You'll see a dialog."</text>
+  <rect x="305" y="145" width="320" height="40" rx="4" fill="var(--color-accent)" opacity="0.2" stroke="var(--color-accent)" strokeWidth="1.2"/>
+  <text x="465" y="169" textAnchor="middle" fontSize="10" fill="var(--color-accent)" fontFamily="monospace">"...see a dialog. Confirm by email."</text>
+  <rect x="305" y="145" width="75" height="40" rx="4" fill="var(--color-accent)" opacity="0.35" stroke="var(--color-accent)" strokeWidth="1.5" strokeDasharray="3,2"/>
+  <text x="342" y="200" textAnchor="middle" fontSize="9" fill="var(--color-accent)" fontFamily="monospace">↑ shared overlap region</text>
+  <text x="360" y="225" textAnchor="middle" fontSize="10" fill="var(--color-text-dim)" fontFamily="monospace" fontStyle="italic">10-20% overlap is the usual sweet spot</text>
+</svg>
+
+Typical overlap is 10-20% of chunk size. Too little and you lose context. Too much and you waste space and money (every chunk gets embedded and stored, so 50% overlap means 50% more vectors).
+
+## Picking an embedding model
+
+The embedding model is your translator from text to vector. Different translators produce different maps. A query embedded with one model can't be compared to documents embedded with another. Pick one and stick with it.
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',height:'auto',margin:'1.5rem 0',display:'block',borderRadius:'12px',background:'var(--color-surface)',border:'1px solid var(--color-border)'}}>
+  <text x="360" y="25" textAnchor="middle" fontSize="13" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">embedding model trade-offs</text>
+  <text x="160" y="60" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">small (384 dims)</text>
+  <text x="360" y="60" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">medium (768 dims)</text>
+  <text x="560" y="60" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">large (1536+ dims)</text>
+  <text x="60" y="95" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">Quality</text>
+  <rect x="115" y="80" width="90" height="22" rx="4" fill="var(--color-border)" opacity="0.4"/>
+  <text x="160" y="95" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">decent</text>
+  <rect x="315" y="80" width="90" height="22" rx="4" fill="var(--color-accent)" opacity="0.2"/>
+  <text x="360" y="95" textAnchor="middle" fontSize="9" fill="var(--color-text-muted)" fontFamily="monospace">good</text>
+  <rect x="515" y="80" width="90" height="22" rx="4" fill="var(--color-accent)" opacity="0.3"/>
+  <text x="560" y="95" textAnchor="middle" fontSize="9" fill="var(--color-accent)" fontFamily="monospace">best</text>
+  <text x="60" y="130" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">Speed</text>
+  <rect x="115" y="115" width="90" height="22" rx="4" fill="var(--color-accent)" opacity="0.3"/>
+  <text x="160" y="130" textAnchor="middle" fontSize="9" fill="var(--color-accent)" fontFamily="monospace">fast</text>
+  <rect x="315" y="115" width="90" height="22" rx="4" fill="var(--color-accent)" opacity="0.2"/>
+  <text x="360" y="130" textAnchor="middle" fontSize="9" fill="var(--color-text-muted)" fontFamily="monospace">medium</text>
+  <rect x="515" y="115" width="90" height="22" rx="4" fill="var(--color-border)" opacity="0.4"/>
+  <text x="560" y="130" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">slow</text>
+  <text x="60" y="165" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">Cost</text>
+  <rect x="115" y="150" width="90" height="22" rx="4" fill="var(--color-accent)" opacity="0.3"/>
+  <text x="160" y="165" textAnchor="middle" fontSize="9" fill="var(--color-accent)" fontFamily="monospace">cheap</text>
+  <rect x="315" y="150" width="90" height="22" rx="4" fill="var(--color-accent)" opacity="0.2"/>
+  <text x="360" y="165" textAnchor="middle" fontSize="9" fill="var(--color-text-muted)" fontFamily="monospace">moderate</text>
+  <rect x="515" y="150" width="90" height="22" rx="4" fill="var(--color-border)" opacity="0.4"/>
+  <text x="560" y="165" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">expensive</text>
+  <text x="60" y="200" fontSize="10" fill="var(--color-text-muted)" fontFamily="monospace" fontWeight="600">Storage</text>
+  <rect x="115" y="185" width="90" height="22" rx="4" fill="var(--color-accent)" opacity="0.3"/>
+  <text x="160" y="200" textAnchor="middle" fontSize="9" fill="var(--color-accent)" fontFamily="monospace">small</text>
+  <rect x="315" y="185" width="90" height="22" rx="4" fill="var(--color-accent)" opacity="0.2"/>
+  <text x="360" y="200" textAnchor="middle" fontSize="9" fill="var(--color-text-muted)" fontFamily="monospace">2x</text>
+  <rect x="515" y="185" width="90" height="22" rx="4" fill="var(--color-border)" opacity="0.4"/>
+  <text x="560" y="200" textAnchor="middle" fontSize="9" fill="var(--color-text-dim)" fontFamily="monospace">4x+</text>
+  <rect x="60" y="225" width="600" height="40" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" strokeDasharray="3,3" strokeWidth="1"/>
+  <text x="160" y="248" textAnchor="middle" fontSize="9" fill="var(--color-text-muted)" fontFamily="monospace">all-MiniLM-L6-v2</text>
+  <text x="360" y="248" textAnchor="middle" fontSize="9" fill="var(--color-text-muted)" fontFamily="monospace">text-embedding-3-small</text>
+  <text x="560" y="248" textAnchor="middle" fontSize="9" fill="var(--color-text-muted)" fontFamily="monospace">text-embedding-3-large</text>
+</svg>
+
+A few things to know when picking:
+
+- **Higher dimensions usually mean better quality, but at increasing cost.** Going from 384 to 1536 dimensions roughly quadruples your storage and search time, with maybe 5-10% better retrieval quality.
+- **Domain matters.** Generic embeddings work for general text. For medical, legal, or code, domain-tuned models do much better.
+- **Multilingual? Pick a multilingual model.** Don't try to translate first; embed in the original language with a model that supports it.
+- **Switching costs are real.** If you change your embedding model later, you have to re-embed every document. Choose carefully or design for re-indexing from day one.
+
+## What I'd actually do
+
+The checklist I run through when building a RAG system:
+
+1. **Start with recursive chunking, 500-800 tokens, 10-15% overlap.** This handles 80% of cases. Tune later if quality is off.
+2. **Pick a medium-sized embedding model first.** Something like `text-embedding-3-small` or `bge-base`. Move bigger only if retrieval quality is the bottleneck.
+3. **Always test with real questions before going live.** Pick 20-30 actual user questions and check if the right chunks come back in the top 5 results. This catches more issues than any other test.
+4. **Store the source for every chunk.** Document name, page number, section. Show it in the LLM's answer so users can verify and debug.
+5. **Watch for "lost in the middle".** LLMs pay more attention to the start and end of context. Put the most relevant chunk first, not just the most similar by cosine.
+6. **Re-rank if accuracy matters.** A small re-ranking model on top of the top-20 vector results often beats just taking the top-5 directly. The vector search is recall, the reranker is precision.
+
+A RAG system isn't an LLM with documents bolted on. It's a search engine wearing an LLM as a hat. Get the search right and the answers follow. Get the search wrong and no amount of prompt engineering will save you.
+
+Next time your chatbot confidently makes something up, don't blame the model. Look at what it was shown.
