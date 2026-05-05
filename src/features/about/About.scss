@@ -28,7 +28,7 @@
   font-size: 16px;
   line-height: 1.7;
   color: var(--color-text-muted);
-  font-style: normal;
+  font-style: italic;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -40,6 +40,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-accent);
+  font-style: normal;
 }
 
 .about__skills {

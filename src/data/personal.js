@@ -8,7 +8,7 @@ export const personalInfo = {
     "Outside of work, you'll find me singing, painting, or chasing a creative side-project. I'm also an avid traveller, always planning the next trip.",
     "I've recently started writing blogs too. It turns out, explaining something clearly is the fastest way to realize you didn't fully understand it yourself.",
   ],
-  funFact: "*I have travelled 18 states across India and counting. Every trip teaches me something a textbook never could.*",
+  funFact: "I have travelled 18 states across India and counting. Every trip teaches me something a textbook never could.",
   email: 'contact@soumya.io',
   social: {
     github: 'https://github.com/heysoumyadeep',
